@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Пользователи — Ticket System UI</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --card: #ffffff;
+      --muted: #64748b;
+      --text: #0f172a;
+      --line: #e5e7eb;
+      --primary: #2563eb;
+      --primary-2: #1d4ed8;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --info: #06b6d4;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 28%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--text);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+      color: #fff;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.2px;
+    }
+
+    .brand-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
+      font-size: 1.1rem;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .profile small {
+      color: rgba(255,255,255,0.65);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: rgba(255,255,255,0.78);
+      padding: 12px 14px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: 0.2s ease;
+      background: transparent;
+    }
+
+    .nav a:hover,
+    .nav a.active {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    .nav .count {
+      min-width: 28px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.2);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.5;
+    }
+
+    /* Main */
+    .main {
+      padding: 28px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .search-row {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .search {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .search input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      font-size: 15px;
+      background: transparent;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      white-space: nowrap;
+      flex: 0 0 auto;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+    }
+
+    .btn-filter { min-width: 110px; padding-inline: 18px; }
+    .btn-new { min-width: 120px; color: #fff; padding-inline: 20px; }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(229,231,235,0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 18px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .chip.active,
+    .chip:hover {
+      border-color: rgba(37,99,235,0.3);
+      background: rgba(37,99,235,0.08);
+      color: var(--primary-2);
+    }
+
+    .tickets {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .ticket {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      transition: 0.2s ease;
+    }
+
+    .ticket:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .ticket-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .ticket-id {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .ticket-title {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+
+    .ticket-meta {
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge.success { background: rgba(22, 163, 74, 0.12); color: var(--success); }
+    .badge.warning { background: rgba(245, 158, 11, 0.15); color: #b45309; }
+    .badge.danger  { background: rgba(220, 38, 38, 0.12); color: var(--danger); }
+    .badge.info    { background: rgba(6, 182, 212, 0.12); color: #0891b2; }
+
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">T</div>
+        <div>Tech Service</div>
+      </div>
+
+      <div class="profile">
+        <div>
+          <strong>Евгений В.</strong>
+          <small>ИТ директор</small>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="file:///C:/Users/Public/TechService/Monitoring.htm">
+          <span>Мониторинг</span>
+          <span class="count">3</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Reports.htm">
+          <span>Отчеты по парку</span>
+          <span class="count">128</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Tasks.htm">
+          <span>Задачи</span>
+          <span class="count">24</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Incidents.htm">
+          <span>Инциденты</span>
+          <span class="count">51</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Locations.htm">
+          <span>Локации</span>
+          <span class="count">10</span>
+        </a>
+        <a class="active" href="file:///C:/Users/Public/TechService/Users.htm">
+          <span>Пользователи</span>
+          <span class="count">35</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Topics.htm">
+          <span>Темы</span>
+          <span class="count">35</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Attractions.htm">
+          <span>Аттракционы</span>
+          <span class="count">35</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Assignees.htm">
+          <span>Ответственные</span>
+          <span class="count">35</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Observers.htm">
+          <span>Наблюдатели</span>
+          <span class="count">35</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/RootCauses.htm">
+          <span>Первопричины</span>
+          <span class="count">35</span>
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <nav class="nav">
+          <a href="file:///C:/Users/Public/TechService/ITRequest.htm">
+            <span>Заявка в ИТ</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="search-row">
+          <label class="search">
+            <span>🔎</span>
+            <input type="text" id="userSearch" placeholder="Поиск по имени, должности, email или локации..." />
+          </label>
+        </div>
+        <div class="topbar">
+          <a href="file:///C:/Users/Public/TechService/Filters.htm" class="btn btn-ghost btn-filter">Фильтры</a>
+          <a href="file:///C:/Users/Public/TechService/NewUser.htm" class="btn btn-primary btn-new">+ Новый пользователь</a>
+        </div>
+      </div>
+
+      <section class="content">
+        <div class="panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Управление пользователями</h2>
+          </div>
+
+          <!-- Фильтры ролей -->
+          <div class="filters">
+            <button class="chip active" data-filter="all">Все (35)</button>
+            <button class="chip" data-filter="admin">Администраторы</button>
+            <button class="chip" data-filter="engineer">Инженеры</button>
+            <button class="chip" data-filter="operator">Операторы</button>
+          </div>
+
+          <div class="tickets" id="userList">
+            <article class="ticket" data-role="admin">
+              <div class="ticket-top">
+                <div>
+                  <div class="ticket-id">#USR-001 · e.volkov@techservice.kz</div>
+                  <h3 class="ticket-title">Евгений В.</h3>
+                  <div class="ticket-meta">
+                    <span>Должность: ИТ директор</span>
+                    <span>Локация: Головной офис</span>
+                    <span>Телефон: +7 (701) 000-01-01</span>
+                  </div>
+                </div>
+                <span class="badge info">Администратор</span>
+              </div>
+            </article>
+
+            <article class="ticket" data-role="engineer">
+              <div class="ticket-top">
+                <div>
+                  <div class="ticket-id">#USR-002 · s.samat@techservice.kz</div>
+                  <h3 class="ticket-title">Самат С.</h3>
+                  <div class="ticket-meta">
+                    <span>Должность: Главный инженер</span>
+                    <span>Локация: Алматы Атакент</span>
+                    <span>Телефон: +7 (702) 111-22-33</span>
+                  </div>
+                </div>
+                <span class="badge success">Инженер</span>
+              </div>
+            </article>
+
+            <article class="ticket" data-role="engineer">
+              <div class="ticket-top">
+                <div>
+                  <div class="ticket-id">#USR-003 · i.ivanov@techservice.kz</div>
+                  <h3 class="ticket-title">Иванов И.</h3>
+                  <div class="ticket-meta">
+                    <span>Должность: Сервисный техник</span>
+                    <span>Локация: Шымкент Royal Plaza</span>
+                    <span>Телефон: +7 (705) 444-55-66</span>
+                  </div>
+                </div>
+                <span class="badge success">Инженер</span>
+              </div>
+            </article>
+
+            <article class="ticket" data-role="operator">
+              <div class="ticket-top">
+                <div>
+                  <div class="ticket-id">#USR-004 · a.petrova@techservice.kz</div>
+                  <h3 class="ticket-title">Петрова А.</h3>
+                  <div class="ticket-meta">
+                    <span>Должность: Старший кассир</span>
+                    <span>Локация: Алматы Алатау</span>
+                    <span>Телефон: +7 (707) 777-88-99</span>
+                  </div>
+                </div>
+                <span class="badge warning">Оператор</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- СКРИПТ ДЛЯ Users.htm -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Карта всех переходов системы
+      const routes = {
+        "Отчеты по парку": "file:///C:/Users/Public/TechService/Reports.htm",
+        "Задачи": "file:///C:/Users/Public/TechService/Tasks.htm",
+        "Инциденты": "file:///C:/Users/Public/TechService/Incidents.htm",
+        "Локации": "file:///C:/Users/Public/TechService/Locations.htm",
+        "Пользователи": "file:///C:/Users/Public/TechService/Users.htm",
+        "Темы": "file:///C:/Users/Public/TechService/Topics.htm",
+        "Аттракционы": "file:///C:/Users/Public/TechService/Attractions.htm",
+        "Ответственные": "file:///C:/Users/Public/TechService/Assignees.htm",
+        "Наблюдатели": "file:///C:/Users/Public/TechService/Observers.htm",
+        "Первопричины": "file:///C:/Users/Public/TechService/RootCauses.htm",
+        "Заявка в ИТ": "file:///C:/Users/Public/TechService/ITRequest.htm",
+        "Фильтры": "file:///C:/Users/Public/TechService/Filters.htm",
+        "+ Новый пользователь": "file:///C:/Users/Public/TechService/NewUser.htm"
+      };
+
+      // 2. Универсальный обработчик переходов по кнопкам и ссылкам
+      document.querySelectorAll('a, button').forEach(element => {
+        element.addEventListener('click', (e) => {
+          const text = element.textContent.trim().split('\n')[0].trim();
+          if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {
+            e.preventDefault();
+            window.location.href = routes[text];
+          }
+        });
+      });
+
+      // 3. Интерактивная фильтрация пользователей по ролям
+      const chips = document.querySelectorAll('.filters .chip');
+      const tickets = document.querySelectorAll('#userList .ticket');
+
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          chips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+
+          const filter = chip.getAttribute('data-filter');
+
+          tickets.forEach(ticket => {
+            if (filter === 'all' || ticket.getAttribute('data-role') === filter) {
+              ticket.style.display = 'grid';
+            } else {
+              ticket.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // 4. Логика поиска по пользователям
+      const searchInput = document.getElementById('userSearch');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const query = e.target.value.toLowerCase().trim();
+
+          tickets.forEach(ticket => {
+            const text = ticket.textContent.toLowerCase();
+            if (text.includes(query)) {
+              ticket.style.display = 'grid';
+            } else {
+              ticket.style.display = 'none';
+            }
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

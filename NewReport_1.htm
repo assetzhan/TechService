@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Новый отчет (Мастер) — Ticket System UI</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --card: #ffffff;
+      --muted: #64748b;
+      --text: #0f172a;
+      --line: #e5e7eb;
+      --primary: #2563eb;
+      --primary-2: #1d4ed8;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 28%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--text);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+      color: #fff;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .brand-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
+      font-size: 1.1rem;
+    }
+
+    .profile small { color: rgba(255,255,255,0.65); display: block; margin-top: 2px; }
+
+    .nav { display: grid; gap: 10px; }
+    .nav a {
+      text-decoration: none;
+      color: rgba(255,255,255,0.78);
+      padding: 12px 14px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: 0.2s ease;
+    }
+    .nav a:hover, .nav a.active { background: rgba(255,255,255,0.1); color: #fff; }
+    .nav .count { min-width: 28px; padding: 4px 8px; border-radius: 999px; background: rgba(37, 99, 235, 0.2); text-align: center; font-size: 12px; }
+
+    /* Main Container */
+    .main { padding: 28px; display: grid; gap: 20px; }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-ghost { background: #fff; color: var(--text); border: 1px solid var(--line); }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24); }
+
+    /* Wizard Tracker */
+    .wizard-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      background: #fff;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .step-item.active { background: rgba(37, 99, 235, 0.1); color: var(--primary-2); }
+    .step-item.completed { background: rgba(22, 163, 74, 0.1); color: var(--success); }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--line);
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+    }
+    .step-item.active .step-num { background: var(--primary); color: #fff; }
+    .step-item.completed .step-num { background: var(--success); color: #fff; }
+
+    /* Form Body */
+    .panel {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(229,231,235,0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .form-group { display: grid; gap: 8px; }
+    .form-group label { font-size: 14px; font-weight: 600; color: #334155; }
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      outline: none;
+      font-size: 14px;
+      background: #fff;
+      transition: 0.2s ease;
+    }
+    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* Checklist Table inside Wizard */
+    .mini-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .mini-table th, .mini-table td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; }
+    .mini-table th { background: #f8fafc; color: var(--muted); font-size: 12px; }
+
+    .radio-group { display: flex; gap: 16px; }
+    .radio-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+
+    /* File Dropzone */
+    .dropzone {
+      border: 2px dashed var(--primary);
+      background: rgba(37, 99, 235, 0.03);
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .wizard-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .wizard-step-content { display: none; }
+    .wizard-step-content.active { display: grid; gap: 20px; }
+
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .wizard-steps { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">T</div>
+        <div>Tech Service</div>
+      </div>
+      <div class="profile">
+        <div>
+          <strong>Евгений В.</strong>
+          <small>ИТ директор</small>
+        </div>
+      </div>
+      <nav class="nav">
+        <a class="active" href="file:///C:/Users/Public/TechService/Reports.htm">
+          <span>Отчеты по парку</span>
+          <span class="count">128</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Tasks.htm"><span>Задачи</span><span class="count">24</span></a>
+        <a href="file:///C:/Users/Public/TechService/Incidents.htm"><span>Инциденты</span><span class="count">51</span></a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <a href="file:///C:/Users/Public/TechService/Reports.htm" class="btn btn-ghost">← Отмена</a>
+        <h2 style="margin:0; font-size: 1.2rem;">Создание отчета инспекции (Вариант 1: Пошаговый)</h2>
+      </div>
+
+      <!-- Пошаговый Индикатор -->
+      <section class="wizard-steps">
+        <div class="step-item active" id="stepIndicator1">
+          <span class="step-num">1</span>
+          <span>Основная информация</span>
+        </div>
+        <div class="step-item" id="stepIndicator2">
+          <span class="step-num">2</span>
+          <span>Чек-лист инспекции</span>
+        </div>
+        <div class="step-item" id="stepIndicator3">
+          <span class="step-num">3</span>
+          <span>Файлы и Заключение</span>
+        </div>
+      </section>
+
+      <!-- Панель формы -->
+      <section class="panel">
+        <form id="reportWizardForm" onsubmit="return false;">
+          
+          <!-- ШАГ 1 -->
+          <div class="wizard-step-content active" id="step1">
+            <h3 style="margin: 0;">Шаг 1: Параметры объекта и инспекции</h3>
+            
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Парк / Локация *</label>
+                <select class="form-control" required>
+                  <option value="">Выберите локацию...</option>
+                  <option selected>Алматы Атакент</option>
+                  <option>Астана Хан Шатыр</option>
+                  <option>Шымкент Royal Plaza</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Аттракцион / Объект *</label>
+                <select class="form-control" required>
+                  <option value="">Выберите оборудование...</option>
+                  <option selected>Батутная арена (Батуты)</option>
+                  <option>Колесо обозрения</option>
+                  <option>Автодром</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Дата и время осмотра *</label>
+                <input type="datetime-local" class="form-control" value="2026-08-25T08:30" required />
+              </div>
+
+              <div class="form-group">
+                <label>Проводящий инспекцию *</label>
+                <input type="text" class="form-control" value="Аскаров Б." placeholder="ФИО сотрудника" required />
+              </div>
+            </div>
+          </div>
+
+          <!-- ШАГ 2 -->
+          <div class="wizard-step-content" id="step2">
+            <h3 style="margin: 0;">Шаг 2: Экспресс-проверка пунктов (Батуты)</h3>
+            
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>Проверяемый элемент</th>
+                  <th>Признаки нормы</th>
+                  <th style="width: 140px; text-align: center;">Соответствует</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Батутные полотна</strong></td>
+                  <td>Без порезов и разрывов, полотно натянуто равномерно.</td>
+                  <td>
+                    <div class="radio-group" style="justify-content: center;">
+                      <label class="radio-label"><input type="radio" name="p1" checked /> Да</label>
+                      <label class="radio-label"><input type="radio" name="p1" /> Нет</label>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Пружины и крепления</strong></td>
+                  <td>Все пружины на месте, без коррозии, скрип отсутствует.</td>
+                  <td>
+                    <div class="radio-group" style="justify-content: center;">
+                      <label class="radio-label"><input type="radio" name="p2" checked /> Да</label>
+                      <label class="radio-label"><input type="radio" name="p2" /> Нет</label>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Несущая рама</strong></td>
+                  <td>Сварные соединения затянуты, устойчивость полная.</td>
+                  <td>
+                    <div class="radio-group" style="justify-content: center;">
+                      <label class="radio-label"><input type="radio" name="p3" checked /> Да</label>
+                      <label class="radio-label"><input type="radio" name="p3" /> Нет</label>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Защитные маты</strong></td>
+                  <td>Перекрывают жесткие элементы, не смещаются.</td>
+                  <td>
+                    <div class="radio-group" style="justify-content: center;">
+                      <label class="radio-label"><input type="radio" name="p4" checked /> Да</label>
+                      <label class="radio-label"><input type="radio" name="p4" /> Нет</label>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ШАГ 3 -->
+          <div class="wizard-step-content" id="step3">
+            <h3 style="margin: 0;">Шаг 3: Прикрепление фото/акта и отправка</h3>
+
+            <div class="form-group">
+              <label>Загрузка скана или фото акта осмотра</label>
+              <div class="dropzone" onclick="document.getElementById('fileInput').click()">
+                <div style="font-size: 2rem; margin-bottom: 8px;">📄</div>
+                <strong>Перетащите файл сюда или нажмите для выбора</strong>
+                <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">Поддерживаются PDF, JPG, PNG (до 15 МБ)</div>
+                <input type="file" id="fileInput" style="display: none;" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Итоговое примечание / Заключение</label>
+              <textarea class="form-control" rows="3" placeholder="Введите дополнительные замечания или комментарии к осмотру...">Оборудование прошло полную проверку. Замечаний и критических дефектов не выявлено. Допущено к эксплуатации.</textarea>
+            </div>
+          </div>
+
+          <!-- Кнопки управления шагами -->
+          <div class="wizard-actions">
+            <button type="button" class="btn btn-ghost" id="btnPrev" style="visibility: hidden;">← Назад</button>
+            <button type="button" class="btn btn-primary" id="btnNext">Далее →</button>
+          </div>
+
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    const btnNext = document.getElementById('btnNext');
+    const btnPrev = document.getElementById('btnPrev');
+
+    function updateWizard() {
+      // Переключение видимости контента
+      for (let i = 1; i <= totalSteps; i++) {
+        document.getElementById(`step${i}`).classList.toggle('active', i === currentStep);
+        
+        const indicator = document.getElementById(`stepIndicator${i}`);
+        indicator.classList.toggle('active', i === currentStep);
+        indicator.classList.toggle('completed', i < currentStep);
+      }
+
+      // Управление кнопками
+      btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+      
+      if (currentStep === totalSteps) {
+        btnNext.textContent = '✓ Сохранить и опубликовать';
+        btnNext.classList.remove('btn-primary');
+        btnNext.style.background = 'var(--success)';
+        btnNext.style.color = '#fff';
+      } else {
+        btnNext.textContent = 'Далее →';
+        btnNext.style.background = 'linear-gradient(135deg, var(--primary), var(--primary-2))';
+      }
+    }
+
+    btnNext.addEventListener('click', () => {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateWizard();
+      } else {
+        alert('Отчет успешно создан и добавлен в реестр!');
+        window.location.href = "file:///C:/Users/Public/TechService/Reports.htm";
+      }
+    });
+
+    btnPrev.addEventListener('click', () => {
+      if (currentStep > 1) {
+        currentStep--;
+        updateWizard();
+      }
+    });
+  </script>
+</body>
+</html>

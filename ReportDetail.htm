@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Детализация чек-листа инспекции — Ticket System UI</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --card: #ffffff;
+      --muted: #64748b;
+      --text: #0f172a;
+      --line: #e5e7eb;
+      --primary: #2563eb;
+      --primary-2: #1d4ed8;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --info: #06b6d4;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 28%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--text);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+      color: #fff;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.2px;
+    }
+
+    .brand-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
+      font-size: 1.1rem;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .profile small {
+      color: rgba(255,255,255,0.65);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: rgba(255,255,255,0.78);
+      padding: 12px 14px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: 0.2s ease;
+      background: transparent;
+    }
+
+    .nav a:hover,
+    .nav a.active {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    .nav .count {
+      min-width: 28px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.2);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    /* Main Content */
+    .main {
+      padding: 28px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-ghost { background: #fff; color: var(--text); border: 1px solid var(--line); }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; }
+    .btn-primary:hover { box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35); transform: translateY(-1px); }
+
+    .btn-lg {
+      padding: 14px 28px;
+      font-size: 1rem;
+      border-radius: 14px;
+    }
+
+    /* Report Header Info */
+    .report-header {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 16px;
+    }
+
+    .report-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 16px;
+    }
+
+    .report-title {
+      margin: 0 0 6px;
+      font-size: 1.3rem;
+    }
+
+    .report-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .meta-item { display: grid; gap: 4px; }
+    .meta-label { color: var(--muted); font-size: 12px; }
+    .meta-val { font-weight: 600; }
+
+    /* Metric Cards */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .metric-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric-card .num {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(229,231,235,0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 1.1rem;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Inspection Table Styling */
+    .checklist-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .checklist-table th, .checklist-table td {
+      padding: 14px 12px;
+      text-align: left;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--line);
+      line-height: 1.45;
+    }
+
+    .checklist-table th {
+      background: #f8fafc;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border-top: 1px solid var(--line);
+    }
+
+    .checklist-table tr:hover {
+      background: rgba(37, 99, 235, 0.02);
+    }
+
+    .col-num { width: 50px; text-align: center; font-weight: 700; color: var(--muted); }
+    .col-elem { font-weight: 600; position: relative; }
+    .col-ans { width: 80px; text-align: center; }
+    .col-notes { width: 480px; color: var(--muted); }
+
+    /* Стили подсказки (Popover / Tooltip) */
+    .elem-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .info-badge:hover,
+    .info-badge:active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      transform: scale(1.1);
+    }
+
+    .info-popover {
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%) translateX(10px);
+      width: 340px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 14px 35px rgba(15, 23, 42, 0.18);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+      pointer-events: none;
+      font-size: 13px;
+      font-weight: normal;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .info-popover::before {
+      content: "";
+      position: absolute;
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 7px;
+      border-style: solid;
+      border-color: transparent #ffffff transparent transparent;
+    }
+
+    /* Наведение (Desktop) и Активный клик/тап (Mobile) */
+    .info-badge:hover + .info-popover,
+    .info-popover:hover,
+    .info-popover.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(-50%) translateX(14px);
+      pointer-events: auto;
+    }
+
+    .popover-item {
+      margin-bottom: 10px;
+    }
+
+    .popover-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .popover-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 2px;
+    }
+
+    .popover-val {
+      color: #334155;
+      font-size: 12.5px;
+    }
+
+    /* Custom Checkbox Status UI */
+    .status-check {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .status-check.yes { background: rgba(22, 163, 74, 0.15); color: var(--success); border: 1px solid var(--success); }
+    .status-check.empty { border: 1px solid var(--line); color: transparent; }
+
+    .badge {
+      display: inline-flex;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge.success { background: rgba(22, 163, 74, 0.12); color: var(--success); }
+
+    /* Нижняя панель действий (Конец отчета) */
+    .report-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 10px 0 20px;
+    }
+
+    @media print {
+      .info-popover, .info-badge, .sidebar, .topbar, .report-footer { display: none !important; }
+      .app { display: block; }
+      .main { padding: 0; }
+    }
+
+    /* Адаптированность под мобильные экраны */
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main { padding: 16px; }
+
+      /* Модальное представление подсказки на смартфонах */
+      .info-popover {
+        position: fixed;
+        left: 50% !important;
+        top: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translate(-50%, -50%) scale(0.95);
+        width: calc(100vw - 32px) !important;
+        max-width: 340px;
+        z-index: 10000;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      }
+
+      .info-popover::before { display: none; }
+
+      .info-badge:hover + .info-popover,
+      .info-popover.active {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .report-footer {
+        justify-content: center;
+      }
+      
+      .btn-lg {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">T</div>
+        <div>Tech Service</div>
+      </div>
+
+      <div class="profile">
+        <div>
+          <strong>Евгений В.</strong>
+          <small>ИТ директор</small>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a class="active" href="file:///C:/Users/Public/TechService/Reports.htm">
+          <span>Отчеты по парку</span>
+          <span class="count">128</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Tasks.htm">
+          <span>Задачи</span>
+          <span class="count">24</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Incidents.htm">
+          <span>Инциденты</span>
+          <span class="count">51</span>
+        </a>
+        <a href="file:///C:/Users/Public/TechService/Monitoring.htm">
+          <span>Мониторинг</span>
+          <span class="count">3</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <a href="file:///C:/Users/Public/TechService/Reports.htm" class="btn btn-ghost">← Назад к списку отчетов</a>
+        <div>
+          <button class="btn btn-ghost" onclick="window.print()">🖨️ Печать чек-листа</button>
+        </div>
+      </div>
+
+      <!-- Главная карточка отчета -->
+      <section class="report-header">
+        <div class="report-title-row">
+          <div>
+            <span style="color: var(--muted); font-size: 13px; font-weight: 600;">#CHK-2026-0825 · Аттракцион: Батуты</span>
+            <h1 class="report-title">Акт технической проверки и безопасности оборудования</h1>
+          </div>
+          <span class="badge success">Проверка пройдена (11/11)</span>
+        </div>
+
+        <div class="report-meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Дата и время осмотра</span>
+            <span class="meta-val">25 августа 2026, 08:30</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Инспектор / Специалист</span>
+            <span class="meta-val">Аскаров Б. (Тех. отдел)</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Локация</span>
+            <span class="meta-val">Парк «Алматы Атакент»</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Тип аттракциона</span>
+            <span class="meta-val">Батутная арена (Батуты)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Метрики проверки -->
+      <section class="metrics-grid">
+        <div class="metric-card">
+          <span style="color: var(--muted); font-size: 13px;">Проверено пунктов</span>
+          <div class="num">11 / 11</div>
+        </div>
+        <div class="metric-card">
+          <span style="color: var(--muted); font-size: 13px;">Ответ «Да» (Соответствует)</span>
+          <div class="num" style="color: var(--success);">11</div>
+        </div>
+        <div class="metric-card">
+          <span style="color: var(--muted); font-size: 13px;">Ответ «Нет» (Замечания)</span>
+          <div class="num">0</div>
+        </div>
+        <div class="metric-card">
+          <span style="color: var(--muted); font-size: 13px;">Допуск к эксплуатации</span>
+          <div class="num" style="color: var(--success);">Разрешен</div>
+        </div>
+      </section>
+
+      <!-- Таблица Чек-листа Инспекции -->
+      <section class="panel">
+        <div class="panel-title">
+          <span>Карта технической проверки узлов и конструкций</span>
+          <span style="font-size: 12px; color: var(--muted); font-weight: normal;">Основание: Регламент ежесменного ТО</span>
+        </div>
+
+        <table class="checklist-table">
+          <thead>
+            <tr>
+              <th class="col-num">№</th>
+              <th class="col-elem">Проверяемый элемент</th>
+              <th class="col-ans">Да</th>
+              <th class="col-ans">Нет</th>
+              <th class="col-notes">Примечание</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <!-- Пункт 1 -->
+            <tr>
+              <td class="col-num">1</td>
+              <td class="col-elem">
+                <div class="elem-wrapper">
+                  <span>Батутные полотна</span>
+                  <span class="info-badge">?</span>
+                  <div class="info-popover">
+                    <div class="popover-item">
+                      <span class="popover-label">Что проверяется:</span>
+                      <div class="popover-val">Полотно, швы, крепёжные петли.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Как проверяется:</span>
+                      <div class="popover-val">Осмотреть всю поверхность; проверить швы, крепёжные петли, равномерность натяжения и отсутствие провисания.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Признаки нормы:</span>
+                      <div class="popover-val">Порезы, разрывы, прожоги и чрезмерная потёртость отсутствуют; полотно натянуто равномерно; швы и петли целые.</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-ans"><span class="status-check yes">✓</span></td>
+              <td class="col-ans"><span class="status-check empty"></span></td>
+              <td class="col-notes">В норме</td>
+            </tr>
+
+            <!-- Пункт 2 -->
+            <tr>
+              <td class="col-num">2</td>
+              <td class="col-elem">
+                <div class="elem-wrapper">
+                  <span>Пружины и их крепления</span>
+                  <span class="info-badge">?</span>
+                  <div class="info-popover">
+                    <div class="popover-item">
+                      <span class="popover-label">Что проверяется:</span>
+                      <div class="popover-val">Пружины, крюки, проушины и крепление к раме.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Как проверяется:</span>
+                      <div class="popover-val">Проверить наличие всех пружин, крюки, проушины и крепление к раме; при безопасной пробной нагрузке проверить посторонние звуки.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Признаки нормы:</span>
+                      <div class="popover-val">Все пружины на месте, без трещин, остаточной деформации и значительной коррозии; крепления надёжны; скрип, щелчки и удары отсутствуют.</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-ans"><span class="status-check yes">✓</span></td>
+              <td class="col-ans"><span class="status-check empty"></span></td>
+              <td class="col-notes">Замечаний нет</td>
+            </tr>
+
+            <!-- Пункт 3 -->
+            <tr>
+              <td class="col-num">3</td>
+              <td class="col-elem">
+                <div class="elem-wrapper">
+                  <span>Несущая рама и соединения</span>
+                  <span class="info-badge">?</span>
+                  <div class="info-popover">
+                    <div class="popover-item">
+                      <span class="popover-label">Что проверяется:</span>
+                      <div class="popover-val">Балки, сварные и болтовые соединения.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Как проверяется:</span>
+                      <div class="popover-val">Визуально осмотреть стойки, балки, сварные и болтовые соединения; проверить устойчивость и отсутствие люфта.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Признаки нормы:</span>
+                      <div class="popover-val">Трещины, деформации и следы разрушения отсутствуют; соединения затянуты и зафиксированы; конструкция устойчива.</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-ans"><span class="status-check yes">✓</span></td>
+              <td class="col-ans"><span class="status-check empty"></span></td>
+              <td class="col-notes">Протянуто</td>
+            </tr>
+
+            <!-- Пункт 4 -->
+            <tr>
+              <td class="col-num">4</td>
+              <td class="col-elem">
+                <div class="elem-wrapper">
+                  <span>Крепление конструкции к полу / основанию</span>
+                  <span class="info-badge">?</span>
+                  <div class="info-popover">
+                    <div class="popover-item">
+                      <span class="popover-label">Что проверяется:</span>
+                      <div class="popover-val">Анкеры, опорные площадки и места крепления.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Как проверяется:</span>
+                      <div class="popover-val">Осмотреть анкеры, опорные площадки и места крепления; проверить отсутствие смещения конструкции.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Признаки нормы:</span>
+                      <div class="popover-val">Анкеры и опоры целы, не ослаблены; смещение, раскачивание и повреждение основания отсутствуют.</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-ans"><span class="status-check yes">✓</span></td>
+              <td class="col-ans"><span class="status-check empty"></span></td>
+              <td class="col-notes">Зафиксировано</td>
+            </tr>
+
+            <!-- Пункт 5 -->
+            <tr>
+              <td class="col-num">5</td>
+              <td class="col-elem">
+                <div class="elem-wrapper">
+                  <span>Защитные маты над рамой и пружинами</span>
+                  <span class="info-badge">?</span>
+                  <div class="info-popover">
+                    <div class="popover-item">
+                      <span class="popover-label">Что проверяется:</span>
+                      <div class="popover-val">Защитные маты, плотность прилегания.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Как проверяется:</span>
+                      <div class="popover-val">Проверить полное перекрытие жёстких элементов, целостность чехлов и наполнителя, положение и фиксацию матов.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Признаки нормы:</span>
+                      <div class="popover-val">Пружины и металл полностью закрыты; маты плотно прилегают, не смещаются; разрывов, провалов и оголённого наполнителя нет.</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-ans"><span class="status-check yes">✓</span></td>
+              <td class="col-ans"><span class="status-check empty"></span></td>
+              <td class="col-notes">Целостные</td>
+            </tr>
+
+            <!-- Пункт 6 -->
+            <tr>
+              <td class="col-num">6</td>
+              <td class="col-elem">
+                <div class="elem-wrapper">
+                  <span>Мягкая защита стоек и выступающих элементов</span>
+                  <span class="info-badge">?</span>
+                  <div class="info-popover">
+                    <div class="popover-item">
+                      <span class="popover-label">Что проверяется:</span>
+                      <div class="popover-val">Защитные кожухи и мягкие накладки.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Как проверяется:</span>
+                      <div class="popover-val">Осмотреть защитные кожухи и мягкие накладки; проверить их фиксацию и достаточность покрытия.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Признаки нормы:</span>
+                      <div class="popover-val">Все доступные жёсткие и выступающие элементы закрыты; защита целая, закреплена и не смещается.</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-ans"><span class="status-check yes">✓</span></td>
+              <td class="col-ans"><span class="status-check empty"></span></td>
+              <td class="col-notes">Без повреждений</td>
+            </tr>
+
+            <!-- Пункт 7 -->
+            <tr>
+              <td class="col-num">7</td>
+              <td class="col-elem">
+                <div class="elem-wrapper">
+                  <span>Ограждающие сетки</span>
+                  <span class="info-badge">?</span>
+                  <div class="info-popover">
+                    <div class="popover-item">
+                      <span class="popover-label">Что проверяется:</span>
+                      <div class="popover-val">Сетки, швы, узлы крепления.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Как проверяется:</span>
+                      <div class="popover-val">Осмотреть сетки по всей площади, швы, узлы крепления, верхний и нижний края; проверить натяжение.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Признаки нормы:</span>
+                      <div class="popover-val">Разрывы, растянутые ячейки и открытые зазоры отсутствуют; сетка натянута и закреплена по всему периметру.</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-ans"><span class="status-check yes">✓</span></td>
+              <td class="col-ans"><span class="status-check empty"></span></td>
+              <td class="col-notes">Натяжение норм</td>
+            </tr>
+
+            <!-- Пункт 8 -->
+            <tr>
+              <td class="col-num">8</td>
+              <td class="col-elem">
+                <div class="elem-wrapper">
+                  <span>Вход, выход и калитки</span>
+                  <span class="info-badge">?</span>
+                  <div class="info-popover">
+                    <div class="popover-item">
+                      <span class="popover-label">Что проверяется:</span>
+                      <div class="popover-val">Петли, защёлки/замки.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Как проверяется:</span>
+                      <div class="popover-val">Открыть и закрыть калитки; проверить петли, защёлки/замки, автоматическое закрытие и свободный проход.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Признаки нормы:</span>
+                      <div class="popover-val">Калитка исправно закрывается и фиксируется; не остаётся самопроизвольно открытой; проход свободен, пороги и края безопасны.</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-ans"><span class="status-check yes">✓</span></td>
+              <td class="col-ans"><span class="status-check empty"></span></td>
+              <td class="col-notes">Замки смазаны</td>
+            </tr>
+
+            <!-- Пункт 9 -->
+            <tr>
+              <td class="col-num">9</td>
+              <td class="col-elem">
+                <div class="elem-wrapper">
+                  <span>Интерактивные элементы и табло</span>
+                  <span class="info-badge">?</span>
+                  <div class="info-popover">
+                    <div class="popover-item">
+                      <span class="popover-label">Что проверяется:</span>
+                      <div class="popover-val">Датчики, табло.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Как проверяется:</span>
+                      <div class="popover-val">Включить систему; проверить световые мишени, датчики, табло, звук и штатные режимы; осмотреть корпуса и кабели.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Признаки нормы:</span>
+                      <div class="popover-val">Система работает без ошибок и перегрева; показания корректны; корпуса закрыты; оголённые или повреждённые провода отсутствуют.</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-ans"><span class="status-check yes">✓</span></td>
+              <td class="col-ans"><span class="status-check empty"></span></td>
+              <td class="col-notes">Тест пройден</td>
+            </tr>
+
+            <!-- Пункт 14 -->
+            <tr>
+              <td class="col-num">14</td>
+              <td class="col-elem">
+                <div class="elem-wrapper">
+                  <span>Правила, ограничения и инфо-знаки</span>
+                  <span class="info-badge">?</span>
+                  <div class="info-popover">
+                    <div class="popover-item">
+                      <span class="popover-label">Что проверяется:</span>
+                      <div class="popover-val">Правила, ограничения, предупреждения и требования.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Как проверяется:</span>
+                      <div class="popover-val">Проверить наличие, актуальность, читаемость и видимость правил, ограничений и предупреждений.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Признаки нормы:</span>
+                      <div class="popover-val">Правила и ограничения размещены у входа, хорошо видны, читаемы и соответствуют фактическому оборудованию.</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-ans"><span class="status-check yes">✓</span></td>
+              <td class="col-ans"><span class="status-check empty"></span></td>
+              <td class="col-notes">Знаки на месте</td>
+            </tr>
+
+            <!-- Пункт 15 -->
+            <tr>
+              <td class="col-num">15</td>
+              <td class="col-elem">
+                <div class="elem-wrapper">
+                  <span>Пробный запуск / проверка</span>
+                  <span class="info-badge">?</span>
+                  <div class="info-popover">
+                    <div class="popover-item">
+                      <span class="popover-label">Что проверяется:</span>
+                      <div class="popover-val">Плавность прохождения секций, отсутствие зацепов.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Как проверяется:</span>
+                      <div class="popover-val">До допуска посетителей проверить устойчивость, звуки и работу доступных систем.</div>
+                    </div>
+                    <div class="popover-item">
+                      <span class="popover-label">Признаки нормы:</span>
+                      <div class="popover-val">Необычные шумы, рывки, вибрация, смещение матов и ошибки систем отсутствуют; оборудование работает штатно.</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="col-ans"><span class="status-check yes">✓</span></td>
+              <td class="col-ans"><span class="status-check empty"></span></td>
+              <td class="col-notes">Готово к работе</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Перенесенная кнопка в самый конец отчета -->
+      <footer class="report-footer">
+        <button class="btn btn-primary btn-lg" onclick="alert('Отчет проверен и утвержден')">✓ Отчет проверен</button>
+      </footer>
+    </main>
+  </div>
+
+  <!-- JavaScript для взаимодействия на сенсорных экранах (мобильные/планшеты) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const badges = document.querySelectorAll('.info-badge');
+
+      badges.forEach(badge => {
+        badge.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const wrapper = badge.closest('.elem-wrapper');
+          const popover = wrapper.querySelector('.info-popover');
+          
+          const isActive = popover.classList.contains('active');
+
+          // Закрываем все открытые подсказки
+          document.querySelectorAll('.info-popover').forEach(p => p.classList.remove('active'));
+
+          // Если текущая была закрыта — открываем её
+          if (!isActive) {
+            popover.classList.add('active');
+          }
+        });
+      });
+
+      // Закрытие всплывающего окна при клике в любую точку вне подсказки
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.info-popover')) {
+          document.querySelectorAll('.info-popover').forEach(p => p.classList.remove('active'));
+        }
+      });
+
+      // Предотвращаем закрытие при клике внутри самой карточки подсказки
+      document.querySelectorAll('.info-popover').forEach(popover => {
+        popover.addEventListener('click', (e) => e.stopPropagation());
+      });
+    });
+  </script>
+</body>
+</html>

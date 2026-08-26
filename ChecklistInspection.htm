@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Мобильный Чек-лист инспекции — Tech Service</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --muted: #64748b;
+      --text: #0f172a;
+      --line: #e2e8f0;
+      --primary: #2563eb;
+      --primary-2: #1d4ed8;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 80px;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Сайдбар (Только для ПК) */
+    .sidebar {
+      width: 280px;
+      background: #0f172a;
+      color: #fff;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      position: fixed;
+      height: 100vh;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.1rem; }
+    .brand-badge { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; background: linear-gradient(135deg, var(--primary), #06b6d4); font-size: 1.1rem; }
+    .nav { display: grid; gap: 8px; }
+    .nav a { text-decoration: none; color: rgba(255,255,255,0.7); padding: 12px 14px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; }
+    .nav a.active { background: rgba(255,255,255,0.1); color: #fff; }
+    
+    .main {
+      flex: 1;
+      padding: 24px;
+      margin-left: 280px;
+      max-width: 1200px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .topbar { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
+    @media (min-width: 768px) { .topbar .btn { width: auto; } }
+
+    /* Шапка параметров отчета */
+    .header-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    
+    /* Адаптивная сетка мета-полей */
+    .grid-form {
+      display: grid;
+      grid-template-columns: 1fr; /* 1 колонка на мобильных */
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .grid-form {
+        grid-template-columns: repeat(3, 1fr); /* 3 колонки на планшетах и ПК */
+      }
+    }
+
+    .form-group label { 
+      display: block; 
+      font-size: 11px; 
+      font-weight: 700; 
+      color: var(--muted); 
+      text-transform: uppercase; 
+      margin-bottom: 6px; 
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      font-size: 15px; /* Размер шрифта оптимизирован против авто-зума на iOS */
+      background: #ffffff;
+      color: var(--text);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    
+    select.form-control {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2064748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+
+    /* Заблокированные поля */
+    .form-control-readonly {
+      background-color: #e2e8f0 !important;
+      color: #334155 !important;
+      border-color: #cbd5e1 !important;
+      cursor: not-allowed;
+      pointer-events: none;
+      user-select: none;
+      -webkit-text-fill-color: #334155;
+      opacity: 1;
+    }
+
+    /* Карточки чек-листа */
+    .check-list-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 1024px) { .check-list-grid { grid-template-columns: 1fr 1fr; } }
+
+    .check-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+    .num-badge {
+      background: #e2e8f0;
+      color: #334155;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .card-info { font-size: 13px; color: #475569; display: grid; gap: 6px; background: #f8fafc; padding: 10px; border-radius: 10px; }
+    .card-info strong { color: var(--text); font-weight: 600; }
+
+    /* Touch-кнопки (Да/Нет) */
+    .touch-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .radio-label { position: relative; cursor: pointer; display: block; }
+    .radio-label input { position: absolute; opacity: 0; width: 0; height: 0; }
+    
+    .radio-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      border-radius: 10px;
+      border: 2px solid var(--line);
+      font-weight: 600;
+      font-size: 14px;
+      transition: 0.2s;
+      background: #fff;
+    }
+
+    .radio-label input:checked + .radio-box.yes-box {
+      background: var(--success-bg);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .radio-label input:checked + .radio-box.no-box {
+      background: var(--danger-bg);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid var(--line);
+      padding: 10px 20px;
+      justify-content: space-around;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom, 10px);
+    }
+    .mobile-nav a { text-align: center; color: var(--muted); text-decoration: none; font-size: 11px; font-weight: 600; display: grid; gap: 4px; }
+    .mobile-nav a.active { color: var(--primary); }
+    .mobile-nav a i { font-size: 20px; font-style: normal; }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 16px; }
+      .mobile-nav { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Мобильное нижнее меню -->
+  <nav class="mobile-nav">
+    <a href="#" class="active"><i>📋</i>Отчеты</a>
+    <a href="#"><i>✅</i>Задачи</a>
+    <a href="#"><i>⚠️</i>Инциденты</a>
+    <a href="#"><i>👤</i>Профиль</a>
+  </nav>
+
+  <div class="app">
+    <!-- Боковая панель для ПК -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">T</div>
+        <div>Tech Service</div>
+      </div>
+      <nav class="nav">
+        <a class="active" href="#">Отчеты по парку</a>
+        <a href="#">Задачи</a>
+        <a href="#">Инциденты</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <form onsubmit="event.preventDefault(); alert('Чек-лист успешно сохранен!');">
+        
+        <div class="topbar">
+          <h2 style="margin: 0; font-size: 1.4rem;">Чек-лист: Батуты</h2>
+        </div>
+
+        <!-- Шапка: Адаптируемые мета-данные -->
+        <section class="header-card">
+          <div class="grid-form">
+            
+            <!-- ДОСТУПНО ДЛЯ РЕДАКТИРОВАНИЯ / ВЫБОРА -->
+            <div class="form-group">
+              <label>Локация</label>
+              <select class="form-control" name="location">
+                <option value="Алматы Атакент" selected>Алматы Атакент</option>
+                <option value="Алматы Алатау">Алматы Алатау</option>
+              </select>
+            </div>
+
+            <!-- НЕ РЕДАКТИРУЕТСЯ (АВТО) -->
+            <div class="form-group">
+              <label>Дата и время</label>
+              <input type="text" id="datetime-field" class="form-control form-control-readonly" value="2026-08-25T08:30" disabled readonly />
+            </div>
+
+            <!-- НЕ РЕДАКТИРУЕТСЯ (АВТО) -->
+            <div class="form-group">
+              <label>Автор</label>
+              <input type="text" id="author-field" class="form-control form-control-readonly" value="Аскаров Б." disabled readonly />
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Пункты инспекции -->
+        <section class="check-list-grid">
+          
+          <div class="check-card">
+            <div class="card-title">
+              <span class="num-badge">1</span>
+              <span>Батутные полотна, швы, крепёжные петли</span>
+            </div>
+            <div class="card-info">
+              <div><strong>Как проверить:</strong> Осмотреть всю поверхность, натяжение, отсутствие провисания.</div>
+              <div><strong>Норма:</strong> Порезы/разрывы отсутствуют, натянуто равномерно.</div>
+            </div>
+            <div class="touch-actions">
+              <label class="radio-label">
+                <input type="radio" name="item_1" value="yes" required checked>
+                <div class="radio-box yes-box">Да (Норма)</div>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="item_1" value="no">
+                <div class="radio-box no-box">Нет (Дефект)</div>
+              </label>
+            </div>
+            <input type="text" class="form-control" placeholder="Примечание или дефект..." />
+          </div>
+
+          <div class="check-card">
+            <div class="card-title">
+              <span class="num-badge">2</span>
+              <span>Пружины и их крепление к раме</span>
+            </div>
+            <div class="card-info">
+              <div><strong>Как проверить:</strong> Проверить наличие всех пружин, дать пробную нагрузку.</div>
+              <div><strong>Норма:</strong> Пружины на месте, без деформации/коррозии.</div>
+            </div>
+            <div class="touch-actions">
+              <label class="radio-label">
+                <input type="radio" name="item_2" value="yes" required checked>
+                <div class="radio-box yes-box">Да (Норма)</div>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="item_2" value="no">
+                <div class="radio-box no-box">Нет (Дефект)</div>
+              </label>
+            </div>
+            <input type="text" class="form-control" placeholder="Примечание..." />
+          </div>
+
+          <div class="check-card">
+            <div class="card-title">
+              <span class="num-badge">3</span>
+              <span>Несущая рама и соединения</span>
+            </div>
+            <div class="card-info">
+              <div><strong>Как проверить:</strong> Осмотр стоек, балок, проверка на люфт.</div>
+              <div><strong>Норма:</strong> Деформации отсутствуют, соединения затянуты.</div>
+            </div>
+            <div class="touch-actions">
+              <label class="radio-label">
+                <input type="radio" name="item_3" value="yes" required checked>
+                <div class="radio-box yes-box">Да (Норма)</div>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="item_3" value="no">
+                <div class="radio-box no-box">Нет (Дефект)</div>
+              </label>
+            </div>
+            <input type="text" class="form-control" placeholder="Примечание..." />
+          </div>
+
+          <div class="check-card">
+            <div class="card-title">
+              <span class="num-badge">4</span>
+              <span>Защитные маты над рамой</span>
+            </div>
+            <div class="card-info">
+              <div><strong>Как проверить:</strong> Проверить перекрытие жёстких элементов.</div>
+              <div><strong>Норма:</strong> Металл полностью закрыт, маты не смещаются.</div>
+            </div>
+            <div class="touch-actions">
+              <label class="radio-label">
+                <input type="radio" name="item_4" value="yes" required>
+                <div class="radio-box yes-box">Да (Норма)</div>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="item_4" value="no">
+                <div class="radio-box no-box">Нет (Дефект)</div>
+              </label>
+            </div>
+            <input type="text" class="form-control" placeholder="Примечание..." />
+          </div>
+
+          <div class="check-card">
+            <div class="card-title">
+              <span class="num-badge">5</span>
+              <span>Ограждающие сетки</span>
+            </div>
+            <div class="card-info">
+              <div><strong>Как проверить:</strong> Осмотреть швы, узлы крепления, натяжение.</div>
+              <div><strong>Норма:</strong> Разрывов нет, сетка закреплена по периметру.</div>
+            </div>
+            <div class="touch-actions">
+              <label class="radio-label">
+                <input type="radio" name="item_5" value="yes" required>
+                <div class="radio-box yes-box">Да (Норма)</div>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="item_5" value="no">
+                <div class="radio-box no-box">Нет (Дефект)</div>
+              </label>
+            </div>
+            <input type="text" class="form-control" placeholder="Примечание..." />
+          </div>
+          
+          <div class="check-card">
+            <div class="card-title">
+              <span class="num-badge">6</span>
+              <span>Пробный запуск / Проверка систем</span>
+            </div>
+            <div class="card-info">
+              <div><strong>Как проверить:</strong> Проверить работу и звуки систем под нагрузкой.</div>
+              <div><strong>Норма:</strong> Необычные шумы отсутствуют, работа штатная.</div>
+            </div>
+            <div class="touch-actions">
+              <label class="radio-label">
+                <input type="radio" name="item_6" value="yes" required>
+                <div class="radio-box yes-box">Да (Норма)</div>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="item_6" value="no">
+                <div class="radio-box no-box">Нет (Дефект)</div>
+              </label>
+            </div>
+            <input type="text" class="form-control" placeholder="Примечание..." />
+          </div>
+
+        </section>
+        
+        <br>
+        <button type="submit" class="btn btn-primary" style="padding: 16px; font-size: 16px;">
+          ✓ Отправить отчет
+        </button>
+
+      </form>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Автоматическое занесение системных даты и времени
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+
+      document.getElementById('datetime-field').value = `${day}.${month}.${year}, ${hours}:${minutes}`;
+    });
+  </script>
+</body>
+</html>

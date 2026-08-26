@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Пользователи — TechService</title>
+  <title>Темы — TechService</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -356,11 +356,11 @@
           <span>Локации</span>
           <span class="count">10</span>
         </a>
-        <a class="active" href="https://assetzhan.github.io/TechService/Users.htm">
+        <a href="https://assetzhan.github.io/TechService/Users.htm">
           <span>Пользователи</span>
           <span class="count">35</span>
         </a>
-        <a href="https://assetzhan.github.io/TechService/Topics.htm">
+        <a class="active" href="https://assetzhan.github.io/TechService/Topics.htm">
           <span>Темы</span>
           <span class="count">35</span>
         </a>
@@ -384,7 +384,7 @@
       
       <div class="sidebar-footer">
         <nav class="nav">
-          <a href="https://assetzhan.github.io/TechService/ITRequest.htm">
+          <a href="https://support.mykids.kz/">
             <span>Заявка в ИТ</span>
           </a>
         </nav>
@@ -396,87 +396,87 @@
         <div class="search-row">
           <label class="search">
             <span>🔎</span>
-            <input type="text" id="userSearch" placeholder="Поиск по имени, должности, email или локации..." />
+            <input type="text" id="topicSearch" placeholder="Поиск по категории, теме обращения или SLA..." />
           </label>
         </div>
         <div class="topbar">
           <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost btn-filter">Фильтры</a>
-          <a href="https://assetzhan.github.io/TechService/NewUser.htm" class="btn btn-primary btn-new">+ Новый пользователь</a>
+          <a href="https://assetzhan.github.io/TechService/NewTopic.htm" class="btn btn-primary btn-new">+ Новая тема</a>
         </div>
       </div>
 
       <section class="content">
         <div class="panel">
           <div class="panel-head">
-            <h2 class="panel-title">Управление пользователями</h2>
+            <h2 class="panel-title">Категории и темы обращений</h2>
           </div>
 
-          <!-- Фильтры ролей -->
+          <!-- Фильтры по департаментам/типам -->
           <div class="filters">
             <button class="chip active" data-filter="all">Все (35)</button>
-            <button class="chip" data-filter="admin">Администраторы</button>
-            <button class="chip" data-filter="engineer">Инженеры</button>
-            <button class="chip" data-filter="operator">Операторы</button>
+            <button class="chip" data-filter="hardware">Оборудование</button>
+            <button class="chip" data-filter="software">ПО и Сети</button>
+            <button class="chip" data-filter="access">Права доступа</button>
           </div>
 
-          <div class="tickets" id="userList">
-            <article class="ticket" data-role="admin">
+          <div class="tickets" id="topicList">
+            <article class="ticket" data-category="hardware">
               <div class="ticket-top">
                 <div>
-                  <div class="ticket-id">#USR-001 · e.volkov@techservice.kz</div>
-                  <h3 class="ticket-title">Евгений В.</h3>
+                  <div class="ticket-id">#TOP-001 · Департамент: ИТ Оборудование</div>
+                  <h3 class="ticket-title">Неисправность чекового принтера / кассы</h3>
                   <div class="ticket-meta">
-                    <span>Должность: ИТ директор</span>
-                    <span>Локация: Головной офис</span>
-                    <span>Телефон: +7 (701) 000-01-01</span>
+                    <span>SLA: 2 часа</span>
+                    <span>Приоритет по умолчанию: Высокий</span>
+                    <span>Заявок за месяц: 42</span>
                   </div>
                 </div>
-                <span class="badge info">Администратор</span>
+                <span class="badge danger">Высокий приоритет</span>
               </div>
             </article>
 
-            <article class="ticket" data-role="engineer">
+            <article class="ticket" data-category="software">
               <div class="ticket-top">
                 <div>
-                  <div class="ticket-id">#USR-002 · s.samat@techservice.kz</div>
-                  <h3 class="ticket-title">Самат С.</h3>
+                  <div class="ticket-id">#TOP-002 · Департамент: Системное ПО</div>
+                  <h3 class="ticket-title">Ошибка авторизации в платежной системе</h3>
                   <div class="ticket-meta">
-                    <span>Должность: Главный инженер</span>
-                    <span>Локация: Алматы Атакент</span>
-                    <span>Телефон: +7 (702) 111-22-33</span>
+                    <span>SLA: 1 час</span>
+                    <span>Приоритет по умолчанию: Критический</span>
+                    <span>Заявок за месяц: 18</span>
                   </div>
                 </div>
-                <span class="badge success">Инженер</span>
+                <span class="badge warning">Критический</span>
               </div>
             </article>
 
-            <article class="ticket" data-role="engineer">
+            <article class="ticket" data-category="hardware">
               <div class="ticket-top">
                 <div>
-                  <div class="ticket-id">#USR-003 · i.ivanov@techservice.kz</div>
-                  <h3 class="ticket-title">Иванов И.</h3>
+                  <div class="ticket-id">#TOP-003 · Департамент: Инженерные системы</div>
+                  <h3 class="ticket-title">Техническое обслуживание турникетов</h3>
                   <div class="ticket-meta">
-                    <span>Должность: Сервисный техник</span>
-                    <span>Локация: Шымкент Royal Plaza</span>
-                    <span>Телефон: +7 (705) 444-55-66</span>
+                    <span>SLA: 24 часа</span>
+                    <span>Приоритет по умолчанию: Средний</span>
+                    <span>Заявок за месяц: 12</span>
                   </div>
                 </div>
-                <span class="badge success">Инженер</span>
+                <span class="badge info">Средний приоритет</span>
               </div>
             </article>
 
-            <article class="ticket" data-role="operator">
+            <article class="ticket" data-category="access">
               <div class="ticket-top">
                 <div>
-                  <div class="ticket-id">#USR-004 · a.petrova@techservice.kz</div>
-                  <h3 class="ticket-title">Петрова А.</h3>
+                  <div class="ticket-id">#TOP-004 · Департамент: Безопасность</div>
+                  <h3 class="ticket-title">Сброс пароля и настройка доступа</h3>
                   <div class="ticket-meta">
-                    <span>Должность: Старший кассир</span>
-                    <span>Локация: Алматы Алатау</span>
-                    <span>Телефон: +7 (707) 777-88-99</span>
+                    <span>SLA: 4 часа</span>
+                    <span>Приоритет по умолчанию: Низкий</span>
+                    <span>Заявок за месяц: 65</span>
                   </div>
                 </div>
-                <span class="badge warning">Оператор</span>
+                <span class="badge success">Низкий приоритет</span>
               </div>
             </article>
           </div>
@@ -485,7 +485,7 @@
     </main>
   </div>
 
-  <!-- СКРИПТ ДЛЯ Users.htm -->
+  <!-- СКРИПТ ДЛЯ Topics.htm -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // 1. Карта всех переходов системы
@@ -500,9 +500,9 @@
         "Ответственные": "https://assetzhan.github.io/TechService/Assignees.htm",
         "Наблюдатели": "https://assetzhan.github.io/TechService/Observers.htm",
         "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
-        "Заявка в ИТ": "https://assetzhan.github.io/TechService/ITRequest.htm",
+        "Заявка в ИТ": "https://support.mykids.kz/",
         "Фильтры": "https://assetzhan.github.io/TechService/Filters.htm",
-        "+ Новый пользователь": "https://assetzhan.github.io/TechService/NewUser.htm"
+        "+ Новая тема": "https://assetzhan.github.io/TechService/NewTopic.htm"
       };
 
       // 2. Универсальный обработчик переходов по кнопкам и ссылкам
@@ -516,9 +516,9 @@
         });
       });
 
-      // 3. Интерактивная фильтрация пользователей по ролям
+      // 3. Интерактивная фильтрация тем по категориям
       const chips = document.querySelectorAll('.filters .chip');
-      const tickets = document.querySelectorAll('#userList .ticket');
+      const tickets = document.querySelectorAll('#topicList .ticket');
 
       chips.forEach(chip => {
         chip.addEventListener('click', () => {
@@ -528,7 +528,7 @@
           const filter = chip.getAttribute('data-filter');
 
           tickets.forEach(ticket => {
-            if (filter === 'all' || ticket.getAttribute('data-role') === filter) {
+            if (filter === 'all' || ticket.getAttribute('data-category') === filter) {
               ticket.style.display = 'grid';
             } else {
               ticket.style.display = 'none';
@@ -537,8 +537,8 @@
         });
       });
 
-      // 4. Логика поиска по пользователям
-      const searchInput = document.getElementById('userSearch');
+      // 4. Поиск по темам
+      const searchInput = document.getElementById('topicSearch');
       if (searchInput) {
         searchInput.addEventListener('input', (e) => {
           const query = e.target.value.toLowerCase().trim();

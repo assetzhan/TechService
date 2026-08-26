@@ -116,7 +116,7 @@
 
     .sidebar-footer { margin-top: auto; font-size: 14px; }
 
-    /* Main Container с ограничением максимальной ширины */
+    /* Main Container */
     .main-wrapper {
       width: 100%;
       display: flex;
@@ -178,6 +178,38 @@
       font-size: 14px;
       background: transparent;
     }
+
+    /* Фильтр количества на странице */
+    .per-page-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .per-page-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .per-page-select {
+      height: 44px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      transition: border-color 0.2s;
+    }
+    .per-page-select:focus, .per-page-select:hover { border-color: var(--primary); }
 
     .actions-row {
       display: flex;
@@ -433,7 +465,6 @@
       gap: 16px;
     }
 
-    /* Выравнивание числа и текста справа от него на одной линии */
     .metric-header-row {
       display: flex;
       align-items: baseline;
@@ -441,7 +472,6 @@
       flex-wrap: wrap;
     }
 
-    /* Стилизация текста справа от цифры */
     .metric-badge {
       font-size: 13px;
       font-weight: 600;
@@ -451,7 +481,6 @@
     .metric-badge.danger  { color: var(--danger); }
     .metric-badge.process { color: var(--process); }
 
-    /* Блок дополнительных строк со средним временем */
     .metric-details {
       display: flex;
       flex-direction: column;
@@ -624,10 +653,10 @@
       }
       .sidebar.open { transform: translateX(0); }
 
-      /* Двухуровневый grid для topbar на мобильных */
+      /* Трехуровневая сетка для topbar на мобильных устройств */
       .topbar {
         display: grid;
-        grid-template-columns: 44px 1fr auto;
+        grid-template-columns: 44px 1fr;
         gap: 12px;
         align-items: center;
       }
@@ -643,7 +672,7 @@
 
       .date-picker-wrapper {
         grid-row: 1;
-        grid-column: 2 / 4;
+        grid-column: 2;
         width: 100%;
       }
 
@@ -652,6 +681,7 @@
         justify-content: space-between;
       }
 
+      /* 2-я строка: Поиск */
       .search-row {
         grid-row: 2;
         grid-column: 1 / 3;
@@ -659,10 +689,17 @@
         width: 100%;
       }
 
+      /* 3-я строка: Фильтр отображения и кнопка Фильтры */
+      .per-page-wrapper {
+        grid-row: 3;
+        grid-column: 1;
+      }
+
       .btn-ghost {
-        grid-row: 2;
-        grid-column: 3;
+        grid-row: 3;
+        grid-column: 2;
         white-space: nowrap;
+        justify-self: end;
       }
     }
   </style>
@@ -754,6 +791,17 @@
             </label>
           </div>
 
+          <!-- Элемент отображения количества элементов -->
+          <div class="per-page-wrapper">
+            <span class="per-page-label">НА СТРАНИЦЕ:</span>
+            <select id="perPageSelect" class="per-page-select">
+              <option value="10" selected>10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+
           <div class="actions-row">
             <!-- Кастомный фильтр дат -->
             <div class="date-picker-wrapper">
@@ -819,48 +867,45 @@
 
         <!-- Сводка метрик -->
         <section class="metrics-grid">
-        <!-- Отчеты по парку -->
-        <div class="metric-card">
-          <span class="metric-title">Отчеты по парку</span>
-          <div class="metric-header-row">
-            <span class="metric-value">128</span>
-            <span class="metric-badge success">  112 проверено (87%),</span>
-            <span class="metric-badge danger"> 4 не работает (3%)</span>
+          <div class="metric-card">
+            <span class="metric-title">Отчеты по парку</span>
+            <div class="metric-header-row">
+              <span class="metric-value">128</span>
+              <span class="metric-badge success">112 проверено (87%),</span>
+              <span class="metric-badge danger">4 не работает (3%)</span>
+            </div>
+            <div class="metric-details">
+              <div>Ср. время отправки: Будни 9:30, Выходные 9:20</div>
+              <div>Ср. время проверки: Будни 40 минут, Выходные 20 минут</div>
+            </div>
           </div>
-          <div class="metric-details">
-            <div>Ср. время отправки: Будни 9:30, Выходные 9:20</div>
-            <div>Ср. время проверки: Будни 40 минут, Выходные 20 минут</div>
+        
+          <div class="metric-card">
+            <span class="metric-title">Задачи</span>
+            <div class="metric-header-row">
+              <span class="metric-value">24</span>
+              <span class="metric-badge process">12 в работе,</span>
+              <span class="metric-badge warning">6 требуют внимания</span>
+            </div>
+            <div class="metric-details">
+              <div>Ср. время создания 9:20</div>
+              <div>Ср. время закрытия 5 часов</div>
+            </div>
           </div>
-        </div>
-      
-        <!-- Задачи -->
-        <div class="metric-card">
-          <span class="metric-title">Задачи</span>
-          <div class="metric-header-row">
-            <span class="metric-value">24</span>
-            <span class="metric-badge process">  12 в работе,</span>
-            <span class="metric-badge warning"> 6 требуют внимания</span>
+        
+          <div class="metric-card">
+            <span class="metric-title">Инциденты</span>
+            <div class="metric-header-row">
+              <span class="metric-value">51</span>
+              <span class="metric-badge process">10 в работе,</span>
+              <span class="metric-badge danger">3 критических</span>
+            </div>
+            <div class="metric-details">
+              <div>Ср. время возникновения 9:20</div>
+              <div>Ср. время закрытия 5 часов</div>
+            </div>
           </div>
-          <div class="metric-details">
-            <div>Ср. время создания 9:20</div>
-            <div>Ср. время закрытия 5 часов</div>
-          </div>
-        </div>
-      
-        <!-- Инциденты -->
-        <div class="metric-card">
-          <span class="metric-title">Инциденты</span>
-          <div class="metric-header-row">
-            <span class="metric-value">51</span>
-            <span class="metric-badge process">  10 в работе,</span>
-            <span class="metric-badge danger"> 3 критических</span>
-          </div>
-          <div class="metric-details">
-            <div>Ср. время возникновения 9:20</div>
-            <div>Ср. время закрытия 5 часов</div>
-          </div>
-        </div>
-      </section>
+        </section>
 
         <section class="content">
           <div class="panel">
@@ -868,7 +913,6 @@
               <h2 class="panel-title">Мониторинг активностей (Отчеты, Задачи, Инциденты)</h2>
             </div>
 
-            <!-- Переключение категорий -->
             <div class="filters">
               <button class="chip active" data-filter="all">Все активности (203)</button>
               <button class="chip" data-filter="reports">Отчеты по парку (128)</button>
@@ -877,7 +921,6 @@
             </div>
 
             <div class="tickets" id="monitoringList">
-              <!-- Отчет по парку -->
               <article class="ticket" data-type="reports" data-date="2026-08-24">
                 <div class="ticket-header">
                   <div class="ticket-id">#R-10128 · Категория: Отчет по парку</div>
@@ -893,7 +936,6 @@
                 </div>
               </article>
 
-              <!-- Инцидент -->
               <article class="ticket" data-type="incidents" data-date="2026-08-24">
                 <div class="ticket-header">
                   <div class="ticket-id">#MON-INC-051 · Категория: Инциденты</div>
@@ -903,13 +945,12 @@
                 <div class="ticket-meta">
                   <span><strong>Дата и Время:</strong> 24-08-2026 14:26</span>
                   <span><strong>Приоритет:</strong> Средний</span>
-                  <span><strong>Статус:</strong> В работе </span>
+                  <span><strong>Статус:</strong> В работе</span>
                   <span><strong>Автор:</strong> Иванов И.</span>
                   <span><strong>Ответственный:</strong> Волков В.</span>
                 </div>
               </article>
 
-              <!-- Задача -->
               <article class="ticket" data-type="tasks" data-date="2026-08-24">
                 <div class="ticket-header">
                   <div class="ticket-id">#MON-TSK-024 · Категория: Задачи</div>
@@ -919,14 +960,13 @@
                 <div class="ticket-meta">
                   <span><strong>Дата и Время:</strong> 24-08-2026 12:26</span>
                   <span><strong>Приоритет:</strong> Низкий</span>
-                  <span><strong>Статус:</strong> В работе </span>
+                  <span><strong>Статус:</strong> В работе</span>
                   <span><strong>Автор:</strong> Иванов И.</span>
                   <span><strong>Ответственный:</strong> Волков В.</span>
                   <span><strong>Исполнитель:</strong> Антонов А.</span>
                 </div>
               </article>
 
-              <!-- Отчет по парку -->
               <article class="ticket" data-type="reports" data-date="2026-05-15">
                 <div class="ticket-header">
                   <div class="ticket-id">#R-1027 · Категория: Отчет по парку</div>
@@ -948,7 +988,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Мобильный сайдбар и управление свайпом (Swipe Gestures)
+      // 1. Сайдбар
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
       const menuToggle = document.getElementById('menuToggle');
@@ -959,10 +999,7 @@
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (overlay) overlay.addEventListener('click', closeSidebar);
 
-      let touchStartX = 0;
-      let touchStartY = 0;
-      let touchEndX = 0;
-      let touchEndY = 0;
+      let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
 
       document.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].clientX;
@@ -980,19 +1017,15 @@
         const deltaY = touchEndY - touchStartY;
 
         if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-          if (deltaX > 0) {
-            if (!sidebar.classList.contains('open') && touchStartX < 100) {
-              openSidebar();
-            }
-          } else if (deltaX < 0) {
-            if (sidebar.classList.contains('open')) {
-              closeSidebar();
-            }
+          if (deltaX > 0 && !sidebar.classList.contains('open') && touchStartX < 100) {
+            openSidebar();
+          } else if (deltaX < 0 && sidebar.classList.contains('open')) {
+            closeSidebar();
           }
         }
       }
 
-      // 2. Интерактивный Календарь Диапазона Дат
+      // 2. Календарь
       const monthGenitive = ["янв.", "февр.", "мар.", "апр.", "мая", "июня", "июля", "авг.", "сент.", "окт.", "нояб.", "дек."];
 
       let appliedStartDate = new Date(2026, 4, 1);
@@ -1007,7 +1040,6 @@
       const trigger = document.getElementById('datePickerTrigger');
       const popover = document.getElementById('datePickerPopover');
       const dateRangeText = document.getElementById('dateRangeText');
-      const presetSelect = document.getElementById('presetSelect');
 
       const startDaysGrid = document.getElementById('startDaysGrid');
       const endDaysGrid = document.getElementById('endDaysGrid');
@@ -1060,22 +1092,19 @@
             if (!tempStartDate || (tempStartDate && tempEndDate)) {
               tempStartDate = currentDate;
               tempEndDate = null;
-            } else if (tempStartDate && !tempEndDate) {
-              if (currentDate < tempStartDate) {
-                tempStartDate = currentDate;
-              } else {
-                tempEndDate = currentDate;
-              }
+            } else if (currentDate < tempStartDate) {
+              tempStartDate = currentDate;
+            } else {
+              tempEndDate = currentDate;
             }
-            presetSelect.value = 'custom';
-            updateCalendarsView();
+            renderCalendars();
           });
 
           gridElement.appendChild(cell);
         }
       }
 
-      function updateCalendarsView() {
+      function renderCalendars() {
         startMonthTitle.textContent = formatDateTitle(startCalendarMonth);
         endMonthTitle.textContent = formatDateTitle(endCalendarMonth);
 
@@ -1083,80 +1112,21 @@
         renderSingleCalendar(endDaysGrid, endCalendarMonth.getFullYear(), endCalendarMonth.getMonth());
       }
 
-      // Переключение месяцев
-      document.getElementById('prevStartMonth').addEventListener('click', () => {
-        startCalendarMonth.setMonth(startCalendarMonth.getMonth() - 1);
-        updateCalendarsView();
-      });
-      document.getElementById('nextStartMonth').addEventListener('click', () => {
-        startCalendarMonth.setMonth(startCalendarMonth.getMonth() + 1);
-        updateCalendarsView();
-      });
+      renderCalendars();
 
-      document.getElementById('prevEndMonth').addEventListener('click', () => {
-        endCalendarMonth.setMonth(endCalendarMonth.getMonth() - 1);
-        updateCalendarsView();
-      });
-      document.getElementById('nextEndMonth').addEventListener('click', () => {
-        endCalendarMonth.setMonth(endCalendarMonth.getMonth() + 1);
-        updateCalendarsView();
+      if (trigger) {
+        trigger.addEventListener('click', () => {
+          popover.classList.toggle('open');
+          trigger.classList.toggle('active');
+        });
+      }
+
+      document.getElementById('cancelDateBtn')?.addEventListener('click', () => {
+        popover.classList.remove('open');
+        trigger.classList.remove('active');
       });
 
-      // Открытие / закрытие поповера
-      trigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = popover.classList.toggle('open');
-        trigger.classList.toggle('active', isOpen);
-        if (isOpen) {
-          tempStartDate = appliedStartDate ? new Date(appliedStartDate) : null;
-          tempEndDate = appliedEndDate ? new Date(appliedEndDate) : null;
-          updateCalendarsView();
-        }
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.date-picker-wrapper')) {
-          popover.classList.remove('open');
-          trigger.classList.remove('active');
-        }
-      });
-
-      popover.addEventListener('click', (e) => e.stopPropagation());
-
-      // Пресеты дат
-      presetSelect.addEventListener('change', (e) => {
-        const value = e.target.value;
-        const now = new Date(2026, 7, 26);
-
-        if (value === 'today') {
-          tempStartDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          tempEndDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        } else if (value === '7days') {
-          tempEndDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          tempStartDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
-        } else if (value === '30days') {
-          tempEndDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          tempStartDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29);
-        } else if (value === 'thisMonth') {
-          tempStartDate = new Date(now.getFullYear(), now.getMonth(), 1);
-          tempEndDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-        } else if (value === 'all') {
-          tempStartDate = null;
-          tempEndDate = null;
-        }
-
-        if (tempStartDate) {
-          startCalendarMonth = new Date(tempStartDate.getFullYear(), tempStartDate.getMonth(), 1);
-        }
-        if (tempEndDate) {
-          endCalendarMonth = new Date(tempEndDate.getFullYear(), tempEndDate.getMonth(), 1);
-        }
-
-        updateCalendarsView();
-      });
-
-      // Кнопки Применить и Отмена
-      document.getElementById('applyDateBtn').addEventListener('click', () => {
+      document.getElementById('applyDateBtn')?.addEventListener('click', () => {
         appliedStartDate = tempStartDate;
         appliedEndDate = tempEndDate;
         dateRangeText.textContent = formatDateDisplay(appliedStartDate, appliedEndDate);
@@ -1165,70 +1135,46 @@
         filterTickets();
       });
 
-      document.getElementById('cancelDateBtn').addEventListener('click', () => {
-        tempStartDate = appliedStartDate ? new Date(appliedStartDate) : null;
-        tempEndDate = appliedEndDate ? new Date(appliedEndDate) : null;
-        popover.classList.remove('open');
-        trigger.classList.remove('active');
-      });
-
-      // 3. Фильтрация карточек по категориям, поиску и датам
-      const filterChips = document.querySelectorAll('.chip');
+      // 3. Фильтрация и ограничение количества элементов monitoringList
+      const perPageSelect = document.getElementById('perPageSelect');
       const searchInput = document.getElementById('monitoringSearch');
-      const tickets = document.querySelectorAll('.ticket');
-
+      const categoryChips = document.querySelectorAll('.chip');
       let currentCategory = 'all';
-
-      filterChips.forEach(chip => {
-        chip.addEventListener('click', () => {
-          filterChips.forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-          currentCategory = chip.dataset.filter;
-          filterTickets();
-        });
-      });
-
-      if (searchInput) {
-        searchInput.addEventListener('input', filterTickets);
-      }
 
       function filterTickets() {
         const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const limit = parseInt(perPageSelect.value, 10) || 10;
+        const tickets = document.querySelectorAll('#monitoringList .ticket');
+
+        let visibleCount = 0;
 
         tickets.forEach(ticket => {
-          const typeMatch = (currentCategory === 'all' || ticket.dataset.type === currentCategory);
-          const ticketText = ticket.textContent.toLowerCase();
-          const searchMatch = !query || ticketText.includes(query);
+          const type = ticket.getAttribute('data-type');
+          const text = ticket.textContent.toLowerCase();
+          const matchCategory = (currentCategory === 'all' || type === currentCategory);
+          const matchSearch = !query || text.includes(query);
 
-          let dateMatch = true;
-          const ticketDateStr = ticket.dataset.date;
-          if (ticketDateStr && (appliedStartDate || appliedEndDate)) {
-            const ticketDate = new Date(ticketDateStr);
-            ticketDate.setHours(0, 0, 0, 0);
-
-            if (appliedStartDate) {
-              const start = new Date(appliedStartDate);
-              start.setHours(0, 0, 0, 0);
-              if (ticketDate < start) dateMatch = false;
-            }
-            if (appliedEndDate) {
-              const end = new Date(appliedEndDate);
-              end.setHours(23, 59, 59, 999);
-              if (ticketDate > end) dateMatch = false;
-            }
-          }
-
-          if (typeMatch && searchMatch && dateMatch) {
+          if (matchCategory && matchSearch && visibleCount < limit) {
             ticket.style.display = '';
+            visibleCount++;
           } else {
             ticket.style.display = 'none';
           }
         });
       }
 
-      // Инициализация
-      updateCalendarsView();
-      dateRangeText.textContent = formatDateDisplay(appliedStartDate, appliedEndDate);
+      perPageSelect?.addEventListener('change', filterTickets);
+      searchInput?.addEventListener('input', filterTickets);
+
+      categoryChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          categoryChips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          currentCategory = chip.getAttribute('data-filter');
+          filterTickets();
+        });
+      });
+
       filterTickets();
     });
   </script>

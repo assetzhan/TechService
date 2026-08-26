@@ -1,559 +1,177 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ответственные — Ticket System UI</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --panel-2: #1f2937;
-      --card: #ffffff;
-      --muted: #64748b;
-      --text: #0f172a;
-      --line: #e5e7eb;
-      --primary: #2563eb;
-      --primary-2: #1d4ed8;
-      --success: #16a34a;
-      --warning: #f59e0b;
-      --danger: #dc2626;
-      --info: #06b6d4;
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
-      --radius: 18px;
-    }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 28%),
-        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
-      color: var(--text);
-    }
-
-    .app {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 280px 1fr;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
-      color: #fff;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      letter-spacing: 0.2px;
-    }
-
-    .brand-badge {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #2563eb, #06b6d4);
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
-      font-size: 1.1rem;
-    }
-
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .profile small {
-      color: rgba(255,255,255,0.65);
-      display: block;
-      margin-top: 2px;
-    }
-
-    .nav {
-      display: grid;
-      gap: 10px;
-    }
-
-    .nav a {
-      text-decoration: none;
-      color: rgba(255,255,255,0.78);
-      padding: 12px 14px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: 0.2s ease;
-      background: transparent;
-    }
-
-    .nav a:hover,
-    .nav a.active {
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-    }
-
-    .nav .count {
-      min-width: 28px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(37, 99, 235, 0.2);
-      text-align: center;
-      font-size: 12px;
-    }
-
-    .sidebar-footer {
-      margin-top: auto;
-      font-size: 14px;
-      color: rgba(255,255,255,0.7);
-      line-height: 1.5;
-    }
-
-    /* Main */
-    .main {
-      padding: 28px;
-      display: grid;
-      gap: 20px;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .search-row {
-      display: flex;
-      align-items: stretch;
-      gap: 12px;
-      width: 100%;
-      max-width: 100%;
-    }
-
-    .search {
-      flex: 1 1 auto;
-      min-width: 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: var(--shadow);
-    }
-
-    .search input {
-      width: 100%;
-      min-width: 0;
-      border: 0;
-      outline: none;
-      font-size: 15px;
-      background: transparent;
-    }
-
-    .btn {
-      border: 0;
-      border-radius: 14px;
-      padding: 12px 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
-      white-space: nowrap;
-      flex: 0 0 auto;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      color: #fff;
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
-    }
-
-    .btn-filter { min-width: 110px; padding-inline: 18px; }
-    .btn-new { min-width: 120px; color: #fff; padding-inline: 20px; }
-
-    .content {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-      align-items: start;
-    }
-
-    .panel {
-      background: rgba(255,255,255,0.88);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(229,231,235,0.9);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .panel-head {
-      padding: 18px 18px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .panel-title {
-      margin: 0;
-      font-size: 1.05rem;
-    }
-
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .chip {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: #334155;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .chip.active,
-    .chip:hover {
-      border-color: rgba(37,99,235,0.3);
-      background: rgba(37,99,235,0.08);
-      color: var(--primary-2);
-    }
-
-    .tickets {
-      display: grid;
-      gap: 12px;
-      padding: 18px;
-    }
-
-    .ticket {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      display: grid;
-      gap: 12px;
-      transition: 0.2s ease;
-    }
-
-    .ticket:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-    }
-
-    .ticket-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: start;
-    }
-
-    .ticket-id {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .ticket-title {
-      margin: 0 0 8px;
-      font-size: 1.05rem;
-    }
-
-    .ticket-meta {
-      color: var(--muted);
-      font-size: 13px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .badge.success { background: rgba(22, 163, 74, 0.12); color: var(--success); }
-    .badge.warning { background: rgba(245, 158, 11, 0.15); color: #b45309; }
-    .badge.danger  { background: rgba(220, 38, 38, 0.12); color: var(--danger); }
-    .badge.info    { background: rgba(6, 182, 212, 0.12); color: #0891b2; }
-
-    @media (max-width: 900px) {
-      .app { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Ответственные лица - TechService</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --sidebar-bg: #1e293b;
+            --text-color: #334155;
+            --accent-color: #3b82f6;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            height: 100vh;
+            color: #fff;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-brand {
+            padding: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+        .sidebar-menu li a {
+            display: block;
+            padding: 15px 20px;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .sidebar-menu li.active a, .sidebar-menu li a:hover {
+            color: #fff;
+            background-color: rgba(255,255,255,0.05);
+            border-left: 4px solid var(--accent-color);
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            flex-grow: 1;
+            box-sizing: border-box;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .search-box {
+            padding: 10px 15px;
+            width: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--sidebar-bg);
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status.available { background-color: #dcfce7; color: #166534; }
+        .status.busy { background-color: #fee2e2; color: #991b1b; }
+        .status.shift-end { background-color: #fef3c7; color: #92400e; }
+    </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-badge">T</div>
-        <div>Tech Service</div>
-      </div>
 
-      <div class="profile">
-        <div>
-          <strong>Евгений В.</strong>
-          <small>ИТ директор</small>
+    <div class="sidebar">
+        <div class="sidebar-brand">TechService</div>
+        <ul class="sidebar-menu" id="navigationMenu">
+            <!-- Динамическое или статическое меню с обновленными путями -->
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h2>Реестр ответственных лиц</h2>
+            <input type="text" id="searchInput" class="search-box" placeholder="Поиск по специалистам..." onkeyup="filterAssignees()">
         </div>
-      </div>
 
-      <nav class="nav">
-        <a href="file:///C:/Users/Public/TechService/Monitoring.htm">
-          <span>Мониторинг</span>
-          <span class="count">3</span>
-        </a>
-        <a href="file:///C:/Users/Public/TechService/Reports.htm">
-          <span>Отчеты по парку</span>
-          <span class="count">128</span>
-        </a>
-        <a href="file:///C:/Users/Public/TechService/Tasks.htm">
-          <span>Задачи</span>
-          <span class="count">24</span>
-        </a>
-        <a href="file:///C:/Users/Public/TechService/Incidents.htm">
-          <span>Инциденты</span>
-          <span class="count">51</span>
-        </a>
-        <a href="file:///C:/Users/Public/TechService/Locations.htm">
-          <span>Локации</span>
-          <span class="count">10</span>
-        </a>
-        <a href="file:///C:/Users/Public/TechService/Users.htm">
-          <span>Пользователи</span>
-          <span class="count">35</span>
-        </a>
-        <a href="file:///C:/Users/Public/TechService/Topics.htm">
-          <span>Темы</span>
-          <span class="count">35</span>
-        </a>
-        <a href="file:///C:/Users/Public/TechService/Attractions.htm">
-          <span>Аттракционы</span>
-          <span class="count">35</span>
-        </a>
-        <a class="active" href="file:///C:/Users/Public/TechService/Assignees.htm">
-          <span>Ответственные</span>
-          <span class="count">35</span>
-        </a>
-        <a href="file:///C:/Users/Public/TechService/Observers.htm">
-          <span>Наблюдатели</span>
-          <span class="count">35</span>
-        </a>
-        <a href="file:///C:/Users/Public/TechService/RootCauses.htm">
-          <span>Первопричины</span>
-          <span class="count">35</span>
-        </a>
-      </nav>
-      
-      <div class="sidebar-footer">
-        <nav class="nav">
-          <a href="file:///C:/Users/Public/TechService/ITRequest.htm">
-            <span>Заявка в ИТ</span>
-          </a>
-        </nav>
-      </div>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div class="search-row">
-          <label class="search">
-            <span>🔎</span>
-            <input type="text" id="assigneeSearch" placeholder="Поиск по ФИО, специальности или назначенной локации..." />
-          </label>
+        <div class="card-grid" id="assigneesContainer">
+            <div class="card" data-name="Иван Петров" data-role="Электрик">
+                <h3>Иван Петров</h3>
+                <p><strong>Специализация:</strong> Главный электрик</p>
+                <p><strong>Локация:</strong> Зона аттракционов А</p>
+                <span class="status available">Доступен</span>
+            </div>
+            <div class="card" data-name="Алексей Смирнов" data-role="Механик">
+                <h3>Алексей Смирнов</h3>
+                <p><strong>Специализация:</strong> Механик аттракционов</p>
+                <p><strong>Локация:</strong> Аквапарк</p>
+                <span class="status busy">Занят</span>
+            </div>
+            <div class="card" data-name="Елена Васильева" data-role="Инженер">
+                <h3>Елена Васильева</h3>
+                <p><strong>Специализация:</strong> Инженер по ТБ</p>
+                <p><strong>Локация:</strong> Главный корпус</p>
+                <span class="status shift-end">Конец смены</span>
+            </div>
         </div>
-        <div class="topbar">
-          <a href="file:///C:/Users/Public/TechService/Filters.htm" class="btn btn-ghost btn-filter">Фильтры</a>
-          <a href="file:///C:/Users/Public/TechService/NewAssignee.htm" class="btn btn-primary btn-new">+ Назначить специалиста</a>
-        </div>
-      </div>
+    </div>
 
-      <section class="content">
-        <div class="panel">
-          <div class="panel-head">
-            <h2 class="panel-title">Реестр ответственных специалистов</h2>
-          </div>
+    <script>
+        // Обновленные пути маршрутизации согласно структуре проекта
+        const routes = [
+            { name: "Отчеты", url: "https://assetzhan.github.io/TechService/Reports.htm" },
+            { name: "Задачи", url: "https://assetzhan.github.io/TechService/Tasks.htm" },
+            { name: "Инциденты", url: "https://assetzhan.github.io/TechService/Incidents.htm" },
+            { name: "Ответственные", url: "https://assetzhan.github.io/TechService/Assignees.htm", active: true },
+            { name: "Аттракционы", url: "https://assetzhan.github.io/TechService/Attractions.htm" }
+        ];
 
-          <!-- Фильтры по статусу загрузки -->
-          <div class="filters">
-            <button class="chip active" data-filter="all">Все (35)</button>
-            <button class="chip" data-filter="available">Свободен</button>
-            <button class="chip" data-filter="busy">Занят (в работе)</button>
-            <button class="chip" data-filter="shift-end">Смена окончена</button>
-          </div>
+        function renderMenu() {
+            const menuContainer = document.getElementById('navigationMenu');
+            menuContainer.innerHTML = routes.map(route => `
+                <li class="${route.active ? 'active' : ''}">
+                    <a href="${route.url}">${route.name}</a>
+                </li>
+            `).join('');
+        }
 
-          <div class="tickets" id="assigneeList">
-            <article class="ticket" data-status="busy">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#ASG-001 · Специализация: Инженер КИПиА</div>
-                  <h3 class="ticket-title">Самат С.</h3>
-                  <div class="ticket-meta">
-                    <span>Локации: Алматы Атакент, Шымкент Royal Plaza</span>
-                    <span>Активных задач: 5</span>
-                    <span>Текущий инцидент: #INC-8994</span>
-                  </div>
-                </div>
-                <span class="badge warning">Занят (в работе)</span>
-              </div>
-            </article>
+        function filterAssignees() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
 
-            <article class="ticket" data-status="available">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#ASG-002 · Специализация: Системный администратор</div>
-                  <h3 class="ticket-title">Иванов И.</h3>
-                  <div class="ticket-meta">
-                    <span>Локации: Шымкент Royal Plaza</span>
-                    <span>Активных задач: 1</span>
-                    <span>Текущий инцидент: #INC-9012</span>
-                  </div>
-                </div>
-                <span class="badge success">Свободен</span>
-              </div>
-            </article>
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                const role = card.getAttribute('data-role').toLowerCase();
+                if (name.includes(input) || role.includes(input)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
 
-            <article class="ticket" data-status="busy">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#ASG-003 · Специализация: Сервисный механик</div>
-                  <h3 class="ticket-title">Романенко И.</h3>
-                  <div class="ticket-meta">
-                    <span>Локации: Алматы Алатау</span>
-                    <span>Активных задач: 3</span>
-                    <span>Текущий инцидент: Нет</span>
-                  </div>
-                </div>
-                <span class="badge warning">Занят (в работе)</span>
-              </div>
-            </article>
-
-            <article class="ticket" data-status="shift-end">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#ASG-004 · Специализация: Специалист POS-терминалов</div>
-                  <h3 class="ticket-title">Сидоров И.</h3>
-                  <div class="ticket-meta">
-                    <span>Локации: Астана Хан Шатыр</span>
-                    <span>Активных задач: 0</span>
-                    <span>Смена до: 18:00</span>
-                  </div>
-                </div>
-                <span class="badge danger">Смена окончена</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- СКРИПТ ДЛЯ Assignees.htm -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // 1. Карта всех переходов системы
-      const routes = {
-        "Отчеты по парку": "file:///C:/Users/Public/TechService/Reports.htm",
-        "Задачи": "file:///C:/Users/Public/TechService/Tasks.htm",
-        "Инциденты": "file:///C:/Users/Public/TechService/Incidents.htm",
-        "Локации": "file:///C:/Users/Public/TechService/Locations.htm",
-        "Пользователи": "file:///C:/Users/Public/TechService/Users.htm",
-        "Темы": "file:///C:/Users/Public/TechService/Topics.htm",
-        "Аттракционы": "file:///C:/Users/Public/TechService/Attractions.htm",
-        "Ответственные": "file:///C:/Users/Public/TechService/Assignees.htm",
-        "Наблюдатели": "file:///C:/Users/Public/TechService/Observers.htm",
-        "Первопричины": "file:///C:/Users/Public/TechService/RootCauses.htm",
-        "Заявка в ИТ": "file:///C:/Users/Public/TechService/ITRequest.htm",
-        "Фильтры": "file:///C:/Users/Public/TechService/Filters.htm",
-        "+ Назначить специалиста": "file:///C:/Users/Public/TechService/NewAssignee.htm"
-      };
-
-      // 2. Универсальный обработчик переходов по кнопкам и ссылкам
-      document.querySelectorAll('a, button').forEach(element => {
-        element.addEventListener('click', (e) => {
-          const text = element.textContent.trim().split('\n')[0].trim();
-          if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {
-            e.preventDefault();
-            window.location.href = routes[text];
-          }
-        });
-      });
-
-      // 3. Интерактивная фильтрация ответственных по статусу загрузки
-      const chips = document.querySelectorAll('.filters .chip');
-      const tickets = document.querySelectorAll('#assigneeList .ticket');
-
-      chips.forEach(chip => {
-        chip.addEventListener('click', () => {
-          chips.forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-
-          const filter = chip.getAttribute('data-filter');
-
-          tickets.forEach(ticket => {
-            if (filter === 'all' || ticket.getAttribute('data-status') === filter) {
-              ticket.style.display = 'grid';
-            } else {
-              ticket.style.display = 'none';
-            }
-          });
-        });
-      });
-
-      // 4. Поиск по ответственным
-      const searchInput = document.getElementById('assigneeSearch');
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          const query = e.target.value.toLowerCase().trim();
-
-          tickets.forEach(ticket => {
-            const text = ticket.textContent.toLowerCase();
-            if (text.includes(query)) {
-              ticket.style.display = 'grid';
-            } else {
-              ticket.style.display = 'none';
-            }
-          });
-        });
-      }
-    });
-  </script>
+        document.addEventListener('DOMContentLoaded', renderMenu);
+    </script>
 </body>
 </html>

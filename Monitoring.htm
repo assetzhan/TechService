@@ -124,7 +124,7 @@
 
     .main {
       width: 100%;
-      max-width: 1360px; /* Исключает растягивание и гигантские пустые пространства */
+      max-width: 1360px;
       padding: 24px;
       display: flex;
       flex-direction: column;
@@ -220,7 +220,7 @@
       transform: rotate(180deg);
     }
 
-    /* Popover Calendar Modal (копия дизайна со скриншота) */
+    /* Popover Calendar Modal */
     .date-picker-popover {
       position: absolute;
       top: calc(100% + 8px);
@@ -360,7 +360,6 @@
       background: #e2e8f0;
     }
 
-    /* Выделение начальной и конечной даты */
     .day-cell.selected-start, .day-cell.selected-end {
       background: #2563eb !important;
       color: #ffffff !important;
@@ -385,7 +384,6 @@
       border-bottom-right-radius: 50%;
     }
 
-    /* Popover Actions Footer */
     .popover-footer {
       display: flex;
       justify-content: flex-end;
@@ -436,7 +434,6 @@
       font-size: 14px;
     }
 
-    /* Dashboard Metric Cards */
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -475,7 +472,6 @@
       font-weight: 500;
     }
 
-    /* Content Area Layout */
     .panel {
       background: #ffffff;
       border: 1px solid var(--line);
@@ -593,6 +589,7 @@
       .calendars-grid::before { display: none; }
     }
 
+    /* Мобильная адаптация Topbar */
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
       .menu-toggle { display: inline-flex; }
@@ -602,8 +599,49 @@
         transform: translateX(-100%);
       }
       .sidebar.open { transform: translateX(0); }
-      .topbar { flex-wrap: wrap; }
-      .search-row { max-width: 100%; width: 100%; order: 3; }
+
+      /* Двухуровневый grid для topbar на мобильных */
+      .topbar {
+        display: grid;
+        grid-template-columns: 44px 1fr auto;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .actions-row {
+        display: contents; /* Позволяет дочерним элементам стать частями общего Grid */
+      }
+
+      /* 1 уровень: кнопка меню слева, дата справа на том же уровне */
+      .menu-toggle {
+        grid-row: 1;
+        grid-column: 1;
+      }
+
+      .date-picker-wrapper {
+        grid-row: 1;
+        grid-column: 2 / 4;
+        width: 100%;
+      }
+
+      .date-picker-trigger {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      /* 2 уровень: поиск слева, фильтры справа на том же уровне */
+      .search-row {
+        grid-row: 2;
+        grid-column: 1 / 3;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .btn-ghost {
+        grid-row: 2;
+        grid-column: 3;
+        white-space: nowrap;
+      }
     }
   </style>
 </head>
@@ -695,7 +733,7 @@
           </div>
 
           <div class="actions-row">
-            <!-- Кастомный фильтр дат с выпадающим календарем -->
+            <!-- Кастомный фильтр дат -->
             <div class="date-picker-wrapper">
               <button type="button" class="date-picker-trigger" id="datePickerTrigger">
                 <span>📅</span>
@@ -836,7 +874,7 @@
                   <span><strong>Статус:</strong> В работе </span>
                   <span><strong>Автор:</strong> Иванов И.</span>
                   <span><strong>Ответственный:</strong> Волков В.</span>
-                  <span><strong>Испольнитель:</strong> Антонов А.</span>
+                  <span><strong>Исполнитель:</strong> Антонов А.</span>
                 </div>
               </article>
 
@@ -862,7 +900,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Мобильный сайдбар
+      // 1. Мобильный сайдбар и управление свайпом (Swipe Gestures)
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
       const menuToggle = document.getElementById('menuToggle');
@@ -873,19 +911,56 @@
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (overlay) overlay.addEventListener('click', closeSidebar);
 
-      // 2. Интерактивный Календарь Диапазона Дат (как на скриншоте)
-      const monthsRu = ["МАЙ", "ИЮНЬ", "ИЮЛЬ", "АВГ.", "СЕНТ.", "ОКТ.", "НОЯБ.", "ДЕК.", "ЯНВ.", "ФЕВР.", "МАРТ", "АПР."];
+      // Обработка жестов пальцем (свайп)
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchEndX = 0;
+      let touchEndY = 0;
+
+      document.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].clientX;
+        touchStartY = e.changedTouches[0].clientY;
+      }, { passive: true });
+
+      document.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].clientX;
+        touchEndY = e.changedTouches[0].clientY;
+        handleSwipe();
+      }, { passive: true });
+
+      function handleSwipe() {
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+
+        // Проверяем, что горизонтальное движение преобладает над вертикальным и превышает 50px
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+          // Свайп слева направо (открытие меню)
+          if (deltaX > 0) {
+            // Открываем, если меню закрыто и свайп начат в зоне у левого края (до 100px)
+            if (!sidebar.classList.contains('open') && touchStartX < 100) {
+              openSidebar();
+            }
+          } 
+          // Свайп справа налево (закрытие меню)
+          else if (deltaX < 0) {
+            if (sidebar.classList.contains('open')) {
+              closeSidebar();
+            }
+          }
+        }
+      }
+
+      // 2. Интерактивный Календарь Диапазона Дат
       const monthGenitive = ["янв.", "февр.", "мар.", "апр.", "мая", "июня", "июля", "авг.", "сент.", "окт.", "нояб.", "дек."];
 
-      // По умолчанию: с 1 мая 2026 по 25 августа 2026
       let appliedStartDate = new Date(2026, 4, 1);
       let appliedEndDate = new Date(2026, 7, 25);
 
       let tempStartDate = new Date(appliedStartDate);
       let tempEndDate = new Date(appliedEndDate);
 
-      let startCalendarMonth = new Date(2026, 4, 1); // Май 2026
-      let endCalendarMonth = new Date(2026, 7, 1);   // Авг 2026
+      let startCalendarMonth = new Date(2026, 4, 1);
+      let endCalendarMonth = new Date(2026, 7, 1);
 
       const trigger = document.getElementById('datePickerTrigger');
       const popover = document.getElementById('datePickerPopover');
@@ -905,7 +980,6 @@
       function formatDateDisplay(startDate, endDate) {
         if (!startDate && !endDate) return "За всё время";
         if (startDate && !endDate) return `С ${startDate.getDate()} ${monthGenitive[startDate.getMonth()]} ${startDate.getFullYear()} г.`;
-        
         return `${startDate.getDate()} ${monthGenitive[startDate.getMonth()]} ${startDate.getFullYear()} г. - ${endDate.getDate()} ${monthGenitive[endDate.getMonth()]} ${endDate.getFullYear()} г.`;
       }
 
@@ -918,7 +992,6 @@
         const firstDayOfMonth = new Date(year, month, 1);
         const lastDayOfMonth = new Date(year, month + 1, 0);
 
-        // Отступ для начала недели (0 = Понедельник)
         let firstDayIndex = (firstDayOfMonth.getDay() + 6) % 7;
 
         for (let i = 0; i < firstDayIndex; i++) {
@@ -968,6 +1041,29 @@
         renderSingleCalendar(endDaysGrid, endCalendarMonth.getFullYear(), endCalendarMonth.getMonth());
       }
 
+      // Открытие / Закрытие календаря
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = popover.classList.contains('open');
+        if (!isOpen) {
+          tempStartDate = appliedStartDate ? new Date(appliedStartDate) : null;
+          tempEndDate = appliedEndDate ? new Date(appliedEndDate) : null;
+          updateCalendarsView();
+          popover.classList.add('open');
+          trigger.classList.add('active');
+        } else {
+          popover.classList.remove('open');
+          trigger.classList.remove('active');
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!popover.contains(e.target) && !trigger.contains(e.target)) {
+          popover.classList.remove('open');
+          trigger.classList.remove('active');
+        }
+      });
+
       // Навигация по месяцам
       document.getElementById('prevStartMonth').addEventListener('click', (e) => {
         e.stopPropagation();
@@ -991,10 +1087,10 @@
         updateCalendarsView();
       });
 
-      // Переключение пресетов
+      // Пресеты дат
       presetSelect.addEventListener('change', (e) => {
         const val = e.target.value;
-        const now = new Date(2026, 7, 26); // Зафиксированная дата системы 26 авг 2026
+        const now = new Date(2026, 7, 26);
 
         if (val === 'today') {
           tempStartDate = new Date(now);
@@ -1014,40 +1110,10 @@
           tempStartDate = null;
           tempEndDate = null;
         }
-
-        if (tempStartDate) {
-          startCalendarMonth = new Date(tempStartDate.getFullYear(), tempStartDate.getMonth(), 1);
-        }
-        if (tempEndDate) {
-          endCalendarMonth = new Date(tempEndDate.getFullYear(), tempEndDate.getMonth(), 1);
-        }
-
         updateCalendarsView();
       });
 
-      // Открытие / Закрытие Popover
-      trigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = popover.classList.contains('open');
-        if (!isOpen) {
-          tempStartDate = appliedStartDate ? new Date(appliedStartDate) : null;
-          tempEndDate = appliedEndDate ? new Date(appliedEndDate) : null;
-          updateCalendarsView();
-          popover.classList.add('open');
-          trigger.classList.add('active');
-        } else {
-          popover.classList.remove('open');
-          trigger.classList.remove('active');
-        }
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!popover.contains(e.target) && !trigger.contains(e.target)) {
-          popover.classList.remove('open');
-          trigger.classList.remove('active');
-        }
-      });
-
+      // Кнопки Подтвердить / Отмена
       document.getElementById('cancelDateBtn').addEventListener('click', () => {
         popover.classList.remove('open');
         trigger.classList.remove('active');
@@ -1060,61 +1126,9 @@
         dateRangeText.textContent = formatDateDisplay(appliedStartDate, appliedEndDate);
         popover.classList.remove('open');
         trigger.classList.remove('active');
-
-        filterTickets();
       });
 
-      // 3. Единый скрипт фильтрации списков
-      const searchInput = document.getElementById('monitoringSearch');
-      const chips = document.querySelectorAll('.filters .chip');
-      const tickets = document.querySelectorAll('#monitoringList .ticket');
-
-      function filterTickets() {
-        const activeChip = document.querySelector('.filters .chip.active');
-        const filterCat = activeChip ? activeChip.getAttribute('data-filter') : 'all';
-        const query = searchInput.value.toLowerCase().trim();
-
-        tickets.forEach(ticket => {
-          const cat = ticket.getAttribute('data-type');
-          const dateStr = ticket.getAttribute('data-date'); // Формат YYYY-MM-DD
-          const text = ticket.textContent.toLowerCase();
-
-          const matchCat = (filterCat === 'all' || cat === filterCat);
-          const matchSearch = (!query || text.includes(query));
-
-          let matchDate = true;
-          if (dateStr) {
-            const ticketDate = new Date(dateStr);
-            if (appliedStartDate && ticketDate < appliedStartDate) matchDate = false;
-            if (appliedEndDate) {
-              const endOfDay = new Date(appliedEndDate);
-              endOfDay.setHours(23, 59, 59, 999);
-              if (ticketDate > endOfDay) matchDate = false;
-            }
-          }
-
-          if (matchCat && matchSearch && matchDate) {
-            ticket.style.display = 'block';
-          } else {
-            ticket.style.display = 'none';
-          }
-        });
-      }
-
-      chips.forEach(chip => {
-        chip.addEventListener('click', () => {
-          chips.forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-          filterTickets();
-        });
-      });
-
-      if (searchInput) searchInput.addEventListener('input', filterTickets);
-
-      // Первичная инициализация
-      dateRangeText.textContent = formatDateDisplay(appliedStartDate, appliedEndDate);
       updateCalendarsView();
-      filterTickets();
     });
   </script>
 </body>

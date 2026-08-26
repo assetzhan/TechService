@@ -39,6 +39,26 @@
       grid-template-columns: 280px 1fr;
     }
 
+    /* Sidebar Overlay (Затемнение фона для мобильных) */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 999;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
     /* Sidebar */
     .sidebar {
       background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
@@ -47,6 +67,7 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .brand {
@@ -135,12 +156,24 @@
       flex-wrap: wrap;
     }
 
+    /* Кнопка открытия меню на мобильных */
+    .menu-toggle {
+      display: none;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
     .search-row {
       display: flex;
       align-items: stretch;
       gap: 12px;
-      width: 100%;
-      max-width: 100%;
+      flex: 1 1 auto;
+      min-width: 0;
     }
 
     .search {
@@ -350,15 +383,45 @@
     .badge.danger  { background: rgba(220, 38, 38, 0.12); color: var(--danger); }
     .badge.info    { background: rgba(6, 182, 212, 0.12); color: #0891b2; }
 
+    /* Адаптивность для смартфонов и планшетов */
     @media (max-width: 900px) {
-      .app { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
+      .app { 
+        grid-template-columns: 1fr; 
+      }
+
+      .menu-toggle {
+        display: inline-flex;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 1000;
+        transform: translateX(-100%);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+        overflow-y: auto;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main {
+        padding: 16px;
+      }
     }
   </style>
 </head>
 <body>
+
+  <!-- Фон-оверлей при открытии меню -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   <div class="app">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-badge">T</div>
         <div>TechService</div>
@@ -417,7 +480,7 @@
           <span class="count">35</span>
         </a>
       </nav>
-      
+
       <div class="sidebar-footer">
         <nav class="nav">
           <a href="https://support.mykids.kz/">
@@ -429,13 +492,16 @@
 
     <main class="main">
       <div class="topbar">
+        <!-- Кнопка открытия меню для мобильных -->
+        <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
+
         <div class="search-row">
           <label class="search">
             <span>🔎</span>
             <input type="text" id="monitoringSearch" placeholder="Поиск по событиям отчетов, задач и инцидентов..." />
           </label>
         </div>
-        <div class="topbar">
+        <div>
           <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost btn-filter">Фильтры</a>
         </div>
       </div>
@@ -562,7 +628,60 @@
   <!-- СКРИПТ ДЛЯ Monitoring.htm -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Карта всех переходов системы
+      // 1. Управление мобильным сайдбаром и жестами (свайп)
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      const menuToggle = document.getElementById('menuToggle');
+
+      function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+      }
+
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+      }
+
+      if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+      if (overlay) overlay.addEventListener('click', closeSidebar);
+
+      // Логика свайпа пальцем
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchEndX = 0;
+      let touchEndY = 0;
+
+      document.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].clientX;
+        touchStartY = e.changedTouches[0].clientY;
+      }, { passive: true });
+
+      document.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].clientX;
+        touchEndY = e.changedTouches[0].clientY;
+        handleSwipe();
+      }, { passive: true });
+
+      function handleSwipe() {
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = Math.abs(touchEndY - touchStartY);
+
+        // Игнорируем вертикальный скролл страницы
+        if (deltaY > 50) return;
+
+        // Свайп слева направо (открытие): запуск от края экрана (меньше 40px) и сдвиг более 50px
+        if (touchStartX < 40 && deltaX > 50) {
+          openSidebar();
+        }
+
+        // Свайп справа налево (закрытие): если меню открыто и сдвиг влево более 50px
+        if (sidebar.classList.contains('open') && deltaX < -50) {
+          closeSidebar();
+        }
+      }
+
+      // 2. Карта всех переходов системы
       const routes = {
         "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
         "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
@@ -579,18 +698,19 @@
         "Фильтры": "https://assetzhan.github.io/TechService/Filters.htm"
       };
 
-      // 2. Универсальный обработчик переходов
+      // 3. Универсальный обработчик переходов
       document.querySelectorAll('a, button').forEach(element => {
         element.addEventListener('click', (e) => {
           const text = element.textContent.trim().split('\n')[0].trim();
           if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {
             e.preventDefault();
+            closeSidebar(); // Закрываем меню при клике на ссылку
             window.location.href = routes[text];
           }
         });
       });
 
-      // 3. Фильтрация по разделам (Отчеты, Задачи, Инциденты)
+      // 4. Фильтрация по разделам (Отчеты, Задачи, Инциденты)
       const chips = document.querySelectorAll('.filters .chip');
       const tickets = document.querySelectorAll('#monitoringList .ticket');
 
@@ -611,7 +731,7 @@
         });
       });
 
-      // 4. Реализация поиска
+      // 5. Реализация поиска
       const searchInput = document.getElementById('monitoringSearch');
       if (searchInput) {
         searchInput.addEventListener('input', (e) => {

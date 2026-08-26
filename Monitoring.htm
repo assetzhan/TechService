@@ -24,6 +24,11 @@
     }
 
     * { box-sizing: border-box; }
+    
+    html {
+      overflow-y: scroll; /* Предотвращает скачки ширины при появлении/исчезновении полосы прокрутки */
+    }
+
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -152,8 +157,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
       flex-wrap: wrap;
+      min-height: 46px;
     }
 
     /* Кнопка открытия меню на мобильных */
@@ -162,30 +168,34 @@
       background: #fff;
       border: 1px solid var(--line);
       border-radius: 14px;
-      padding: 10px 14px;
+      height: 46px;
+      padding: 0 14px;
       font-size: 1.2rem;
       cursor: pointer;
       box-shadow: var(--shadow);
+      align-items: center;
+      justify-content: center;
     }
 
     .search-row {
       display: flex;
-      align-items: stretch;
+      align-items: center;
       gap: 12px;
-      flex: 1 1 auto;
+      flex: 1 1 300px;
       min-width: 0;
     }
 
     .search {
       flex: 1 1 auto;
       min-width: 0;
+      height: 46px;
       display: flex;
       align-items: center;
       gap: 10px;
       background: #fff;
       border: 1px solid var(--line);
       border-radius: 16px;
-      padding: 12px 14px;
+      padding: 0 14px;
       box-shadow: var(--shadow);
     }
 
@@ -196,12 +206,77 @@
       outline: none;
       font-size: 15px;
       background: transparent;
+      height: 100%;
+    }
+
+    /* Фильтр по датам */
+    .date-filter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 0 12px;
+      height: 46px;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      color: var(--muted);
+      flex-wrap: nowrap;
+    }
+
+    .date-filter label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .date-filter input[type="date"] {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 4px 6px;
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      background: #f8fafc;
+      cursor: pointer;
+    }
+
+    .btn-clear-date {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s ease;
+    }
+
+    .btn-clear-date:hover {
+      background: #f1f5f9;
+      color: var(--danger);
+    }
+
+    .actions-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .btn {
       border: 0;
       border-radius: 14px;
-      padding: 12px 16px;
+      height: 46px;
+      padding: 0 16px;
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s ease;
@@ -214,8 +289,10 @@
     }
 
     .btn-ghost {
-      background: transparent;
+      background: #fff;
+      border: 1px solid var(--line);
       color: var(--text);
+      box-shadow: var(--shadow);
     }
 
     .btn-primary {
@@ -224,7 +301,7 @@
       box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
     }
 
-    .btn-filter { min-width: 110px; padding-inline: 18px; }
+    .btn-filter { min-width: 100px; padding-inline: 16px; }
 
     /* Dashboard Metric Cards */
     .metrics-grid {
@@ -237,11 +314,11 @@
       background: #fff;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 10px;
+      padding: 14px 16px;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .metric-title {
@@ -251,7 +328,7 @@
     }
 
     .metric-value {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 700;
       color: var(--text);
     }
@@ -297,19 +374,25 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      padding: 14px 18px;
+      padding: 12px 18px;
       border-bottom: 1px solid var(--line);
+      min-height: 60px;
+      align-items: center;
     }
 
     .chip {
       border: 1px solid var(--line);
       background: #fff;
       color: #334155;
-      padding: 8px 14px;
+      height: 34px;
+      padding: 0 14px;
       border-radius: 999px;
       font-size: 13px;
+      font-weight: 500;
       cursor: pointer;
       transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
     }
 
     .chip.active,
@@ -325,13 +408,13 @@
       padding: 18px;
     }
 
+    /* Оптимизированная карточка элемента */
     .ticket {
       background: #fff;
       border: 1px solid var(--line);
       border-radius: 18px;
       padding: 16px;
-      display: grid;
-      gap: 12px;
+      display: block;
       transition: 0.2s ease;
     }
 
@@ -340,38 +423,44 @@
       box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
     }
 
-    .ticket-top {
+    .ticket-header {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
-      align-items: start;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
     }
 
     .ticket-id {
       font-size: 12px;
       color: var(--muted);
       font-weight: 600;
-      margin-bottom: 6px;
     }
 
     .ticket-title {
-      margin: 0 0 8px;
+      margin: 0 0 10px 0;
       font-size: 1.05rem;
+      line-height: 1.4;
+      word-break: break-word;
+      width: 100%;
     }
 
     .ticket-meta {
       color: var(--muted);
       font-size: 13px;
       display: flex;
-      gap: 12px;
+      gap: 8px 16px;
       flex-wrap: wrap;
+      align-items: center;
+      width: 100%;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
@@ -411,6 +500,15 @@
 
       .main {
         padding: 16px;
+      }
+
+      .topbar {
+        gap: 10px;
+      }
+
+      .date-filter {
+        width: 100%;
+        justify-content: space-between;
       }
     }
   </style>
@@ -501,7 +599,15 @@
             <input type="text" id="monitoringSearch" placeholder="Поиск по событиям отчетов, задач и инцидентов..." />
           </label>
         </div>
-        <div>
+
+        <div class="actions-row">
+          <!-- Фильтр по диапазону дат -->
+          <div class="date-filter">
+            <label>С: <input type="date" id="dateFrom" /></label>
+            <label>По: <input type="date" id="dateTo" /></label>
+            <button type="button" class="btn-clear-date" id="resetDateBtn" title="Сбросить даты">✕</button>
+          </div>
+
           <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost btn-filter">Фильтры</a>
         </div>
       </div>
@@ -541,84 +647,74 @@
 
           <div class="tickets" id="monitoringList">
             <!-- Отчет по парку -->
-            <article class="ticket" data-type="reports">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#R-10128 · Категория: Отчет по парку</div>
-                  <h3 class="ticket-title">Алматы Атакент - отчет по проверке аттракциона Батут</h3>
-                  <div class="ticket-meta">
-                    <span>Статус: Проверен</span>
-                    <span>Время обновления: 10 мин назад</span>
-                    <span>Автор: Иванов И.</span>
-                    <span>Проверил: Волков. В.</span>
-                  </div>
-                </div>
+            <article class="ticket" data-type="reports" data-date="2026-08-26">
+              <div class="ticket-header">
+                <div class="ticket-id">#R-10128 · Категория: Отчет по парку</div>
                 <span class="badge success">Отчет проверен</span>
+              </div>
+              <h3 class="ticket-title">Алматы Атакент - отчет по проверке аттракциона Батут</h3>
+              <div class="ticket-meta">
+                <span><strong>Статус:</strong> Проверен</span>
+                <span><strong>Время обновления:</strong> 10 мин назад</span>
+                <span><strong>Автор:</strong> Иванов И.</span>
+                <span><strong>Проверил:</strong> Волков В.</span>
               </div>
             </article>
 
             <!-- Инцидент -->
-            <article class="ticket" data-type="incidents">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#MON-INC-051 · Категория: Инциденты</div>
-                  <h3 class="ticket-title">Отказ турникета №3 на входе — Шымкент Royal Plaza</h3>
-                  <div class="ticket-meta">
-                    <span>Приоритет: Критический</span>
-                    <span>SLA: 45 минут осталось</span>
-                    <span>Назначен: Самат С.</span>
-                  </div>
-                </div>
+            <article class="ticket" data-type="incidents" data-date="2026-08-25">
+              <div class="ticket-header">
+                <div class="ticket-id">#MON-INC-051 · Категория: Инциденты</div>
                 <span class="badge danger">Критический инцидент</span>
+              </div>
+              <h3 class="ticket-title">Отказ турникета №3 на входе — Шымкент Royal Plaza</h3>
+              <div class="ticket-meta">
+                <span><strong>Приоритет:</strong> Критический</span>
+                <span><strong>SLA:</strong> 45 минут осталось</span>
+                <span><strong>Назначен:</strong> Самат С.</span>
               </div>
             </article>
 
             <!-- Задача -->
-            <article class="ticket" data-type="tasks">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#MON-TSK-024 · Категория: Задачи</div>
-                  <h3 class="ticket-title">Плановая замена ленты чековых принтеров в кассах 1-4</h3>
-                  <div class="ticket-meta">
-                    <span>Срок выполнения: До 18:00</span>
-                    <span>Локация: Астана Хан Шатыр</span>
-                    <span>Назначен: Иванов И.</span>
-                  </div>
-                </div>
+            <article class="ticket" data-type="tasks" data-date="2026-08-24">
+              <div class="ticket-header">
+                <div class="ticket-id">#MON-TSK-024 · Категория: Задачи</div>
                 <span class="badge warning">В работе</span>
+              </div>
+              <h3 class="ticket-title">Плановая замена ленты чековых принтеров в кассах 1-4</h3>
+              <div class="ticket-meta">
+                <span><strong>Срок выполнения:</strong> До 18:00</span>
+                <span><strong>Локация:</strong> Астана Хан Шатыр</span>
+                <span><strong>Назначен:</strong> Иванов И.</span>
               </div>
             </article>
 
             <!-- Отчет по парку -->
-            <article class="ticket" data-type="reports">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#R-1027 · Категория: Отчет по парку</div>
-                  <h3 class="ticket-title">Алматы Атакент - отчет по проверке аттракциона Скаладром</h3>
-                  <div class="ticket-meta">
-                    <span>Статус: На проверке</span>
-                    <span>Время обновления: 1 час назад</span>
-                    <span>Автор: Иванов И.</span>
-                    <span>Проверил: не назначен</span>
-                  </div>
-                </div>
+            <article class="ticket" data-type="reports" data-date="2026-08-22">
+              <div class="ticket-header">
+                <div class="ticket-id">#R-1027 · Категория: Отчет по парку</div>
                 <span class="badge info">На проверке</span>
+              </div>
+              <h3 class="ticket-title">Алматы Атакент - отчет по проверке аттракциона Скаладром</h3>
+              <div class="ticket-meta">
+                <span><strong>Статус:</strong> На проверке</span>
+                <span><strong>Время обновления:</strong> 1 час назад</span>
+                <span><strong>Автор:</strong> Иванов И.</span>
+                <span><strong>Проверил:</strong> не назначен</span>
               </div>
             </article>
 
             <!-- Задача -->
-            <article class="ticket" data-type="tasks">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#MON-TSK-023 · Категория: Задачи</div>
-                  <h3 class="ticket-title">Обновление прошивки кассовых терминалов Ingenico</h3>
-                  <div class="ticket-meta">
-                    <span>Срок выполнения: Завтра, 10:00</span>
-                    <span>Локация: Все парки</span>
-                    <span>Назначен: IT отдел</span>
-                  </div>
-                </div>
+            <article class="ticket" data-type="tasks" data-date="2026-08-27">
+              <div class="ticket-header">
+                <div class="ticket-id">#MON-TSK-023 · Категория: Задачи</div>
                 <span class="badge info">Запланировано</span>
+              </div>
+              <h3 class="ticket-title">Обновление прошивки кассовых терминалов Ingenico</h3>
+              <div class="ticket-meta">
+                <span><strong>Срок выполнения:</strong> Завтра, 10:00</span>
+                <span><strong>Локация:</strong> Все парки</span>
+                <span><strong>Назначен:</strong> IT отдел</span>
               </div>
             </article>
           </div>
@@ -648,7 +744,6 @@
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (overlay) overlay.addEventListener('click', closeSidebar);
 
-      // Логика свайпа пальцем
       let touchStartX = 0;
       let touchStartY = 0;
       let touchEndX = 0;
@@ -669,21 +764,18 @@
         const deltaX = touchEndX - touchStartX;
         const deltaY = Math.abs(touchEndY - touchStartY);
 
-        // Игнорируем вертикальный скролл страницы
         if (deltaY > 50) return;
 
-        // Свайп слева направо (открытие): запуск от края экрана (меньше 40px) и сдвиг более 50px
         if (touchStartX < 40 && deltaX > 50) {
           openSidebar();
         }
 
-        // Свайп справа налево (закрытие): если меню открыто и сдвиг влево более 50px
         if (sidebar.classList.contains('open') && deltaX < -50) {
           closeSidebar();
         }
       }
 
-      // 2. Карта всех переходов системы
+      // 2. Карта переходов
       const routes = {
         "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
         "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
@@ -700,53 +792,82 @@
         "Фильтры": "https://assetzhan.github.io/TechService/Filters.htm"
       };
 
-      // 3. Универсальный обработчик переходов
       document.querySelectorAll('a, button').forEach(element => {
         element.addEventListener('click', (e) => {
           const text = element.textContent.trim().split('\n')[0].trim();
           if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {
             e.preventDefault();
-            closeSidebar(); // Закрываем меню при клике на ссылку
+            closeSidebar();
             window.location.href = routes[text];
           }
         });
       });
 
-      // 4. Фильтрация по разделам (Отчеты, Задачи, Инциденты)
+      // 3. Единая функция фильтрации (Категория + Текст + Диапазон Дат)
       const chips = document.querySelectorAll('.filters .chip');
       const tickets = document.querySelectorAll('#monitoringList .ticket');
+      const searchInput = document.getElementById('monitoringSearch');
+      const dateFromInput = document.getElementById('dateFrom');
+      const dateToInput = document.getElementById('dateTo');
+      const resetDateBtn = document.getElementById('resetDateBtn');
 
+      function filterTickets() {
+        const activeChip = document.querySelector('.filters .chip.active');
+        const filterCategory = activeChip ? activeChip.getAttribute('data-filter') : 'all';
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const dateFromVal = dateFromInput ? dateFromInput.value : '';
+        const dateToVal = dateToInput ? dateToInput.value : '';
+
+        tickets.forEach(ticket => {
+          const type = ticket.getAttribute('data-type');
+          const ticketDate = ticket.getAttribute('data-date'); // Формат YYYY-MM-DD
+          const text = ticket.textContent.toLowerCase();
+
+          // Проверка категории
+          const matchCategory = (filterCategory === 'all' || type === filterCategory);
+
+          // Проверка текста
+          const matchSearch = (!query || text.includes(query));
+
+          // Проверка периода дат (полная инклюзивность крайней даты)
+          let matchDate = true;
+          if (dateFromVal && ticketDate) {
+            if (ticketDate < dateFromVal) matchDate = false;
+          }
+          if (dateToVal && ticketDate) {
+            if (ticketDate > dateToVal) matchDate = false;
+          }
+
+          if (matchCategory && matchSearch && matchDate) {
+            ticket.style.display = 'block';
+          } else {
+            ticket.style.display = 'none';
+          }
+        });
+      }
+
+      // События клика по фильтрам-чипам
       chips.forEach(chip => {
         chip.addEventListener('click', () => {
           chips.forEach(c => c.classList.remove('active'));
           chip.classList.add('active');
-
-          const filter = chip.getAttribute('data-filter');
-
-          tickets.forEach(ticket => {
-            if (filter === 'all' || ticket.getAttribute('data-type') === filter) {
-              ticket.style.display = 'grid';
-            } else {
-              ticket.style.display = 'none';
-            }
-          });
+          filterTickets();
         });
       });
 
-      // 5. Реализация поиска
-      const searchInput = document.getElementById('monitoringSearch');
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          const query = e.target.value.toLowerCase().trim();
+      // События ввода в поле поиска
+      if (searchInput) searchInput.addEventListener('input', filterTickets);
 
-          tickets.forEach(ticket => {
-            const text = ticket.textContent.toLowerCase();
-            if (text.includes(query)) {
-              ticket.style.display = 'grid';
-            } else {
-              ticket.style.display = 'none';
-            }
-          });
+      // События выбора дат
+      if (dateFromInput) dateFromInput.addEventListener('change', filterTickets);
+      if (dateToInput) dateToInput.addEventListener('change', filterTickets);
+
+      // Кнопка сброса дат
+      if (resetDateBtn) {
+        resetDateBtn.addEventListener('click', () => {
+          if (dateFromInput) dateFromInput.value = '';
+          if (dateToInput) dateToInput.value = '';
+          filterTickets();
         });
       }
     });

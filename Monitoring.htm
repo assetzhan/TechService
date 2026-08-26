@@ -7,34 +7,32 @@
   <style>
     :root {
       --bg: #0f172a;
-      --panel: #111827;
-      --panel-2: #1f2937;
-      --card: #ffffff;
+      --panel: #ffffff;
       --muted: #64748b;
       --text: #0f172a;
-      --line: #e5e7eb;
+      --line: #e2e8f0;
       --primary: #2563eb;
-      --primary-2: #1d4ed8;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
       --success: #16a34a;
-      --warning: #f59e0b;
+      --warning: #d97706;
       --danger: #dc2626;
-      --info: #06b6d4;
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --info: #0891b2;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --popover-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.22);
       --radius: 18px;
     }
 
     * { box-sizing: border-box; }
     
     html {
-      overflow-y: scroll; /* Предотвращает скачки ширины при появлении/исчезновении полосы прокрутки */
+      overflow-y: scroll; /* Стабильная ширина без прыжков полосы прокрутки */
     }
 
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 28%),
-        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      background: #f1f5f9;
       color: var(--text);
     }
 
@@ -44,25 +42,17 @@
       grid-template-columns: 280px 1fr;
     }
 
-    /* Sidebar Overlay (Затемнение фона для мобильных) */
+    /* Sidebar Overlay */
     .sidebar-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(15, 23, 42, 0.5);
       backdrop-filter: blur(4px);
-      opacity: 0;
-      visibility: hidden;
+      opacity: 0; visibility: hidden;
       transition: opacity 0.3s ease, visibility 0.3s ease;
       z-index: 999;
     }
-
-    .sidebar-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
 
     /* Sidebar */
     .sidebar {
@@ -72,7 +62,11 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.3s ease;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
     }
 
     .brand {
@@ -81,232 +75,371 @@
       gap: 12px;
       font-weight: 700;
       font-size: 1.1rem;
-      letter-spacing: 0.2px;
     }
-
     .brand-badge {
-      width: 42px;
-      height: 42px;
+      width: 42px; height: 42px;
       border-radius: 14px;
-      display: grid;
-      place-items: center;
+      display: grid; place-items: center;
       background: linear-gradient(135deg, #2563eb, #06b6d4);
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
       font-size: 1.1rem;
     }
 
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .profile { display: flex; align-items: center; gap: 12px; }
+    .profile small { color: rgba(255,255,255,0.65); display: block; margin-top: 2px; }
 
-    .profile small {
-      color: rgba(255,255,255,0.65);
-      display: block;
-      margin-top: 2px;
-    }
-
-    .nav {
-      display: grid;
-      gap: 10px;
-    }
-
+    .nav { display: grid; gap: 6px; }
     .nav a {
       text-decoration: none;
       color: rgba(255,255,255,0.78);
-      padding: 12px 14px;
-      border-radius: 14px;
+      padding: 10px 14px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       transition: 0.2s ease;
-      background: transparent;
+      font-size: 14px;
     }
-
-    .nav a:hover,
-    .nav a.active {
-      background: rgba(255,255,255,0.1);
+    .nav a:hover, .nav a.active {
+      background: rgba(255,255,255,0.12);
       color: #fff;
     }
-
     .nav .count {
-      min-width: 28px;
-      padding: 4px 8px;
+      min-width: 26px;
+      padding: 2px 8px;
       border-radius: 999px;
-      background: rgba(37, 99, 235, 0.2);
+      background: rgba(37, 99, 235, 0.3);
       text-align: center;
       font-size: 12px;
     }
 
-    .sidebar-footer {
-      margin-top: auto;
-      font-size: 14px;
-      color: rgba(255,255,255,0.7);
-      line-height: 1.5;
+    .sidebar-footer { margin-top: auto; font-size: 14px; }
+
+    /* Main Container с ограничением максимальной ширины */
+    .main-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
 
-    /* Main */
     .main {
-      padding: 28px;
-      display: grid;
+      width: 100%;
+      max-width: 1360px; /* Исключает растягивание и гигантские пустые пространства */
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
       gap: 20px;
     }
 
+    /* Topbar Layout */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      min-height: 46px;
+      gap: 16px;
+      position: relative;
+      z-index: 100;
     }
 
-    /* Кнопка открытия меню на мобильных */
     .menu-toggle {
       display: none;
       background: #fff;
       border: 1px solid var(--line);
-      border-radius: 14px;
-      height: 46px;
-      padding: 0 14px;
+      border-radius: 12px;
+      height: 44px; width: 44px;
       font-size: 1.2rem;
       cursor: pointer;
-      box-shadow: var(--shadow);
-      align-items: center;
-      justify-content: center;
+      align-items: center; justify-content: center;
     }
 
     .search-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex: 1 1 300px;
-      min-width: 0;
+      flex: 1;
+      max-width: 480px;
     }
 
     .search {
-      flex: 1 1 auto;
-      min-width: 0;
-      height: 46px;
+      width: 100%;
+      height: 44px;
       display: flex;
       align-items: center;
       gap: 10px;
       background: #fff;
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 14px;
       padding: 0 14px;
-      box-shadow: var(--shadow);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      transition: border-color 0.2s;
     }
-
+    .search:focus-within { border-color: var(--primary); }
     .search input {
       width: 100%;
-      min-width: 0;
-      border: 0;
-      outline: none;
-      font-size: 15px;
-      background: transparent;
-      height: 100%;
-    }
-
-    /* Фильтр по датам */
-    .date-filter {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 0 12px;
-      height: 46px;
-      box-shadow: var(--shadow);
-      font-size: 13px;
-      color: var(--muted);
-      flex-wrap: nowrap;
-    }
-
-    .date-filter label {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-weight: 600;
-      color: var(--text);
-      white-space: nowrap;
-    }
-
-    .date-filter input[type="date"] {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 4px 6px;
-      font-family: inherit;
-      font-size: 13px;
-      color: var(--text);
-      outline: none;
-      background: #f8fafc;
-      cursor: pointer;
-    }
-
-    .btn-clear-date {
-      background: transparent;
-      border: none;
-      color: var(--muted);
+      border: 0; outline: none;
       font-size: 14px;
-      cursor: pointer;
-      padding: 2px 6px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: 0.2s ease;
-    }
-
-    .btn-clear-date:hover {
-      background: #f1f5f9;
-      color: var(--danger);
+      background: transparent;
     }
 
     .actions-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 12px;
+      position: relative;
     }
 
-    .btn {
-      border: 0;
+    /* Custom Date Picker Trigger Button */
+    .date-picker-wrapper {
+      position: relative;
+    }
+
+    .date-picker-trigger {
+      height: 44px;
+      background: #fff;
+      border: 1px solid var(--line);
       border-radius: 14px;
-      height: 46px;
       padding: 0 16px;
-      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
       cursor: pointer;
-      transition: 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      transition: all 0.2s ease;
       white-space: nowrap;
-      flex: 0 0 auto;
-      text-decoration: none;
-      display: inline-flex;
+    }
+    .date-picker-trigger:hover, .date-picker-trigger.active {
+      border-color: var(--primary);
+      background: #fff;
+    }
+    .date-picker-trigger .arrow {
+      font-size: 10px;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+    .date-picker-trigger.active .arrow {
+      transform: rotate(180deg);
+    }
+
+    /* Popover Calendar Modal (копия дизайна со скриншота) */
+    .date-picker-popover {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 590px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: var(--popover-shadow);
+      border: 1px solid #e2e8f0;
+      padding: 20px;
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      animation: popoverFadeIn 0.2s ease-out;
+    }
+    .date-picker-popover.open { display: flex; }
+
+    @keyframes popoverFadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .popover-header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .preset-select {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Dual Calendar Grid */
+    .calendars-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      position: relative;
+    }
+    .calendars-grid::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      bottom: 10px;
+      width: 1px;
+      background: #e2e8f0;
+    }
+
+    .calendar-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .cal-title-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+    }
+
+    .cal-month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+    }
+    .cal-month-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .cal-nav-btn {
+      background: transparent;
+      border: none;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: grid; place-items: center;
+      font-size: 14px;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .cal-nav-btn:hover { background: #f1f5f9; }
+
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .cal-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      row-gap: 4px;
+      text-align: center;
+    }
+
+    .day-cell {
+      height: 34px;
+      display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 50%;
+      margin: 0 auto;
+      width: 34px;
+      user-select: none;
+      transition: all 0.15s ease;
     }
+
+    .day-cell.empty {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .day-cell:not(.empty):hover {
+      background: #e2e8f0;
+    }
+
+    /* Выделение начальной и конечной даты */
+    .day-cell.selected-start, .day-cell.selected-end {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      font-weight: 700;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(37,99,235,0.3);
+    }
+
+    .day-cell.in-range {
+      background: #eff6ff;
+      border-radius: 0;
+      width: 100%;
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+    .day-cell.in-range.range-start-edge {
+      border-top-left-radius: 50%;
+      border-bottom-left-radius: 50%;
+    }
+    .day-cell.in-range.range-end-edge {
+      border-top-right-radius: 50%;
+      border-bottom-right-radius: 50%;
+    }
+
+    /* Popover Actions Footer */
+    .popover-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-cancel {
+      background: transparent;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      padding: 10px 18px;
+      cursor: pointer;
+      border-radius: 12px;
+    }
+    .btn-cancel:hover { background: #f1f5f9; }
+
+    .btn-apply {
+      background: #e2e8f0;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f172a;
+      padding: 10px 24px;
+      cursor: pointer;
+      border-radius: 999px;
+      transition: 0.2s ease;
+    }
+    .btn-apply:hover { background: #cbd5e1; }
 
     .btn-ghost {
       background: #fff;
       border: 1px solid var(--line);
       color: var(--text);
-      box-shadow: var(--shadow);
+      height: 44px;
+      padding: 0 18px;
+      border-radius: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 14px;
     }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      color: #fff;
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
-    }
-
-    .btn-filter { min-width: 100px; padding-inline: 16px; }
 
     /* Dashboard Metric Cards */
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 16px;
     }
 
@@ -314,7 +447,7 @@
       background: #fff;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 14px 16px;
+      padding: 18px 20px;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
@@ -322,15 +455,16 @@
     }
 
     .metric-title {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--muted);
       font-weight: 600;
     }
 
     .metric-value {
-      font-size: 1.8rem;
-      font-weight: 700;
+      font-size: 2rem;
+      font-weight: 800;
       color: var(--text);
+      letter-spacing: -0.5px;
     }
 
     .metric-sub {
@@ -338,98 +472,83 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      font-weight: 500;
     }
 
-    .content {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-      align-items: start;
-    }
-
+    /* Content Area Layout */
     .panel {
-      background: rgba(255,255,255,0.88);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(229,231,235,0.9);
+      background: #ffffff;
+      border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
 
     .panel-head {
-      padding: 18px 18px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      padding: 20px 24px;
       border-bottom: 1px solid var(--line);
     }
 
     .panel-title {
       margin: 0;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
+      font-weight: 700;
     }
 
     .filters {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      padding: 12px 18px;
+      padding: 16px 24px;
       border-bottom: 1px solid var(--line);
-      min-height: 60px;
-      align-items: center;
+      background: #f8fafc;
     }
 
     .chip {
       border: 1px solid var(--line);
       background: #fff;
-      color: #334155;
-      height: 34px;
-      padding: 0 14px;
+      color: #475569;
+      height: 36px;
+      padding: 0 16px;
       border-radius: 999px;
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      transition: 0.2s ease;
+      transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
     }
 
-    .chip.active,
-    .chip:hover {
-      border-color: rgba(37,99,235,0.3);
-      background: rgba(37,99,235,0.08);
-      color: var(--primary-2);
+    .chip.active {
+      border-color: rgba(37,99,235,0.4);
+      background: #eff6ff;
+      color: var(--primary);
     }
 
     .tickets {
       display: grid;
       gap: 12px;
-      padding: 18px;
+      padding: 20px 24px;
     }
 
-    /* Оптимизированная карточка элемента */
     .ticket {
       background: #fff;
       border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      display: block;
-      transition: 0.2s ease;
+      border-radius: 16px;
+      padding: 18px 20px;
+      transition: all 0.2s ease;
     }
-
     .ticket:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
     }
 
     .ticket-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 8px;
-      flex-wrap: wrap;
     }
 
     .ticket-id {
@@ -441,75 +560,50 @@
     .ticket-title {
       margin: 0 0 10px 0;
       font-size: 1.05rem;
-      line-height: 1.4;
-      word-break: break-word;
-      width: 100%;
+      font-weight: 700;
+      color: var(--text);
     }
 
     .ticket-meta {
       color: var(--muted);
       font-size: 13px;
       display: flex;
-      gap: 8px 16px;
+      gap: 16px;
       flex-wrap: wrap;
-      align-items: center;
-      width: 100%;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 5px 12px;
+      padding: 4px 12px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
-      white-space: nowrap;
+    }
+    .badge.success { background: #dcfce7; color: var(--success); }
+    .badge.warning { background: #fef3c7; color: var(--warning); }
+    .badge.danger  { background: #fee2e2; color: var(--danger); }
+    .badge.info    { background: #e0f2fe; color: var(--info); }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .metrics-grid { grid-template-columns: 1fr; }
+      .date-picker-popover { width: 100%; right: auto; left: 0; }
+      .calendars-grid { grid-template-columns: 1fr; }
+      .calendars-grid::before { display: none; }
     }
 
-    .badge.success { background: rgba(22, 163, 74, 0.12); color: var(--success); }
-    .badge.warning { background: rgba(245, 158, 11, 0.15); color: #b45309; }
-    .badge.danger  { background: rgba(220, 38, 38, 0.12); color: var(--danger); }
-    .badge.info    { background: rgba(6, 182, 212, 0.12); color: #0891b2; }
-
-    /* Адаптивность для смартфонов и планшетов */
     @media (max-width: 900px) {
-      .app { 
-        grid-template-columns: 1fr; 
-      }
-
-      .menu-toggle {
-        display: inline-flex;
-      }
-
+      .app { grid-template-columns: 1fr; }
+      .menu-toggle { display: inline-flex; }
       .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 280px;
+        position: fixed; left: 0; top: 0; bottom: 0;
         z-index: 1000;
         transform: translateX(-100%);
-        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
-        overflow-y: auto;
       }
-
-      .sidebar.open {
-        transform: translateX(0);
-      }
-
-      .main {
-        padding: 16px;
-      }
-
-      .topbar {
-        gap: 10px;
-      }
-
-      .date-filter {
-        width: 100%;
-        justify-content: space-between;
-      }
+      .sidebar.open { transform: translateX(0); }
+      .topbar { flex-wrap: wrap; }
+      .search-row { max-width: 100%; width: 100%; order: 3; }
     }
   </style>
 </head>
@@ -588,257 +682,412 @@
       </div>
     </aside>
 
-    <main class="main">
-      <div class="topbar">
-        <!-- Кнопка открытия меню для мобильных -->
-        <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
+    <div class="main-wrapper">
+      <main class="main">
+        <div class="topbar">
+          <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
 
-        <div class="search-row">
-          <label class="search">
-            <span>🔎</span>
-            <input type="text" id="monitoringSearch" placeholder="Поиск по событиям отчетов, задач и инцидентов..." />
-          </label>
-        </div>
-
-        <div class="actions-row">
-          <!-- Фильтр по диапазону дат -->
-          <div class="date-filter">
-            <label>С: <input type="date" id="dateFrom" /></label>
-            <label>По: <input type="date" id="dateTo" /></label>
-            <button type="button" class="btn-clear-date" id="resetDateBtn" title="Сбросить даты">✕</button>
+          <div class="search-row">
+            <label class="search">
+              <span>🔎</span>
+              <input type="text" id="monitoringSearch" placeholder="Поиск по событиям отчетов, задач и инцидентов..." />
+            </label>
           </div>
 
-          <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost btn-filter">Фильтры</a>
-        </div>
-      </div>
+          <div class="actions-row">
+            <!-- Кастомный фильтр дат с выпадающим календарем -->
+            <div class="date-picker-wrapper">
+              <button type="button" class="date-picker-trigger" id="datePickerTrigger">
+                <span>📅</span>
+                <span id="dateRangeText">1 мая 2026 г. - 25 авг. 2026 г.</span>
+                <span class="arrow">▼</span>
+              </button>
 
-      <!-- Сводка метрик -->
-      <section class="metrics-grid">
-        <div class="metric-card">
-          <span class="metric-title">Отчеты по парку</span>
-          <span class="metric-value">128</span>
-          <span class="metric-sub" style="color: var(--success);">● 112 проверено (87%)</span>
-        </div>
-        <div class="metric-card">
-          <span class="metric-title">Задачи в работе</span>
-          <span class="metric-value">24</span>
-          <span class="metric-sub" style="color: var(--warning);">● 6 требуют внимания</span>
-        </div>
-        <div class="metric-card">
-          <span class="metric-title">Активные инциденты</span>
-          <span class="metric-value">51</span>
-          <span class="metric-sub" style="color: var(--danger);">● 3 критических</span>
-        </div>
-      </section>
+              <!-- Всплывающий календарь (Popover) -->
+              <div class="date-picker-popover" id="datePickerPopover">
+                <div class="popover-header">
+                  <select class="preset-select" id="presetSelect">
+                    <option value="custom">Фиксированные даты</option>
+                    <option value="today">За сегодня</option>
+                    <option value="7days">За последние 7 дней</option>
+                    <option value="30days">За 30 дней</option>
+                    <option value="thisMonth">Этот месяц</option>
+                    <option value="all">За всё время</option>
+                  </select>
+                </div>
 
-      <section class="content">
-        <div class="panel">
-          <div class="panel-head">
-            <h2 class="panel-title">Мониторинг активностей (Отчеты, Задачи, Инциденты)</h2>
-          </div>
+                <div class="calendars-grid">
+                  <!-- Календарь даты начала -->
+                  <div class="calendar-col">
+                    <div class="cal-title-label">Дата начала</div>
+                    <div class="cal-month-nav">
+                      <button class="cal-nav-btn" id="prevStartMonth">‹</button>
+                      <span class="cal-month-name" id="startMonthTitle">МАЙ 2026 Г.</span>
+                      <button class="cal-nav-btn" id="nextStartMonth">›</button>
+                    </div>
+                    <div class="cal-weekdays">
+                      <span>П</span><span>В</span><span>С</span><span>Ч</span><span>П</span><span>С</span><span>В</span>
+                    </div>
+                    <div class="cal-days" id="startDaysGrid"></div>
+                  </div>
 
-          <!-- Переключение категорий отслеживания -->
-          <div class="filters">
-            <button class="chip active" data-filter="all">Все активности (203)</button>
-            <button class="chip" data-filter="reports">Отчеты по парку (128)</button>
-            <button class="chip" data-filter="tasks">Задачи (24)</button>
-            <button class="chip" data-filter="incidents">Инциденты (51)</button>
-          </div>
+                  <!-- Календарь даты окончания -->
+                  <div class="calendar-col">
+                    <div class="cal-title-label">Дата окончания</div>
+                    <div class="cal-month-nav">
+                      <button class="cal-nav-btn" id="prevEndMonth">‹</button>
+                      <span class="cal-month-name" id="endMonthTitle">АВГ. 2026 Г.</span>
+                      <button class="cal-nav-btn" id="nextEndMonth">›</button>
+                    </div>
+                    <div class="cal-weekdays">
+                      <span>П</span><span>В</span><span>С</span><span>Ч</span><span>П</span><span>С</span><span>В</span>
+                    </div>
+                    <div class="cal-days" id="endDaysGrid"></div>
+                  </div>
+                </div>
 
-          <div class="tickets" id="monitoringList">
-            <!-- Отчет по парку -->
-            <article class="ticket" data-type="reports" data-date="2026-08-26">
-              <div class="ticket-header">
-                <div class="ticket-id">#R-10128 · Категория: Отчет по парку</div>
-                <span class="badge success">Отчет проверен</span>
+                <div class="popover-footer">
+                  <button type="button" class="btn-cancel" id="cancelDateBtn">Отмена</button>
+                  <button type="button" class="btn-apply" id="applyDateBtn">Применить</button>
+                </div>
               </div>
-              <h3 class="ticket-title">Алматы Атакент - отчет по проверке аттракциона Батут</h3>
-              <div class="ticket-meta">
-                <span><strong>Статус:</strong> Проверен</span>
-                <span><strong>Время обновления:</strong> 10 мин назад</span>
-                <span><strong>Автор:</strong> Иванов И.</span>
-                <span><strong>Проверил:</strong> Волков В.</span>
-              </div>
-            </article>
+            </div>
 
-            <!-- Инцидент -->
-            <article class="ticket" data-type="incidents" data-date="2026-08-25">
-              <div class="ticket-header">
-                <div class="ticket-id">#MON-INC-051 · Категория: Инциденты</div>
-                <span class="badge danger">Критический инцидент</span>
-              </div>
-              <h3 class="ticket-title">Отказ турникета №3 на входе — Шымкент Royal Plaza</h3>
-              <div class="ticket-meta">
-                <span><strong>Приоритет:</strong> Критический</span>
-                <span><strong>SLA:</strong> 45 минут осталось</span>
-                <span><strong>Назначен:</strong> Самат С.</span>
-              </div>
-            </article>
-
-            <!-- Задача -->
-            <article class="ticket" data-type="tasks" data-date="2026-08-24">
-              <div class="ticket-header">
-                <div class="ticket-id">#MON-TSK-024 · Категория: Задачи</div>
-                <span class="badge warning">В работе</span>
-              </div>
-              <h3 class="ticket-title">Плановая замена ленты чековых принтеров в кассах 1-4</h3>
-              <div class="ticket-meta">
-                <span><strong>Срок выполнения:</strong> До 18:00</span>
-                <span><strong>Локация:</strong> Астана Хан Шатыр</span>
-                <span><strong>Назначен:</strong> Иванов И.</span>
-              </div>
-            </article>
-
-            <!-- Отчет по парку -->
-            <article class="ticket" data-type="reports" data-date="2026-08-22">
-              <div class="ticket-header">
-                <div class="ticket-id">#R-1027 · Категория: Отчет по парку</div>
-                <span class="badge info">На проверке</span>
-              </div>
-              <h3 class="ticket-title">Алматы Атакент - отчет по проверке аттракциона Скаладром</h3>
-              <div class="ticket-meta">
-                <span><strong>Статус:</strong> На проверке</span>
-                <span><strong>Время обновления:</strong> 1 час назад</span>
-                <span><strong>Автор:</strong> Иванов И.</span>
-                <span><strong>Проверил:</strong> не назначен</span>
-              </div>
-            </article>
-
-            <!-- Задача -->
-            <article class="ticket" data-type="tasks" data-date="2026-08-27">
-              <div class="ticket-header">
-                <div class="ticket-id">#MON-TSK-023 · Категория: Задачи</div>
-                <span class="badge info">Запланировано</span>
-              </div>
-              <h3 class="ticket-title">Обновление прошивки кассовых терминалов Ingenico</h3>
-              <div class="ticket-meta">
-                <span><strong>Срок выполнения:</strong> Завтра, 10:00</span>
-                <span><strong>Локация:</strong> Все парки</span>
-                <span><strong>Назначен:</strong> IT отдел</span>
-              </div>
-            </article>
+            <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn-ghost">Фильтры</a>
           </div>
         </div>
-      </section>
-    </main>
+
+        <!-- Сводка метрик -->
+        <section class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-title">Отчеты по парку</span>
+            <span class="metric-value">128</span>
+            <span class="metric-sub" style="color: var(--success);">● 112 проверено (87%)</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Задачи в работе</span>
+            <span class="metric-value">24</span>
+            <span class="metric-sub" style="color: var(--warning);">● 6 требуют внимания</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-title">Активные инциденты</span>
+            <span class="metric-value">51</span>
+            <span class="metric-sub" style="color: var(--danger);">● 3 критических</span>
+          </div>
+        </section>
+
+        <section class="content">
+          <div class="panel">
+            <div class="panel-head">
+              <h2 class="panel-title">Мониторинг активностей (Отчеты, Задачи, Инциденты)</h2>
+            </div>
+
+            <!-- Переключение категорий -->
+            <div class="filters">
+              <button class="chip active" data-filter="all">Все активности (203)</button>
+              <button class="chip" data-filter="reports">Отчеты по парку (128)</button>
+              <button class="chip" data-filter="tasks">Задачи (24)</button>
+              <button class="chip" data-filter="incidents">Инциденты (51)</button>
+            </div>
+
+            <div class="tickets" id="monitoringList">
+              <!-- Отчет по парку -->
+              <article class="ticket" data-type="reports" data-date="2026-08-26">
+                <div class="ticket-header">
+                  <div class="ticket-id">#R-10128 · Категория: Отчет по парку</div>
+                  <span class="badge success">Отчет проверен</span>
+                </div>
+                <h3 class="ticket-title">Алматы Атакент - отчет по проверке аттракциона Батут</h3>
+                <div class="ticket-meta">
+                  <span><strong>Статус:</strong> Проверен</span>
+                  <span><strong>Время:</strong> 10 мин назад</span>
+                  <span><strong>Автор:</strong> Иванов И.</span>
+                  <span><strong>Проверил:</strong> Волков В.</span>
+                </div>
+              </article>
+
+              <!-- Инцидент -->
+              <article class="ticket" data-type="incidents" data-date="2026-08-25">
+                <div class="ticket-header">
+                  <div class="ticket-id">#MON-INC-051 · Категория: Инциденты</div>
+                  <span class="badge danger">Критический инцидент</span>
+                </div>
+                <h3 class="ticket-title">Отказ турникета №3 на входе — Шымкент Royal Plaza</h3>
+                <div class="ticket-meta">
+                  <span><strong>Приоритет:</strong> Критический</span>
+                  <span><strong>SLA:</strong> 45 минут осталось</span>
+                  <span><strong>Назначен:</strong> Самат С.</span>
+                </div>
+              </article>
+
+              <!-- Задача -->
+              <article class="ticket" data-type="tasks" data-date="2026-08-24">
+                <div class="ticket-header">
+                  <div class="ticket-id">#MON-TSK-024 · Категория: Задачи</div>
+                  <span class="badge warning">В работе</span>
+                </div>
+                <h3 class="ticket-title">Плановая замена ленты чековых принтеров в кассах 1-4</h3>
+                <div class="ticket-meta">
+                  <span><strong>Срок:</strong> До 18:00</span>
+                  <span><strong>Локация:</strong> Астана Хан Шатыр</span>
+                  <span><strong>Назначен:</strong> Иванов И.</span>
+                </div>
+              </article>
+
+              <!-- Отчет по парку -->
+              <article class="ticket" data-type="reports" data-date="2026-05-15">
+                <div class="ticket-header">
+                  <div class="ticket-id">#R-1027 · Категория: Отчет по парку</div>
+                  <span class="badge info">На проверке</span>
+                </div>
+                <h3 class="ticket-title">Алматы Атакент - отчет по проверке аттракциона Скалодром</h3>
+                <div class="ticket-meta">
+                  <span><strong>Статус:</strong> На проверке</span>
+                  <span><strong>Дата:</strong> 15 мая 2026 г.</span>
+                  <span><strong>Автор:</strong> Иванов И.</span>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
   </div>
 
-  <!-- СКРИПТ ДЛЯ Monitoring.htm -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Управление мобильным сайдбаром и жестами (свайп)
+      // 1. Мобильный сайдбар
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
       const menuToggle = document.getElementById('menuToggle');
 
-      function openSidebar() {
-        sidebar.classList.add('open');
-        overlay.classList.add('active');
-      }
-
-      function closeSidebar() {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('active');
-      }
+      function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('active'); }
+      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
 
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (overlay) overlay.addEventListener('click', closeSidebar);
 
-      let touchStartX = 0;
-      let touchStartY = 0;
-      let touchEndX = 0;
-      let touchEndY = 0;
+      // 2. Интерактивный Календарь Диапазона Дат (как на скриншоте)
+      const monthsRu = ["МАЙ", "ИЮНЬ", "ИЮЛЬ", "АВГ.", "СЕНТ.", "ОКТ.", "НОЯБ.", "ДЕК.", "ЯНВ.", "ФЕВР.", "МАРТ", "АПР."];
+      const monthGenitive = ["янв.", "февр.", "мар.", "апр.", "мая", "июня", "июля", "авг.", "сент.", "окт.", "нояб.", "дек."];
 
-      document.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].clientX;
-        touchStartY = e.changedTouches[0].clientY;
-      }, { passive: true });
+      // По умолчанию: с 1 мая 2026 по 25 августа 2026
+      let appliedStartDate = new Date(2026, 4, 1);
+      let appliedEndDate = new Date(2026, 7, 25);
 
-      document.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].clientX;
-        touchEndY = e.changedTouches[0].clientY;
-        handleSwipe();
-      }, { passive: true });
+      let tempStartDate = new Date(appliedStartDate);
+      let tempEndDate = new Date(appliedEndDate);
 
-      function handleSwipe() {
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = Math.abs(touchEndY - touchStartY);
+      let startCalendarMonth = new Date(2026, 4, 1); // Май 2026
+      let endCalendarMonth = new Date(2026, 7, 1);   // Авг 2026
 
-        if (deltaY > 50) return;
+      const trigger = document.getElementById('datePickerTrigger');
+      const popover = document.getElementById('datePickerPopover');
+      const dateRangeText = document.getElementById('dateRangeText');
+      const presetSelect = document.getElementById('presetSelect');
 
-        if (touchStartX < 40 && deltaX > 50) {
-          openSidebar();
+      const startDaysGrid = document.getElementById('startDaysGrid');
+      const endDaysGrid = document.getElementById('endDaysGrid');
+      const startMonthTitle = document.getElementById('startMonthTitle');
+      const endMonthTitle = document.getElementById('endMonthTitle');
+
+      function formatDateTitle(date) {
+        const mNames = ["ЯНВ.", "ФЕВР.", "МАРТ", "АПР.", "МАЙ", "ИЮНЬ", "ИЮЛЬ", "АВГ.", "СЕНТ.", "ОКТ.", "НОЯБ.", "ДЕК."];
+        return `${mNames[date.getMonth()]} ${date.getFullYear()} Г.`;
+      }
+
+      function formatDateDisplay(startDate, endDate) {
+        if (!startDate && !endDate) return "За всё время";
+        if (startDate && !endDate) return `С ${startDate.getDate()} ${monthGenitive[startDate.getMonth()]} ${startDate.getFullYear()} г.`;
+        
+        return `${startDate.getDate()} ${monthGenitive[startDate.getMonth()]} ${startDate.getFullYear()} г. - ${endDate.getDate()} ${monthGenitive[endDate.getMonth()]} ${endDate.getFullYear()} г.`;
+      }
+
+      function isSameDay(d1, d2) {
+        return d1 && d2 && d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+      }
+
+      function renderSingleCalendar(gridElement, year, month) {
+        gridElement.innerHTML = '';
+        const firstDayOfMonth = new Date(year, month, 1);
+        const lastDayOfMonth = new Date(year, month + 1, 0);
+
+        // Отступ для начала недели (0 = Понедельник)
+        let firstDayIndex = (firstDayOfMonth.getDay() + 6) % 7;
+
+        for (let i = 0; i < firstDayIndex; i++) {
+          const emptyCell = document.createElement('div');
+          emptyCell.className = 'day-cell empty';
+          gridElement.appendChild(emptyCell);
         }
 
-        if (sidebar.classList.contains('open') && deltaX < -50) {
-          closeSidebar();
+        for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+          const currentDate = new Date(year, month, day);
+          const cell = document.createElement('div');
+          cell.className = 'day-cell';
+          cell.textContent = day;
+
+          if (isSameDay(currentDate, tempStartDate)) {
+            cell.classList.add('selected-start');
+          } else if (isSameDay(currentDate, tempEndDate)) {
+            cell.classList.add('selected-end');
+          } else if (tempStartDate && tempEndDate && currentDate > tempStartDate && currentDate < tempEndDate) {
+            cell.classList.add('in-range');
+          }
+
+          cell.addEventListener('click', () => {
+            if (!tempStartDate || (tempStartDate && tempEndDate)) {
+              tempStartDate = currentDate;
+              tempEndDate = null;
+            } else if (tempStartDate && !tempEndDate) {
+              if (currentDate < tempStartDate) {
+                tempStartDate = currentDate;
+              } else {
+                tempEndDate = currentDate;
+              }
+            }
+            presetSelect.value = 'custom';
+            updateCalendarsView();
+          });
+
+          gridElement.appendChild(cell);
         }
       }
 
-      // 2. Карта переходов
-      const routes = {
-        "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
-        "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
-        "Инциденты": "https://assetzhan.github.io/TechService/Incidents.htm",
-        "Мониторинг": "https://assetzhan.github.io/TechService/Monitoring.htm",
-        "Локации": "https://assetzhan.github.io/TechService/Locations.htm",
-        "Пользователи": "https://assetzhan.github.io/TechService/Users.htm",
-        "Темы": "https://assetzhan.github.io/TechService/Topics.htm",
-        "Аттракционы": "https://assetzhan.github.io/TechService/Attractions.htm",
-        "Ответственные": "https://assetzhan.github.io/TechService/Assignees.htm",
-        "Наблюдатели": "https://assetzhan.github.io/TechService/Observers.htm",
-        "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
-        "Заявка в ИТ": "https://support.mykids.kz/",
-        "Фильтры": "https://assetzhan.github.io/TechService/Filters.htm"
-      };
+      function updateCalendarsView() {
+        startMonthTitle.textContent = formatDateTitle(startCalendarMonth);
+        endMonthTitle.textContent = formatDateTitle(endCalendarMonth);
 
-      document.querySelectorAll('a, button').forEach(element => {
-        element.addEventListener('click', (e) => {
-          const text = element.textContent.trim().split('\n')[0].trim();
-          if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {
-            e.preventDefault();
-            closeSidebar();
-            window.location.href = routes[text];
-          }
-        });
+        renderSingleCalendar(startDaysGrid, startCalendarMonth.getFullYear(), startCalendarMonth.getMonth());
+        renderSingleCalendar(endDaysGrid, endCalendarMonth.getFullYear(), endCalendarMonth.getMonth());
+      }
+
+      // Навигация по месяцам
+      document.getElementById('prevStartMonth').addEventListener('click', (e) => {
+        e.stopPropagation();
+        startCalendarMonth.setMonth(startCalendarMonth.getMonth() - 1);
+        updateCalendarsView();
+      });
+      document.getElementById('nextStartMonth').addEventListener('click', (e) => {
+        e.stopPropagation();
+        startCalendarMonth.setMonth(startCalendarMonth.getMonth() + 1);
+        updateCalendarsView();
       });
 
-      // 3. Единая функция фильтрации (Категория + Текст + Диапазон Дат)
+      document.getElementById('prevEndMonth').addEventListener('click', (e) => {
+        e.stopPropagation();
+        endCalendarMonth.setMonth(endCalendarMonth.getMonth() - 1);
+        updateCalendarsView();
+      });
+      document.getElementById('nextEndMonth').addEventListener('click', (e) => {
+        e.stopPropagation();
+        endCalendarMonth.setMonth(endCalendarMonth.getMonth() + 1);
+        updateCalendarsView();
+      });
+
+      // Переключение пресетов
+      presetSelect.addEventListener('change', (e) => {
+        const val = e.target.value;
+        const now = new Date(2026, 7, 26); // Зафиксированная дата системы 26 авг 2026
+
+        if (val === 'today') {
+          tempStartDate = new Date(now);
+          tempEndDate = new Date(now);
+        } else if (val === '7days') {
+          tempStartDate = new Date(now);
+          tempStartDate.setDate(now.getDate() - 6);
+          tempEndDate = new Date(now);
+        } else if (val === '30days') {
+          tempStartDate = new Date(now);
+          tempStartDate.setDate(now.getDate() - 29);
+          tempEndDate = new Date(now);
+        } else if (val === 'thisMonth') {
+          tempStartDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          tempEndDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        } else if (val === 'all') {
+          tempStartDate = null;
+          tempEndDate = null;
+        }
+
+        if (tempStartDate) {
+          startCalendarMonth = new Date(tempStartDate.getFullYear(), tempStartDate.getMonth(), 1);
+        }
+        if (tempEndDate) {
+          endCalendarMonth = new Date(tempEndDate.getFullYear(), tempEndDate.getMonth(), 1);
+        }
+
+        updateCalendarsView();
+      });
+
+      // Открытие / Закрытие Popover
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = popover.classList.contains('open');
+        if (!isOpen) {
+          tempStartDate = appliedStartDate ? new Date(appliedStartDate) : null;
+          tempEndDate = appliedEndDate ? new Date(appliedEndDate) : null;
+          updateCalendarsView();
+          popover.classList.add('open');
+          trigger.classList.add('active');
+        } else {
+          popover.classList.remove('open');
+          trigger.classList.remove('active');
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!popover.contains(e.target) && !trigger.contains(e.target)) {
+          popover.classList.remove('open');
+          trigger.classList.remove('active');
+        }
+      });
+
+      document.getElementById('cancelDateBtn').addEventListener('click', () => {
+        popover.classList.remove('open');
+        trigger.classList.remove('active');
+      });
+
+      document.getElementById('applyDateBtn').addEventListener('click', () => {
+        appliedStartDate = tempStartDate ? new Date(tempStartDate) : null;
+        appliedEndDate = tempEndDate ? new Date(tempEndDate) : null;
+
+        dateRangeText.textContent = formatDateDisplay(appliedStartDate, appliedEndDate);
+        popover.classList.remove('open');
+        trigger.classList.remove('active');
+
+        filterTickets();
+      });
+
+      // 3. Единый скрипт фильтрации списков
+      const searchInput = document.getElementById('monitoringSearch');
       const chips = document.querySelectorAll('.filters .chip');
       const tickets = document.querySelectorAll('#monitoringList .ticket');
-      const searchInput = document.getElementById('monitoringSearch');
-      const dateFromInput = document.getElementById('dateFrom');
-      const dateToInput = document.getElementById('dateTo');
-      const resetDateBtn = document.getElementById('resetDateBtn');
 
       function filterTickets() {
         const activeChip = document.querySelector('.filters .chip.active');
-        const filterCategory = activeChip ? activeChip.getAttribute('data-filter') : 'all';
-        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
-        const dateFromVal = dateFromInput ? dateFromInput.value : '';
-        const dateToVal = dateToInput ? dateToInput.value : '';
+        const filterCat = activeChip ? activeChip.getAttribute('data-filter') : 'all';
+        const query = searchInput.value.toLowerCase().trim();
 
         tickets.forEach(ticket => {
-          const type = ticket.getAttribute('data-type');
-          const ticketDate = ticket.getAttribute('data-date'); // Формат YYYY-MM-DD
+          const cat = ticket.getAttribute('data-type');
+          const dateStr = ticket.getAttribute('data-date'); // Формат YYYY-MM-DD
           const text = ticket.textContent.toLowerCase();
 
-          // Проверка категории
-          const matchCategory = (filterCategory === 'all' || type === filterCategory);
-
-          // Проверка текста
+          const matchCat = (filterCat === 'all' || cat === filterCat);
           const matchSearch = (!query || text.includes(query));
 
-          // Проверка периода дат (полная инклюзивность крайней даты)
           let matchDate = true;
-          if (dateFromVal && ticketDate) {
-            if (ticketDate < dateFromVal) matchDate = false;
-          }
-          if (dateToVal && ticketDate) {
-            if (ticketDate > dateToVal) matchDate = false;
+          if (dateStr) {
+            const ticketDate = new Date(dateStr);
+            if (appliedStartDate && ticketDate < appliedStartDate) matchDate = false;
+            if (appliedEndDate) {
+              const endOfDay = new Date(appliedEndDate);
+              endOfDay.setHours(23, 59, 59, 999);
+              if (ticketDate > endOfDay) matchDate = false;
+            }
           }
 
-          if (matchCategory && matchSearch && matchDate) {
+          if (matchCat && matchSearch && matchDate) {
             ticket.style.display = 'block';
           } else {
             ticket.style.display = 'none';
@@ -846,7 +1095,6 @@
         });
       }
 
-      // События клика по фильтрам-чипам
       chips.forEach(chip => {
         chip.addEventListener('click', () => {
           chips.forEach(c => c.classList.remove('active'));
@@ -855,21 +1103,12 @@
         });
       });
 
-      // События ввода в поле поиска
       if (searchInput) searchInput.addEventListener('input', filterTickets);
 
-      // События выбора дат
-      if (dateFromInput) dateFromInput.addEventListener('change', filterTickets);
-      if (dateToInput) dateToInput.addEventListener('change', filterTickets);
-
-      // Кнопка сброса дат
-      if (resetDateBtn) {
-        resetDateBtn.addEventListener('click', () => {
-          if (dateFromInput) dateFromInput.value = '';
-          if (dateToInput) dateToInput.value = '';
-          filterTickets();
-        });
-      }
+      // Первичная инициализация
+      dateRangeText.textContent = formatDateDisplay(appliedStartDate, appliedEndDate);
+      updateCalendarsView();
+      filterTickets();
     });
   </script>
 </body>

@@ -125,58 +125,24 @@
       padding: 28px;
       display: grid;
       gap: 20px;
-      align-content: start; /* Чтобы карточки не растягивались на всю высоту */
+      align-content: start;
     }
 
-    /* ЗАФИКСИРОВАННАЯ ВЕРХНЯЯ ПАНЕЛЬ */
+    /* Закрепленная верхняя панель */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
-      
-      /* Настройки для прилипания */
       position: sticky;
       top: 0;
       z-index: 100;
-      
-      /* Визуальное оформление липкой шапки */
       background: rgba(248, 250, 252, 0.85);
       backdrop-filter: blur(12px);
       padding: 24px 28px;
       margin: -28px -28px 0 -28px;
       border-bottom: 1px solid rgba(229, 231, 235, 0.6);
-    }
-
-    .search-row {
-      display: flex;
-      align-items: stretch;
-      gap: 12px;
-      width: 100%;
-      max-width: 100%;
-    }
-
-    .search {
-      flex: 1 1 auto;
-      min-width: 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: var(--shadow);
-    }
-
-    .search input {
-      width: 100%;
-      min-width: 0;
-      border: 0;
-      outline: none;
-      font-size: 15px;
-      background: transparent;
     }
 
     .btn {
@@ -194,18 +160,12 @@
       justify-content: center;
     }
 
-    .btn-ghost {
-      background: transparent;
-      color: var(--text);
-    }
-
     .btn-primary {
       background: linear-gradient(135deg, var(--primary), var(--primary-2));
       color: #fff;
       box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
     }
 
-    .btn-filter { min-width: 110px; padding-inline: 18px; }
     .btn-new { min-width: 120px; color: #fff; padding-inline: 20px; }
 
     .content {
@@ -225,11 +185,7 @@
     }
 
     .panel-head {
-      padding: 18px 18px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      padding: 18px;
       border-bottom: 1px solid var(--line);
     }
 
@@ -238,97 +194,78 @@
       font-size: 1.05rem;
     }
 
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .chip {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: #334155;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .chip.active,
-    .chip:hover {
-      border-color: rgba(37,99,235,0.3);
-      background: rgba(37,99,235,0.08);
-      color: var(--primary-2);
-    }
-
     .tickets {
       display: grid;
       gap: 12px;
       padding: 18px;
     }
 
-    /* Добавил cursor: pointer для кликабельности всей карточки */
+    /* Единый горизонтальный ряд для всей карточки */
     .ticket {
       background: #fff;
       border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      display: grid;
-      gap: 12px;
+      border-radius: 16px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
       transition: 0.2s ease;
-      cursor: pointer; 
+      cursor: pointer;
     }
 
     .ticket:hover {
       transform: translateY(-2px);
       box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-      border-color: var(--primary); /* Визуальный эффект при наведении */
-    }
-
-    .ticket-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: start;
+      border-color: var(--primary);
     }
 
     .ticket-title {
       margin: 0;
-      font-size: 1.1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* 2 СТОЛБЦА ДЛЯ СТАТУСОВ */
     .ticket-statuses {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
-      justify-content: center; /* Текст по центру */
-      gap: 6px;
-      padding: 10px 12px;
-      border-radius: 12px; /* Более квадратный дизайн для кнопок-статусов */
+      justify-content: center;
+      padding: 6px 14px;
+      border-radius: 999px;
       font-size: 13px;
       font-weight: 600;
       white-space: nowrap;
-      width: 100%;
     }
 
     .badge.success { background: rgba(22, 163, 74, 0.12); color: var(--success); }
-    .badge.warning { background: rgba(245, 158, 11, 0.15); color: #b45309; }
     .badge.danger  { background: rgba(220, 38, 38, 0.12); color: var(--danger); }
-    .badge.info    { background: rgba(6, 182, 212, 0.12); color: #0891b2; }
 
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
       .sidebar { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .ticket {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .ticket-statuses {
+        width: 100%;
+        justify-content: space-between;
+      }
     }
   </style>
 </head>
@@ -378,7 +315,7 @@
         </a>
         <a class="active" href="https://assetzhan.github.io/TechService/Attractions.htm">
           <span>Аттракционы</span>
-          <span class="count">35</span>
+          <span class="count">10</span>
         </a>
         <a href="https://assetzhan.github.io/TechService/Assignees.htm">
           <span>Ответственные</span>
@@ -404,11 +341,12 @@
     </aside>
 
     <main class="main">
-      <!-- ЗАКРЕПЛЕННАЯ ПАНЕЛЬ С КНОПКОЙ -->
+      <!-- Закрепленная кнопка "+ Новый аттракцион" -->
       <div class="topbar">
         <a href="https://assetzhan.github.io/TechService/NewAttraction.htm" class="btn btn-primary btn-new">+ Новый аттракцион</a>
       </div>
 
+      <!-- Реестр аттракционов -->
       <section class="content">
         <div class="panel">
           <div class="panel-head">
@@ -417,30 +355,92 @@
 
           <div class="tickets" id="attractionList">
             
-            <!-- Добавлен onclick для перехода на страницу аттракциона -->
-            <article class="ticket" data-status="active" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
-              <div class="ticket-top">
-                <div>
-                  <h3 class="ticket-title">Скалодром</h3>
-                </div>
-              </div>
-              
-              <!-- 2 СТОЛБЦА СО СТАТУСАМИ -->
+            <!-- 1. Скалодром -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Скалодром</h3>
               <div class="ticket-statuses">
                 <span class="badge success">Работает: 6</span>
                 <span class="badge danger">Не работает: 1</span>
               </div>
             </article>
 
-            <!-- Пример еще одной карточки для визуального теста -->
-            <article class="ticket" data-status="active" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
-              <div class="ticket-top">
-                <div>
-                  <h3 class="ticket-title">Автодром</h3>
-                </div>
-              </div>
+            <!-- 2. Батутный комплекс -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Батутный комплекс</h3>
               <div class="ticket-statuses">
-                <span class="badge success">Работает: 12</span>
+                <span class="badge success">Работает: 10</span>
+                <span class="badge danger">Не работает: 2</span>
+              </div>
+            </article>
+
+            <!-- 3. Автодром -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Автодром</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 14</span>
+                <span class="badge danger">Не работает: 0</span>
+              </div>
+            </article>
+
+            <!-- 4. Колесо обозрения -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Колесо обозрения</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 1</span>
+                <span class="badge danger">Не работает: 0</span>
+              </div>
+            </article>
+
+            <!-- 5. Детский лабиринт -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Детский лабиринт</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 4</span>
+                <span class="badge danger">Не работает: 1</span>
+              </div>
+            </article>
+
+            <!-- 6. VR-арена -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">VR-арена</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 8</span>
+                <span class="badge danger">Не работает: 3</span>
+              </div>
+            </article>
+
+            <!-- 7. Французская карусель -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Французская карусель</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 2</span>
+                <span class="badge danger">Не работает: 0</span>
+              </div>
+            </article>
+
+            <!-- 8. Американские горки -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Американские горки</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 1</span>
+                <span class="badge danger">Не работает: 1</span>
+              </div>
+            </article>
+
+            <!-- 9. Игровые автоматы -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Игровые автоматы</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 25</span>
+                <span class="badge danger">Не работает: 4</span>
+              </div>
+            </article>
+
+            <!-- 10. Верёвочный парк -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Верёвочный парк</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 3</span>
                 <span class="badge danger">Не работает: 0</span>
               </div>
             </article>
@@ -451,10 +451,8 @@
     </main>
   </div>
 
-  <!-- СКРИПТ -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Карта всех переходов системы
       const routes = {
         "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
         "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
@@ -467,14 +465,11 @@
         "Наблюдатели": "https://assetzhan.github.io/TechService/Observers.htm",
         "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
         "Заявка в ИТ": "https://support.mykids.kz/",
-        "Фильтры": "https://assetzhan.github.io/TechService/Filters.htm",
         "+ Новый аттракцион": "https://assetzhan.github.io/TechService/NewAttraction.htm"
       };
 
-      // 2. Обработчик кликов для навигации
       document.querySelectorAll('a, button').forEach(element => {
         element.addEventListener('click', (e) => {
-          // Если клик по кнопке с классом btn-new, то переход обрабатывает обычный href
           if(element.classList.contains('btn-new')) return;
 
           const text = element.textContent.trim().split('\n')[0].trim();
@@ -484,44 +479,6 @@
           }
         });
       });
-
-      // 3. Переключение фильтров по состоянию аттракционов
-      const chips = document.querySelectorAll('.filters .chip');
-      const tickets = document.querySelectorAll('#attractionList .ticket');
-
-      chips.forEach(chip => {
-        chip.addEventListener('click', () => {
-          chips.forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-
-          const filter = chip.getAttribute('data-filter');
-
-          tickets.forEach(ticket => {
-            if (filter === 'all' || ticket.getAttribute('data-status') === filter) {
-              ticket.style.display = 'grid';
-            } else {
-              ticket.style.display = 'none';
-            }
-          });
-        });
-      });
-
-      // 4. Реализация поиска
-      const searchInput = document.getElementById('attractionSearch');
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          const query = e.target.value.toLowerCase().trim();
-
-          tickets.forEach(ticket => {
-            const text = ticket.textContent.toLowerCase();
-            if (text.includes(query)) {
-              ticket.style.display = 'grid';
-            } else {
-              ticket.style.display = 'none';
-            }
-          });
-        });
-      }
     });
   </script>
 </body>

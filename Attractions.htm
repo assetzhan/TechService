@@ -393,16 +393,7 @@
 
     <main class="main">
       <div class="topbar">
-        <div class="search-row">
-          <label class="search">
-            <span>🔎</span>
-            <input type="text" id="attractionSearch" placeholder="Поиск по названию аттракциона, локации или состоянию..." />
-          </label>
-        </div>
-        <div class="topbar">
-          <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost btn-filter">Фильтры</a>
-          <a href="https://assetzhan.github.io/TechService/NewAttraction.htm" class="btn btn-primary btn-new">+ Новый аттракцион</a>
-        </div>
+        <a href="https://assetzhan.github.io/TechService/NewAttraction.htm" class="btn btn-primary btn-new">+ Новый аттракцион</a>
       </div>
 
       <section class="content">
@@ -411,70 +402,17 @@
             <h2 class="panel-title">Реестр аттракционов</h2>
           </div>
 
-          <!-- Фильтры статусов аттракциона -->
-          <div class="filters">
-            <button class="chip active" data-filter="all">Все (35)</button>
-            <button class="chip" data-filter="active">Работает</button>
-            <button class="chip" data-filter="maintenance">На обслуживании</button>
-            <button class="chip" data-filter="broken">Не работает</button>
-          </div>
-
           <div class="tickets" id="attractionList">
             <article class="ticket" data-status="active">
               <div class="ticket-top">
                 <div>
-                  <div class="ticket-id">#ATT-001 · Код оборудования: EQ-9842</div>
                   <h3 class="ticket-title">Скалодром</h3>
-                  <div class="ticket-meta">
-                    <span>Локации: Алматы Атакент, Шымкент Royal Plaza</span>
-                    <span>Ответственный: Самат С.</span>
-                  </div>
                 </div>
-                <span class="badge success">Работает</span>
+                <span class="badge success">6 работает,</span>
+                <span class="badge danger">1 не работает</span>
               </div>
             </article>
 
-            <article class="ticket" data-status="broken">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#ATT-002 · Код оборудования: EQ-7712</div>
-                  <h3 class="ticket-title">Башня падения</h3>
-                  <div class="ticket-meta">
-                    <span>Локации: Алматы Алатау</span>
-                    <span>Ответственный: Иванов И.</span>
-                  </div>
-                </div>
-                <span class="badge danger">Не работает</span>
-              </div>
-            </article>
-
-            <article class="ticket" data-status="maintenance">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#ATT-003 · Код оборудования: EQ-3391</div>
-                  <h3 class="ticket-title">Картинг</h3>
-                  <div class="ticket-meta">
-                    <span>Локации: 6 парков</span>
-                    <span>Ответственный: Романенко И.</span>
-                  </div>
-                </div>
-                <span class="badge warning">На обслуживании</span>
-              </div>
-            </article>
-
-            <article class="ticket" data-status="active">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#ATT-004 · Код оборудования: EQ-1045</div>
-                  <h3 class="ticket-title">Лестница в небеса</h3>
-                  <div class="ticket-meta">
-                    <span>Локации: Алматы Атакент</span>
-                    <span>Ответственный: Сидоров И.</span>
-                  </div>
-                </div>
-                <span class="badge success">Работает</span>
-              </div>
-            </article>
           </div>
         </div>
       </section>

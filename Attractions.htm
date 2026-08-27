@@ -125,14 +125,28 @@
       padding: 28px;
       display: grid;
       gap: 20px;
+      align-content: start; /* Чтобы карточки не растягивались на всю высоту */
     }
 
+    /* ЗАФИКСИРОВАННАЯ ВЕРХНЯЯ ПАНЕЛЬ */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
+      
+      /* Настройки для прилипания */
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      
+      /* Визуальное оформление липкой шапки */
+      background: rgba(248, 250, 252, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 24px 28px;
+      margin: -28px -28px 0 -28px;
+      border-bottom: 1px solid rgba(229, 231, 235, 0.6);
     }
 
     .search-row {
@@ -256,6 +270,7 @@
       padding: 18px;
     }
 
+    /* Добавил cursor: pointer для кликабельности всей карточки */
     .ticket {
       background: #fff;
       border: 1px solid var(--line);
@@ -264,11 +279,13 @@
       display: grid;
       gap: 12px;
       transition: 0.2s ease;
+      cursor: pointer; 
     }
 
     .ticket:hover {
       transform: translateY(-2px);
       box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+      border-color: var(--primary); /* Визуальный эффект при наведении */
     }
 
     .ticket-top {
@@ -278,35 +295,30 @@
       align-items: start;
     }
 
-    .ticket-id {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
     .ticket-title {
-      margin: 0 0 8px;
-      font-size: 1.05rem;
+      margin: 0;
+      font-size: 1.1rem;
     }
 
-    .ticket-meta {
-      color: var(--muted);
-      font-size: 13px;
-      display: flex;
+    /* 2 СТОЛБЦА ДЛЯ СТАТУСОВ */
+    .ticket-statuses {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 12px;
-      flex-wrap: wrap;
+      margin-top: 4px;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
+      justify-content: center; /* Текст по центру */
       gap: 6px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
+      padding: 10px 12px;
+      border-radius: 12px; /* Более квадратный дизайн для кнопок-статусов */
+      font-size: 13px;
+      font-weight: 600;
       white-space: nowrap;
+      width: 100%;
     }
 
     .badge.success { background: rgba(22, 163, 74, 0.12); color: var(--success); }
@@ -392,6 +404,7 @@
     </aside>
 
     <main class="main">
+      <!-- ЗАКРЕПЛЕННАЯ ПАНЕЛЬ С КНОПКОЙ -->
       <div class="topbar">
         <a href="https://assetzhan.github.io/TechService/NewAttraction.htm" class="btn btn-primary btn-new">+ Новый аттракцион</a>
       </div>
@@ -403,13 +416,32 @@
           </div>
 
           <div class="tickets" id="attractionList">
-            <article class="ticket" data-status="active">
+            
+            <!-- Добавлен onclick для перехода на страницу аттракциона -->
+            <article class="ticket" data-status="active" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
               <div class="ticket-top">
                 <div>
                   <h3 class="ticket-title">Скалодром</h3>
                 </div>
-                <span class="badge success">6 работает,</span>
-                <span class="badge danger">1 не работает</span>
+              </div>
+              
+              <!-- 2 СТОЛБЦА СО СТАТУСАМИ -->
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 6</span>
+                <span class="badge danger">Не работает: 1</span>
+              </div>
+            </article>
+
+            <!-- Пример еще одной карточки для визуального теста -->
+            <article class="ticket" data-status="active" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <div class="ticket-top">
+                <div>
+                  <h3 class="ticket-title">Автодром</h3>
+                </div>
+              </div>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 12</span>
+                <span class="badge danger">Не работает: 0</span>
               </div>
             </article>
 
@@ -419,7 +451,7 @@
     </main>
   </div>
 
-  <!-- СКРИПТ ДЛЯ Attractions.htm -->
+  <!-- СКРИПТ -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // 1. Карта всех переходов системы
@@ -442,6 +474,9 @@
       // 2. Обработчик кликов для навигации
       document.querySelectorAll('a, button').forEach(element => {
         element.addEventListener('click', (e) => {
+          // Если клик по кнопке с классом btn-new, то переход обрабатывает обычный href
+          if(element.classList.contains('btn-new')) return;
+
           const text = element.textContent.trim().split('\n')[0].trim();
           if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {
             e.preventDefault();

@@ -142,6 +142,12 @@
       padding: 12px 0;
     }
 
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .menu-toggle {
       display: none;
       background: #fff;
@@ -184,15 +190,15 @@
       background: var(--primary-hover);
     }
 
-    .btn-danger {
-      background: #fee2e2;
-      color: var(--danger);
-      padding: 8px 12px;
-      border-radius: 10px;
-      font-size: 13px;
+    .btn-back {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid transparent;
+      padding: 10px 16px;
     }
-    .btn-danger:hover {
-      background: #fecaca;
+    .btn-back:hover {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: var(--line);
     }
 
     .btn-secondary {
@@ -216,14 +222,6 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
-    }
-
-    .panel-head {
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
     /* Table styles */
@@ -256,6 +254,17 @@
 
     tr:hover td {
       background: #f8fafc;
+    }
+
+    .checkbox-cell {
+      text-align: center;
+    }
+
+    .custom-checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: not-allowed;
+      accent-color: var(--primary);
     }
 
     /* Modal styles */
@@ -297,6 +306,12 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+    }
+
+    .form-group-checkbox {
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
     }
 
     .form-label {
@@ -399,6 +414,11 @@
           <textarea id="inputNorm" class="form-textarea" required placeholder="Критерии нормального состояния..."></textarea>
         </div>
 
+        <div class="form-group form-group-checkbox">
+          <input type="checkbox" id="inputActive" style="width: 18px; height: 18px; accent-color: var(--primary);" checked />
+          <label class="form-label" for="inputActive" style="margin: 0; cursor: pointer; color: var(--text);">Активность (элемент включен)</label>
+        </div>
+
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" id="closeModalBtn">Отмена</button>
           <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -485,8 +505,11 @@
       <main class="main">
         <!-- Верхняя панель -->
         <div class="topbar">
-          <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
-          <h1 class="topbar-title">Реестр проверки: Батуты</h1>
+          <div class="topbar-left">
+            <a href="https://assetzhan.github.io/TechService/Attractions.htm" class="btn btn-back">← Назад</a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
+            <h1 class="topbar-title">Реестр проверки: Батуты</h1>
+          </div>
           <button class="btn btn-primary" id="openAddModalBtn">+ Добавить элемент</button>
         </div>
 
@@ -502,7 +525,8 @@
                     <th>Что проверяется</th>
                     <th>Как проверяется</th>
                     <th>Признаки нормы</th>
-                    <th style="width: 100px;">Действия</th>
+                    <th style="width: 100px; text-align: center;">Активность</th>
+                    <th style="width: 80px;">Действия</th>
                   </tr>
                 </thead>
                 <tbody id="elementsTableBody">
@@ -529,35 +553,95 @@
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (overlay) overlay.addEventListener('click', closeSidebar);
 
-      // 2. Управление данными и таблицей
+      // 2. Полный список из 11 элементов
       let checkItems = [
         {
           id: 1,
           name: "Батутные полотна",
           what: "Полотно, швы, крепёжные петли.",
-          how: "Осмотреть всю поверхность; проверить швы, крепёжные петли, равномерность натяжения и отсутствие провисания.",
-          norm: "Порезы, разрывы, прожоги и чрезмерные потёртости отсутствуют;\nполотно натянуто равномерно;\nшвы и петли целые."
+          how: "Осмотреть всю поверхность;\nпроверить швы, крепёжные петли, равномерность натяжения и отсутствие провисания.",
+          norm: "Порезы, разрывы, прожоги и чрезмерные потёртости отсутствуют;\nполотно натянуто равномерно;\nшвы и петли целые.",
+          active: true
         },
         {
           id: 2,
           name: "Пружины и их крепления",
           what: "Пружины, крюки, проушины и крепление к раме.",
-          how: "Проверить наличие всех пружин, крюки, проушины и крепление к раме; при безопасной пробной нагрузке проверить посторонние звуки.",
-          norm: "Все пружины на месте, без трещин, остаточной деформации и значительной коррозии;\nкрепления надёжны;\nскрип, щелчки и удары отсутствуют."
+          how: "Проверить наличие всех пружин, крюки, проушины и крепление к раме;\nпри безопасной пробной нагрузке проверить посторонние звуки.",
+          norm: "Все пружины на месте, без трещин, остаточной деформации и значительной коррозии;\nкрепления надёжны;\nскрип, щелчки и удары отсутствуют.",
+          active: true
         },
         {
           id: 3,
           name: "Несущая рама и соединения",
           what: "Балки, сварные и болтовые соединения",
-          how: "Визуально осмотреть стойки, балки, сварные и болтовые соединения; проверить устойчивость и отсутствие люфта.",
-          norm: "Трещины, деформации и следы разрушения отсутствуют;\nсоединения затянуты и зафиксированы;\nконструкция устойчива."
+          how: "Визуально осмотреть стойки, балки, сварные и болтовые соединения;\nпроверить устойчивость и отсутствие люфта.",
+          norm: "Трещины, деформации и следы разрушения отсутствуют;\nсоединения затянуты и зафиксированы;\nконструкция устойчива.",
+          active: true
         },
         {
           id: 4,
           name: "Крепление конструкции к полу / основанию",
           what: "Анкеры, опорные площадки и места крепления",
-          how: "Осмотреть анкеры, опорные площадки и места крепления; проверить отсутствие смещения конструкции.",
-          norm: "Анкеры и опоры целы, не ослаблены;\nсмещение, раскачивание и повреждение основания отсутствуют."
+          how: "Осмотреть анкеры, опорные площадки и места крепления;\nпроверить отсутствие смещения конструкции.",
+          norm: "Анкеры и опоры целы, не ослаблены;\nсмещение, раскачивание и повреждение основания отсутствуют.",
+          active: true
+        },
+        {
+          id: 5,
+          name: "Защитные маты над рамой и пружинами",
+          what: "Защитные маты, плотность прилегания.",
+          how: "Проверить полное перекрытие жёстких элементов, целостность чехлов и наполнителя, положение и фиксацию матов.",
+          norm: "Пружины и металл полностью закрыты;\nматы плотно прилегают, не смещаются;\nразрывов, провалов и оголённого наполнителя нет.",
+          active: true
+        },
+        {
+          id: 6,
+          name: "Мягкая защита стоек и выступающих элементов",
+          what: "Защитные кожухи и мягкие накладки",
+          how: "Осмотреть защитные кожухи и мягкие накладки;\nпроверить их фиксацию и достаточность покрытия.",
+          norm: "Все доступные жёсткие и выступающие элементы закрыты;\nзащита целая, закреплена и не смещается.",
+          active: true
+        },
+        {
+          id: 7,
+          name: "Ограждающие сетки",
+          what: "Сетки, швы, узлы крепления",
+          how: "Осмотреть сетки по всей площади, швы, узлы крепления, верхний и нижний края;\nпроверить натяжение.",
+          norm: "Разрывы, растянутые ячейки и открытые зазоры отсутствуют;\nсетка натянута и закреплена по всему периметру.",
+          active: true
+        },
+        {
+          id: 8,
+          name: "Вход, выход и калитки",
+          what: "Петли, защёлки/замки",
+          how: "Открыть и закрыть калитки;\nпроверить петли, защёлки/замки, автоматическое закрытие и свободный проход.",
+          norm: "Калитка исправно закрывается и фиксируется;\nне остаётся самопроизвольно открытой;\nпроход свободен, пороги и края безопасны.",
+          active: true
+        },
+        {
+          id: 9,
+          name: "Интерактивные элементы и табло",
+          what: "Датчики, табло",
+          how: "Включить систему;\nпроверить световые мишени, датчики, табло, звук и штатные режимы;\nосмотреть корпуса и кабели.",
+          norm: "Система работает без ошибок и перегрева;\nпоказания корректны;\nкорпуса закрыты;\nоголённые или повреждённые провода отсутствуют.",
+          active: true
+        },
+        {
+          id: 10,
+          name: "Правила, ограничения и информационные знаки",
+          what: "Правила, ограничения, предупреждения и требования к безопасной позе при спуске.",
+          how: "Проверить наличие, актуальность, читаемость и видимость правил, ограничений и предупреждений.",
+          norm: "Правила и ограничения размещены у входа, хорошо видны, читаемы и соответствуют фактическому оборудованию.",
+          active: true
+        },
+        {
+          id: 11,
+          name: "Пробный запуск / функциональная проверка",
+          what: "Плавность прохождения секций, отсутствие зацепов и готовность оборудования.",
+          how: "До допуска посетителей проверить устойчивость, звуки и работу доступных систем.",
+          norm: "Необычные шумы, рывки, вибрация, смещение матов и ошибки систем отсутствуют;\nоборудование работает штатно.",
+          active: true
         }
       ];
 
@@ -574,6 +658,7 @@
       const inputWhat = document.getElementById('inputWhat');
       const inputHow = document.getElementById('inputHow');
       const inputNorm = document.getElementById('inputNorm');
+      const inputActive = document.getElementById('inputActive');
 
       function renderTable() {
         tableBody.innerHTML = '';
@@ -583,12 +668,14 @@
             <td><strong>${item.id}</strong></td>
             <td><strong>${escapeHtml(item.name)}</strong></td>
             <td>${escapeHtml(item.what)}</td>
-            <td>${escapeHtml(item.how)}</td>
+            <td>${escapeHtml(item.how).replace(/\n/g, '<br>')}</td>
             <td>${escapeHtml(item.norm).replace(/\n/g, '<br>')}</td>
+            <td class="checkbox-cell">
+              <input type="checkbox" class="custom-checkbox" ${item.active ? 'checked' : ''} onclick="return false;" tabindex="-1" />
+            </td>
             <td>
               <div class="actions-cell">
                 <button class="btn-icon" onclick="editItem(${index})" title="Редактировать">✏️</button>
-                <button class="btn-icon" onclick="deleteItem(${index})" title="Удалить">🗑️</button>
               </div>
             </td>
           `;
@@ -615,6 +702,7 @@
         inputWhat.value = "";
         inputHow.value = "";
         inputNorm.value = "";
+        inputActive.checked = true;
         modalOverlay.classList.add('active');
       });
 
@@ -629,7 +717,7 @@
         }
       });
 
-      // Редактирование элемента (глобальные функции для инлайн обработчиков)
+      // Редактирование элемента
       window.editItem = function(index) {
         const item = checkItems[index];
         modalTitle.textContent = "Редактировать проверяемый элемент";
@@ -639,15 +727,8 @@
         inputWhat.value = item.what;
         inputHow.value = item.how;
         inputNorm.value = item.norm;
+        inputActive.checked = item.active;
         modalOverlay.classList.add('active');
-      };
-
-      // Удаление элемента
-      window.deleteItem = function(index) {
-        if (confirm("Вы уверены, что хотите удалить этот проверяемый элемент?")) {
-          checkItems.splice(index, 1);
-          renderTable();
-        }
       };
 
       // Сохранение формы
@@ -659,7 +740,8 @@
           name: inputName.value.trim(),
           what: inputWhat.value.trim(),
           how: inputHow.value.trim(),
-          norm: inputNorm.value.trim()
+          norm: inputNorm.value.trim(),
+          active: inputActive.checked
         };
 
         if (index === -1) {

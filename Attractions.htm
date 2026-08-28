@@ -7,13 +7,11 @@
   <style>
     :root {
       --bg: #0f172a;
-      --panel: #111827;
-      --panel-2: #1f2937;
+      --panel: #ffffff;
       --muted: #64748b;
       --text: #0f172a;
       --line: #e2e8f0;
       --primary: #2563eb;
-      --primary-2: #1d4ed8;
       --primary-hover: #1d4ed8;
       --primary-light: #eff6ff;
       --process: #2563eb;
@@ -39,7 +37,7 @@
       color: var(--text);
     }
 
-   .app {
+    .app {
       min-height: 100vh;
       display: grid;
       grid-template-columns: 280px 1fr;
@@ -134,21 +132,18 @@
       gap: 20px;
     }
 
-    /* Закрепленная верхняя панель */
+    /* Topbar Layout */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      flex-wrap: wrap;
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(248, 250, 252, 0.85);
+      background: rgba(241, 245, 249, 0.85);
       backdrop-filter: blur(12px);
-      padding: 24px 28px;
-      margin: -28px -28px 0 -28px;
-      border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+      padding: 12px 0;
     }
 
     .menu-toggle {
@@ -165,7 +160,7 @@
     .btn {
       border: 0;
       border-radius: 14px;
-      padding: 12px 16px;
+      padding: 12px 20px;
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s ease;
@@ -175,15 +170,19 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      font-size: 14px;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      background: var(--primary);
       color: #fff;
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
     }
 
-    .btn-new { min-width: 120px; color: #fff; padding-inline: 20px; }
+    .btn-new { min-width: 120px; }
 
     .content {
       display: grid;
@@ -193,54 +192,53 @@
     }
 
     .panel {
-      background: rgba(255,255,255,0.88);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(229,231,235,0.9);
+      background: #ffffff;
+      border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
 
     .panel-head {
-      padding: 18px;
+      padding: 20px 24px;
       border-bottom: 1px solid var(--line);
     }
 
     .panel-title {
       margin: 0;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
+      font-weight: 700;
     }
 
     .tickets {
       display: grid;
       gap: 12px;
-      padding: 18px;
+      padding: 20px 24px;
     }
 
-    /* Единый горизонтальный ряд для всей карточки */
     .ticket {
       background: #fff;
       border: 1px solid var(--line);
       border-radius: 16px;
-      padding: 14px 20px;
+      padding: 18px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      transition: 0.2s ease;
+      transition: all 0.2s ease;
       cursor: pointer;
     }
 
     .ticket:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-      border-color: var(--primary);
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
     }
 
     .ticket-title {
       margin: 0;
-      font-size: 1rem;
-      font-weight: 600;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
       flex: 1;
       white-space: nowrap;
       overflow: hidden;
@@ -258,19 +256,26 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 6px 14px;
+      padding: 4px 12px;
       border-radius: 999px;
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: 700;
       white-space: nowrap;
     }
 
-    .badge.success { background: rgba(22, 163, 74, 0.12); color: var(--success); }
-    .badge.danger  { background: rgba(220, 38, 38, 0.12); color: var(--danger); }
+    .badge.success { background: #dcfce7; color: var(--success); }
+    .badge.danger  { background: #fee2e2; color: var(--danger); }
 
+    /* Responsive adjustments */
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
+      .menu-toggle { display: inline-flex; }
+      .sidebar {
+        position: fixed; left: 0; top: 0; bottom: 0;
+        z-index: 1000;
+        transform: translateX(-100%);
+      }
+      .sidebar.open { transform: translateX(0); }
     }
 
     @media (max-width: 600px) {
@@ -287,8 +292,12 @@
   </style>
 </head>
 <body>
+
+  <!-- Фон-оверлей при открытии меню -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   <div class="app">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-badge">T</div>
         <div>TechService</div>
@@ -361,368 +370,415 @@
       </div>
     </aside>
 
-    <main class="main">
-      <!-- Закрепленная кнопка "+ Новый аттракцион" -->
-      <div class="topbar">
-        <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
-        <a href="https://assetzhan.github.io/TechService/NewAttraction.htm" class="btn btn-primary btn-new">+ Новый аттракцион</a>
-      </div>
-
-      <!-- Реестр аттракционов -->
-      <section class="content">
-        <div class="panel">
-          <div class="tickets" id="attractionList">
-            
-            <!-- 1. Батуты -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails1.htm'">
-              <h3 class="ticket-title">Батуты</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 6</span>
-                <span class="badge danger">Не работает: 1</span>
-              </div>
-            </article>
-
-            <!-- 2. Башни равновесия -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails2.htm'">
-              <h3 class="ticket-title">Башни равновесия</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 10</span>
-                <span class="badge danger">Не работает: 2</span>
-              </div>
-            </article>
-
-            <!-- 3. Башня -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails3.htm'">
-              <h3 class="ticket-title">Башня</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 14</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 4. Башня-кран -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails4.htm'">
-              <h3 class="ticket-title">Башня-кран</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 1</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 5. Большая волна -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails5.htm'">
-              <h3 class="ticket-title">Большая волна</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 4</span>
-                <span class="badge danger">Не работает: 1</span>
-              </div>
-            </article>
-
-            <!-- 6. Вело-драйв 360 -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails6.htm'">
-              <h3 class="ticket-title">Вело-драйв 360</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 8</span>
-                <span class="badge danger">Не работает: 3</span>
-              </div>
-            </article>
-
-            <!-- 7. Веревочный парк -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails7.htm'">
-              <h3 class="ticket-title">Веревочный парк</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 2</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 8. Волновая горка -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails8.htm'">
-              <h3 class="ticket-title">Волновая горка</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 1</span>
-                <span class="badge danger">Не работает: 1</span>
-              </div>
-            </article>
-
-            <!-- 9. Воронка -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails9.htm'">
-              <h3 class="ticket-title">Воронка</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 25</span>
-                <span class="badge danger">Не работает: 4</span>
-              </div>
-            </article>
-
-            <!-- 10. Гонки -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails10.htm'">
-              <h3 class="ticket-title">Гонки</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 11. Горка 90 градусов -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails11.htm'">
-              <h3 class="ticket-title">Горка 90 градусов</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 12. Капсула -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails12.htm'">
-              <h3 class="ticket-title">Капсула</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 13. Картинг -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails13.htm'">
-              <h3 class="ticket-title">Гонки</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 14. Катапульта -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails14.htm'">
-              <h3 class="ticket-title">Катапульта</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 15. Космический шаттл -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails15.htm'">
-              <h3 class="ticket-title">Космический шаттл</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 16. Лабиринт -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails16.htm'">
-              <h3 class="ticket-title">Лабиринт</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 17. Ленивая река -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails17.htm'">
-              <h3 class="ticket-title">Ленивая река</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 18. Летающий тюбинг -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails18.htm'">
-              <h3 class="ticket-title">Летающий тюбинг</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 19. Маятник -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails19.htm'">
-              <h3 class="ticket-title">Маятник</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 20. Мини-тарзанка -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails20.htm'">
-              <h3 class="ticket-title">Мини-тарзанка</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 21. Общий осмотр парка -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails21.htm'">
-              <h3 class="ticket-title">Общий осмотр парка</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 22. Паутина -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails22.htm'">
-              <h3 class="ticket-title">Паутина</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 23. Плавный спуск -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails23.htm'">
-              <h3 class="ticket-title">Гонки</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 24. Полет Дракона -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails24.htm'">
-              <h3 class="ticket-title">Полет Дракона</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 25. Полоса препятствий -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails25.htm'">
-              <h3 class="ticket-title">Полоса препятствий</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 26. Свободное падение -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails26.htm'">
-              <h3 class="ticket-title">Свободное падение</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 27. Скалодром -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails27.htm'">
-              <h3 class="ticket-title">Скалодром</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 28. Спиральные горки -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails28.htm'">
-              <h3 class="ticket-title">Спиральные горки</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 29. Спортивная площадка -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails29.htm'">
-              <h3 class="ticket-title">Спортивная площадка</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 30. Стена препятствий -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails30.htm'">
-              <h3 class="ticket-title">Стена препятствий</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 31. Стрела -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails31.htm'">
-              <h3 class="ticket-title">Стрела</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 32. Супер спуск -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails32.htm'">
-              <h3 class="ticket-title">Супер спуск</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 33. Тарзанка -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails33.htm'">
-              <h3 class="ticket-title">Тарзанка</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 34. Тоннель -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails34.htm'">
-              <h3 class="ticket-title">Тоннель</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 35. Турбо горка -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails35.htm'">
-              <h3 class="ticket-title">Турбо горка</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 36. Тюбинговая горка -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails36.htm'">
-              <h3 class="ticket-title">Тюбинговая горка</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 37. Широкая река -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails37.htm'">
-              <h3 class="ticket-title">Широкая река</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-            <!-- 38. Ясли -->
-            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails38.htm'">
-              <h3 class="ticket-title">Ясли</h3>
-              <div class="ticket-statuses">
-                <span class="badge success">Работает: 3</span>
-                <span class="badge danger">Не работает: 0</span>
-              </div>
-            </article>
-
-          </div>
+    <div class="main-wrapper">
+      <main class="main">
+        <!-- Верхняя панель с кнопкой меню и создания -->
+        <div class="topbar">
+          <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
+          <a href="https://assetzhan.github.io/TechService/NewAttraction.htm" class="btn btn-primary btn-new">+ Новый аттракцион</a>
         </div>
-      </section>
-    </main>
+
+        <!-- Реестр аттракционов -->
+        <section class="content">
+          <div class="panel">
+            <div class="tickets" id="attractionList">
+              
+              <!-- 1. Батуты -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails1.htm'">
+                <h3 class="ticket-title">Батуты</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 6</span>
+                  <span class="badge danger">Не работает: 1</span>
+                </div>
+              </article>
+
+              <!-- 2. Башни равновесия -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails2.htm'">
+                <h3 class="ticket-title">Башни равновесия</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 10</span>
+                  <span class="badge danger">Не работает: 2</span>
+                </div>
+              </article>
+
+              <!-- 3. Башня -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails3.htm'">
+                <h3 class="ticket-title">Башня</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 14</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 4. Башня-кран -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails4.htm'">
+                <h3 class="ticket-title">Башня-кран</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 1</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 5. Большая волна -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails5.htm'">
+                <h3 class="ticket-title">Большая волна</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 4</span>
+                  <span class="badge danger">Не работает: 1</span>
+                </div>
+              </article>
+
+              <!-- 6. Вело-драйв 360 -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails6.htm'">
+                <h3 class="ticket-title">Вело-драйв 360</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 8</span>
+                  <span class="badge danger">Не работает: 3</span>
+                </div>
+              </article>
+
+              <!-- 7. Веревочный парк -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails7.htm'">
+                <h3 class="ticket-title">Веревочный парк</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 2</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 8. Волновая горка -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails8.htm'">
+                <h3 class="ticket-title">Волновая горка</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 1</span>
+                  <span class="badge danger">Не работает: 1</span>
+                </div>
+              </article>
+
+              <!-- 9. Воронка -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails9.htm'">
+                <h3 class="ticket-title">Воронка</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 25</span>
+                  <span class="badge danger">Не работает: 4</span>
+                </div>
+              </article>
+
+              <!-- 10. Гонки -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails10.htm'">
+                <h3 class="ticket-title">Гонки</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 11. Горка 90 градусов -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails11.htm'">
+                <h3 class="ticket-title">Горка 90 градусов</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 12. Капсула -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails12.htm'">
+                <h3 class="ticket-title">Капсула</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 13. Картинг -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails13.htm'">
+                <h3 class="ticket-title">Гонки</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 14. Катапульта -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails14.htm'">
+                <h3 class="ticket-title">Катапульта</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 15. Космический шаттл -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails15.htm'">
+                <h3 class="ticket-title">Космический шаттл</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 16. Лабиринт -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails16.htm'">
+                <h3 class="ticket-title">Лабиринт</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 17. Ленивая река -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails17.htm'">
+                <h3 class="ticket-title">Ленивая река</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 18. Летающий тюбинг -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails18.htm'">
+                <h3 class="ticket-title">Летающий тюбинг</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 19. Маятник -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails19.htm'">
+                <h3 class="ticket-title">Маятник</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 20. Мини-тарзанка -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails20.htm'">
+                <h3 class="ticket-title">Мини-тарзанка</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 21. Общий осмотр парка -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails21.htm'">
+                <h3 class="ticket-title">Общий осмотр парка</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 22. Паутина -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails22.htm'">
+                <h3 class="ticket-title">Паутина</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 23. Плавный спуск -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails23.htm'">
+                <h3 class="ticket-title">Гонки</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 24. Полет Дракона -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails24.htm'">
+                <h3 class="ticket-title">Полет Дракона</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 25. Полоса препятствий -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails25.htm'">
+                <h3 class="ticket-title">Полоса препятствий</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 26. Свободное падение -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails26.htm'">
+                <h3 class="ticket-title">Свободное падение</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 27. Скалодром -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails27.htm'">
+                <h3 class="ticket-title">Скалодром</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 28. Спиральные горки -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails28.htm'">
+                <h3 class="ticket-title">Спиральные горки</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 29. Спортивная площадка -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails29.htm'">
+                <h3 class="ticket-title">Спортивная площадка</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 30. Стена препятствий -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails30.htm'">
+                <h3 class="ticket-title">Стена препятствий</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 31. Стрела -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails31.htm'">
+                <h3 class="ticket-title">Стрела</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 32. Супер спуск -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails32.htm'">
+                <h3 class="ticket-title">Супер спуск</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 33. Тарзанка -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails33.htm'">
+                <h3 class="ticket-title">Тарзанка</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 34. Тоннель -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails34.htm'">
+                <h3 class="ticket-title">Тоннель</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 35. Турбо горка -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails35.htm'">
+                <h3 class="ticket-title">Турбо горка</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 36. Тюбинговая горка -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails36.htm'">
+                <h3 class="ticket-title">Тюбинговая горка</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 37. Широкая река -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails37.htm'">
+                <h3 class="ticket-title">Широкая река</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+              <!-- 38. Ясли -->
+              <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails38.htm'">
+                <h3 class="ticket-title">Ясли</h3>
+                <div class="ticket-statuses">
+                  <span class="badge success">Работает: 3</span>
+                  <span class="badge danger">Не работает: 0</span>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // 1. Управление боковым меню и оверлеем
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      const menuToggle = document.getElementById('menuToggle');
+
+      function openSidebar() { 
+        sidebar.classList.add('open'); 
+        overlay.classList.add('active'); 
+      }
+      function closeSidebar() { 
+        sidebar.classList.remove('open'); 
+        overlay.classList.remove('active'); 
+      }
+
+      if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+      if (overlay) overlay.addEventListener('click', closeSidebar);
+
+      // Жесты (свайпы) на мобильных устройствах
+      let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
+
+      document.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].clientX;
+        touchStartY = e.changedTouches[0].clientY;
+      }, { passive: true });
+
+      document.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].clientX;
+        touchEndY = e.changedTouches[0].clientY;
+        handleSwipe();
+      }, { passive: true });
+
+      function handleSwipe() {
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+          if (deltaX > 0 && !sidebar.classList.contains('open') && touchStartX < 100) {
+            openSidebar();
+          } else if (deltaX < 0 && sidebar.classList.contains('open')) {
+            closeSidebar();
+          }
+        }
+      }
+
+      // 2. Обработка навигации по роутам
       const routes = {
         "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
         "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
@@ -741,7 +797,7 @@
 
       document.querySelectorAll('a, button').forEach(element => {
         element.addEventListener('click', (e) => {
-          if(element.classList.contains('btn-new')) return;
+          if(element.classList.contains('btn-new') || element.id === 'menuToggle') return;
 
           const text = element.textContent.trim().split('\n')[0].trim();
           if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {

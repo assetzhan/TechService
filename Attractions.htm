@@ -1,51 +1,45 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Аттракционы — TechService</title>
   <style>
-    /* Сброс стилей и переменные */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #f8fafc;
-      color: #0f172a;
-      line-height: 1.5;
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --card: #ffffff;
+      --muted: #64748b;
+      --text: #0f172a;
+      --line: #e5e7eb;
+      --primary: #2563eb;
+      --primary-2: #1d4ed8;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --info: #06b6d4;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --radius: 18px;
     }
 
-    /* Главный контейнер */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 28%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--text);
+    }
+
     .app {
       min-height: 100vh;
       display: grid;
       grid-template-columns: 280px 1fr;
     }
 
-    /* Оверлей для мобильного меню */
-    .sidebar-overlay {
-      position: fixed;
-      top: 0; 
-      left: 0; 
-      width: 100vw; 
-      height: 100vh;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(4px);
-      opacity: 0; 
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-      z-index: 999;
-    }
-    .sidebar-overlay.active { 
-      opacity: 1; 
-      visibility: visible; 
-    }
-
-    /* Сайдбар */
+    /* Sidebar */
     .sidebar {
       background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
       color: #fff;
@@ -53,12 +47,6 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-      z-index: 1000;
     }
 
     .brand {
@@ -67,357 +55,223 @@
       gap: 12px;
       font-weight: 700;
       font-size: 1.1rem;
+      letter-spacing: 0.2px;
     }
+
     .brand-badge {
-      width: 42px; 
+      width: 42px;
       height: 42px;
       border-radius: 14px;
-      display: grid; 
+      display: grid;
       place-items: center;
       background: linear-gradient(135deg, #2563eb, #06b6d4);
-      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
       font-size: 1.1rem;
     }
 
-    .profile { 
-      display: flex; 
-      align-items: center; 
-      gap: 12px; 
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .profile small { 
-      color: rgba(255, 255, 255, 0.65); 
-      display: block; 
-      margin-top: 2px; 
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    .nav { 
-      display: grid; 
-      gap: 6px; 
+    .profile small {
+      color: rgba(255,255,255,0.65);
+      display: block;
+      margin-top: 2px;
     }
+
+    .nav {
+      display: grid;
+      gap: 10px;
+    }
+
     .nav a {
       text-decoration: none;
-      color: rgba(255, 255, 255, 0.78);
+      color: rgba(255,255,255,0.78);
       padding: 12px 14px;
-      border-radius: 12px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       transition: 0.2s ease;
-      font-size: 14px;
-      min-height: 44px;
+      background: transparent;
     }
-    .nav a:hover, .nav a.active {
-      background: rgba(255, 255, 255, 0.12);
+
+    .nav a:hover,
+    .nav a.active {
+      background: rgba(255,255,255,0.1);
       color: #fff;
     }
+
     .nav .count {
-      min-width: 26px;
-      padding: 2px 8px;
+      min-width: 28px;
+      padding: 4px 8px;
       border-radius: 999px;
-      background: rgba(37, 99, 235, 0.3);
+      background: rgba(37, 99, 235, 0.2);
       text-align: center;
       font-size: 12px;
     }
 
-    .sidebar-footer { 
-      margin-top: auto; 
-      font-size: 14px; 
-      padding-top: 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.5;
     }
 
-    /* Основной контент */
-    .main-content {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
+    /* Main */
+    .main {
+      padding: 28px;
+      display: grid;
       gap: 20px;
-      max-width: 100%;
-      overflow-x: hidden;
+      align-content: start;
     }
 
-    /* Верхняя панель */
-    .top-bar {
+    /* Закрепленная верхняя панель */
+    .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #fff;
-      padding: 16px 24px;
-      border-radius: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      gap: 12px;
-    }
-    .top-bar-left {
-      display: flex;
-      align-items: center;
       gap: 16px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(248, 250, 252, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 24px 28px;
+      margin: -28px -28px 0 -28px;
+      border-bottom: 1px solid rgba(229, 231, 235, 0.6);
     }
-    .menu-toggle-btn {
-      display: none;
-      background: #f1f5f9;
-      border: none;
-      font-size: 20px;
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 600;
       cursor: pointer;
-      color: #0f172a;
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
+      transition: 0.2s ease;
+      white-space: nowrap;
+      flex: 0 0 auto;
+      text-decoration: none;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
     }
 
     .btn-primary {
-      background: #2563eb;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
       color: #fff;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: background 0.2s;
-      min-height: 44px;
-      white-space: nowrap;
-    }
-    .btn-primary:hover {
-      background: #1d4ed8;
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
     }
 
-    /* Сетка карточек метрик */
-    .stats-grid {
+    .btn-new { min-width: 120px; color: #fff; padding-inline: 20px; }
+
+    .content {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-    }
-    .stat-card {
-      background: #fff;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .stat-card .label {
-      font-size: 13px;
-      color: #64748b;
-      font-weight: 500;
-    }
-    .stat-card .value {
-      font-size: 28px;
-      font-weight: 700;
-      color: #0f172a;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      align-items: start;
     }
 
-    /* Панель фильтров */
-    .filter-bar {
-      background: #fff;
-      padding: 16px 20px;
-      border-radius: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .search-box {
-      flex: 1;
-      min-width: 240px;
-    }
-    .search-box input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.2s;
-      min-height: 44px;
-    }
-    .search-box input:focus {
-      border-color: #2563eb;
-    }
-    .filters-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .select-control {
-      padding: 12px 14px;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      font-size: 14px;
-      background-color: #fff;
-      color: #334155;
-      outline: none;
-      cursor: pointer;
-      min-height: 44px;
-    }
-
-    /* Таблица с прокруткой для тач-скринов */
-    .table-card {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    .panel {
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(229,231,235,0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       overflow: hidden;
     }
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 14px;
-      min-width: 700px; /* Гарантирует читаемость таблицы без сжатия */
-    }
-    th {
-      background: #f8fafc;
-      padding: 14px 20px;
-      font-weight: 600;
-      color: #475569;
-      border-bottom: 1px solid #e2e8f0;
-      white-space: nowrap;
-    }
-    td {
-      padding: 16px 20px;
-      border-bottom: 1px solid #f1f5f9;
-      color: #1e293b;
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-    tr:last-child td {
-      border-bottom: none;
-    }
-    tr:hover td {
-      background-color: #f8fafc;
+
+    .panel-head {
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
     }
 
-    /* Статусы */
+    .panel-title {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .tickets {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+    }
+
+    /* Единый горизонтальный ряд для всей карточки */
+    .ticket {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: 0.2s ease;
+      cursor: pointer;
+    }
+
+    .ticket:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+      border-color: var(--primary);
+    }
+
+    .ticket-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ticket-statuses {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
+      justify-content: center;
+      padding: 6px 14px;
       border-radius: 999px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
-    }
-    .badge-success { background: #dcfce7; color: #15803d; }
-    .badge-warning { background: #fef3c7; color: #b45309; }
-    .badge-danger { background: #fee2e2; color: #b91c1c; }
-    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-
-    .action-btn {
-      background: #f1f5f9;
-      border: none;
-      color: #334155;
-      cursor: pointer;
-      padding: 8px 14px;
-      border-radius: 8px;
-      transition: all 0.2s;
-      font-weight: 500;
-      min-height: 36px;
-    }
-    .action-btn:hover {
-      background: #e2e8f0;
-      color: #2563eb;
+      white-space: nowrap;
     }
 
-    /* ===================================================
-       АДАПТИВНОСТЬ: ПЛАНШЕТЫ И МОБИЛЬНЫЕ УСТРОЙСТВА
-    =================================================== */
+    .badge.success { background: rgba(22, 163, 74, 0.12); color: var(--success); }
+    .badge.danger  { background: rgba(220, 38, 38, 0.12); color: var(--danger); }
 
-    /* Планшеты (до 1024px) */
-    @media (max-width: 1024px) {
-      .app { 
-        grid-template-columns: 1fr; 
-      }
-      .sidebar {
-        position: fixed; 
-        left: 0; 
-        top: 0; 
-        bottom: 0;
-        transform: translateX(-100%);
-        width: 280px;
-        box-shadow: 4px 0 24px rgba(0,0,0,0.15);
-      }
-      .sidebar.open { 
-        transform: translateX(0); 
-      }
-      .menu-toggle-btn {
-        display: inline-flex;
-      }
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
     }
 
-    /* Мобильные телефоны (до 600px) */
     @media (max-width: 600px) {
-      .main-content {
-        padding: 12px;
-        gap: 14px;
-      }
-
-      .top-bar {
-        padding: 12px 16px;
-        flex-wrap: wrap;
-      }
-      .top-bar h2 {
-        font-size: 1.25rem;
-      }
-      .btn-primary {
-        width: 100%; /* Кнопка во всю ширину на смартфонах */
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 колонки для метрик */
+      .ticket {
+        flex-direction: column;
+        align-items: flex-start;
         gap: 10px;
       }
-      .stat-card {
-        padding: 14px;
-      }
-      .stat-card .value {
-        font-size: 22px;
-      }
-
-      .filter-bar {
-        padding: 12px;
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .search-box {
-        min-width: 100%;
-      }
-      .filters-group {
+      .ticket-statuses {
         width: 100%;
-        flex-direction: column;
-      }
-      .select-control {
-        width: 100%;
-      }
-
-      th, td {
-        padding: 12px 14px;
+        justify-content: space-between;
       }
     }
   </style>
 </head>
 <body>
-
-  <!-- Фон-оверлей -->
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
   <div class="app">
-    <!-- Левое меню (Sidebar) -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar">
       <div class="brand">
         <div class="brand-badge">T</div>
         <div>TechService</div>
@@ -461,11 +315,11 @@
         </a>
         <a class="active" href="https://assetzhan.github.io/TechService/Attractions.htm">
           <span>Аттракционы</span>
-          <span class="count">35</span>
+          <span class="count">10</span>
         </a>
         <a href="https://assetzhan.github.io/TechService/AttractionsList.htm">
           <span>Список аттракционов</span>
-          <span class="count">35</span>
+          <span class="count">10</span>
         </a>
         <a href="https://assetzhan.github.io/TechService/Assignees.htm">
           <span>Ответственные</span>
@@ -480,153 +334,122 @@
           <span class="count">35</span>
         </a>
       </nav>
-
+      
       <div class="sidebar-footer">
         <nav class="nav">
-          <a href="https://support.mykids.kz/" target="_blank">
+          <a href="https://support.mykids.kz/">
             <span>Заявка в ИТ</span>
           </a>
         </nav>
       </div>
     </aside>
 
-    <!-- Основной контент -->
-    <main class="main-content">
-      <!-- Шапка -->
-      <header class="top-bar">
-        <div class="top-bar-left">
-          <button class="menu-toggle-btn" id="menuToggle" aria-label="Открыть меню">☰</button>
-          <h2>Аттракционы</h2>
-        </div>
-        <button class="btn-primary">
-          <span>+ Добавить аттракцион</span>
-        </button>
-      </header>
+    <main class="main">
+      <!-- Закрепленная кнопка "+ Новый аттракцион" -->
+      <div class="topbar">
+        <a href="https://assetzhan.github.io/TechService/NewAttraction.htm" class="btn btn-primary btn-new">+ Новый аттракцион</a>
+      </div>
 
-      <!-- Карточки статусов -->
-      <section class="stats-grid">
-        <div class="stat-card">
-          <span class="label">Всего</span>
-          <span class="value">35</span>
-        </div>
-        <div class="stat-card">
-          <span class="label">В работе</span>
-          <span class="value" style="color: #16a34a;">28</span>
-        </div>
-        <div class="stat-card">
-          <span class="label">На ТО</span>
-          <span class="value" style="color: #d97706;">5</span>
-        </div>
-        <div class="stat-card">
-          <span class="label">Остановлены</span>
-          <span class="value" style="color: #dc2626;">2</span>
-        </div>
-      </section>
+      <!-- Реестр аттракционов -->
+      <section class="content">
+        <div class="panel">
+          <div class="panel-head">
+            <h2 class="panel-title">Реестр аттракционов</h2>
+          </div>
 
-      <!-- Фильтры -->
-      <section class="filter-bar">
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Поиск по названию или коду...">
-        </div>
-        <div class="filters-group">
-          <select class="select-control" id="locationFilter">
-            <option value="">Все локации</option>
-            <option value="mega">ТРЦ Mega Center</option>
-            <option value="forum">ТРЦ Forum</option>
-            <option value="dostyk">ТРЦ Dostyk Plaza</option>
-          </select>
-          <select class="select-control" id="statusFilter">
-            <option value="">Все статусы</option>
-            <option value="active">В работе</option>
-            <option value="maintenance">На ТО</option>
-            <option value="stopped">Остановлен</option>
-          </select>
-        </div>
-      </section>
+          <div class="tickets" id="attractionList">
+            
+            <!-- 1. Скалодром -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Скалодром</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 6</span>
+                <span class="badge danger">Не работает: 1</span>
+              </div>
+            </article>
 
-      <!-- Таблица -->
-      <section class="table-card">
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Код</th>
-                <th>Наименование</th>
-                <th>Локация</th>
-                <th>Категория</th>
-                <th>Статус</th>
-                <th>Ответственный</th>
-                <th>Действия</th>
-              </tr>
-            </thead>
-            <tbody id="attractionsTableBody">
-              <tr>
-                <td><strong>ATR-001</strong></td>
-                <td>Американские горки "Молния"</td>
-                <td>ТРЦ Mega Center</td>
-                <td>Экстремальные</td>
-                <td>
-                  <span class="badge badge-success">
-                    <span class="badge-dot"></span> В работе
-                  </span>
-                </td>
-                <td>Алексей И.</td>
-                <td><button class="action-btn">Открыть</button></td>
-              </tr>
-              <tr>
-                <td><strong>ATR-002</strong></td>
-                <td>Автодром "Формула-1"</td>
-                <td>ТРЦ Mega Center</td>
-                <td>Семейные</td>
-                <td>
-                  <span class="badge badge-success">
-                    <span class="badge-dot"></span> В работе
-                  </span>
-                </td>
-                <td>Иван П.</td>
-                <td><button class="action-btn">Открыть</button></td>
-              </tr>
-              <tr>
-                <td><strong>ATR-003</strong></td>
-                <td>Колесо обозрения</td>
-                <td>ТРЦ Forum</td>
-                <td>Семейные</td>
-                <td>
-                  <span class="badge badge-warning">
-                    <span class="badge-dot"></span> На ТО
-                  </span>
-                </td>
-                <td>Дмитрий С.</td>
-                <td><button class="action-btn">Открыть</button></td>
-              </tr>
-              <tr>
-                <td><strong>ATR-004</strong></td>
-                <td>Карусель "Сказка"</td>
-                <td>ТРЦ Dostyk Plaza</td>
-                <td>Детские</td>
-                <td>
-                  <span class="badge badge-success">
-                    <span class="badge-dot"></span> В работе
-                  </span>
-                </td>
-                <td>Анна К.</td>
-                <td><button class="action-btn">Открыть</button></td>
-              </tr>
-              <tr>
-                <td><strong>ATR-005</strong></td>
-                <td>Башня свободного падения</td>
-                <td>ТРЦ Mega Center</td>
-                <td>Экстремальные</td>
-                <td>
-                  <span class="badge badge-danger">
-                    <span class="badge-dot"></span> Остановлен
-                  </span>
-                </td>
-                <td>Алексей И.</td>
-                <td><button class="action-btn">Открыть</button></td>
-              </tr>
-            </tbody>
-          </table>
+            <!-- 2. Батутный комплекс -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Батутный комплекс</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 10</span>
+                <span class="badge danger">Не работает: 2</span>
+              </div>
+            </article>
+
+            <!-- 3. Автодром -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Автодром</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 14</span>
+                <span class="badge danger">Не работает: 0</span>
+              </div>
+            </article>
+
+            <!-- 4. Колесо обозрения -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Колесо обозрения</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 1</span>
+                <span class="badge danger">Не работает: 0</span>
+              </div>
+            </article>
+
+            <!-- 5. Детский лабиринт -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Детский лабиринт</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 4</span>
+                <span class="badge danger">Не работает: 1</span>
+              </div>
+            </article>
+
+            <!-- 6. VR-арена -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">VR-арена</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 8</span>
+                <span class="badge danger">Не работает: 3</span>
+              </div>
+            </article>
+
+            <!-- 7. Французская карусель -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Французская карусель</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 2</span>
+                <span class="badge danger">Не работает: 0</span>
+              </div>
+            </article>
+
+            <!-- 8. Американские горки -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Американские горки</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 1</span>
+                <span class="badge danger">Не работает: 1</span>
+              </div>
+            </article>
+
+            <!-- 9. Игровые автоматы -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Игровые автоматы</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 25</span>
+                <span class="badge danger">Не работает: 4</span>
+              </div>
+            </article>
+
+            <!-- 10. Верёвочный парк -->
+            <article class="ticket" onclick="window.location.href='https://assetzhan.github.io/TechService/AttractionDetails.htm'">
+              <h3 class="ticket-title">Верёвочный парк</h3>
+              <div class="ticket-statuses">
+                <span class="badge success">Работает: 3</span>
+                <span class="badge danger">Не работает: 0</span>
+              </div>
+            </article>
+
+          </div>
         </div>
       </section>
     </main>
@@ -634,76 +457,33 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
-      const menuToggle = document.getElementById('menuToggle');
+      const routes = {
+        "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
+        "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
+        "Инциденты": "https://assetzhan.github.io/TechService/Incidents.htm",
+        "Локации": "https://assetzhan.github.io/TechService/Locations.htm",
+        "Пользователи": "https://assetzhan.github.io/TechService/Users.htm",
+        "Темы": "https://assetzhan.github.io/TechService/Topics.htm",
+        "Аттракционы": "https://assetzhan.github.io/TechService/Attractions.htm",
+        "Список аттракционов": "https://assetzhan.github.io/TechService/AttractionsList.htm",
+        "Ответственные": "https://assetzhan.github.io/TechService/Assignees.htm",
+        "Наблюдатели": "https://assetzhan.github.io/TechService/Observers.htm",
+        "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
+        "Заявка в ИТ": "https://support.mykids.kz/",
+        "+ Новый аттракцион": "https://assetzhan.github.io/TechService/NewAttraction.htm"
+      };
 
-      function openSidebar() { 
-        sidebar.classList.add('open'); 
-        overlay.classList.add('active'); 
-        document.body.style.overflow = 'hidden'; // Блокируем скролл фона
-      }
+      document.querySelectorAll('a, button').forEach(element => {
+        element.addEventListener('click', (e) => {
+          if(element.classList.contains('btn-new')) return;
 
-      function closeSidebar() { 
-        sidebar.classList.remove('open'); 
-        overlay.classList.remove('active'); 
-        document.body.style.overflow = ''; 
-      }
-
-      if (menuToggle) menuToggle.addEventListener('click', openSidebar);
-      if (overlay) overlay.addEventListener('click', closeSidebar);
-
-      // Закрытие по клику на пункт меню на мобильных
-      const navLinks = sidebar.querySelectorAll('.nav a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-          if (window.innerWidth <= 1024) closeSidebar();
+          const text = element.textContent.trim().split('\n')[0].trim();
+          if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {
+            e.preventDefault();
+            window.location.href = routes[text];
+          }
         });
       });
-
-      // Жесты (свайпы)
-      let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
-
-      document.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].clientX;
-        touchStartY = e.changedTouches[0].clientY;
-      }, { passive: true });
-
-      document.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].clientX;
-        touchEndY = e.changedTouches[0].clientY;
-        handleSwipe();
-      }, { passive: true });
-
-      function handleSwipe() {
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = touchEndY - touchStartY;
-
-        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-          // Свайп вправо от левого края для открытия
-          if (deltaX > 0 && !sidebar.classList.contains('open') && touchStartX < 60) {
-            openSidebar();
-          } 
-          // Свайп влево для закрытия
-          else if (deltaX < 0 && sidebar.classList.contains('open')) {
-            closeSidebar();
-          }
-        }
-      }
-
-      // Быстрый поиск по таблице
-      const searchInput = document.getElementById('searchInput');
-      const tableRows = document.querySelectorAll('#attractionsTableBody tr');
-
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          const query = e.target.value.toLowerCase();
-          tableRows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(query) ? '' : 'none';
-          });
-        });
-      }
     });
   </script>
 </body>

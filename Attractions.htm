@@ -132,14 +132,21 @@
       gap: 20px;
     }
 
-    /* Topbar Layout */
+    /* Закрепленная верхняя панель */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      position: relative;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
       z-index: 100;
+      background: rgba(248, 250, 252, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 24px 28px;
+      margin: -28px -28px 0 -28px;
+      border-bottom: 1px solid rgba(229, 231, 235, 0.6);
     }
 
     .menu-toggle {

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Новый аттракцион — TechService</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #ffffff;
+      --muted: #64748b;
+      --text: #0f172a;
+      --line: #e2e8f0;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    
+    html {
+      overflow-y: scroll;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 999;
+    }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+    /* Sidebar */
+    .sidebar {
+      background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+      color: #fff;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      transition: transform 0.3s ease;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .brand-badge {
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+      font-size: 1.1rem;
+    }
+
+    .profile { display: flex; align-items: center; gap: 12px; }
+    .profile small { color: rgba(255,255,255,0.65); display: block; margin-top: 2px; }
+
+    .nav { display: grid; gap: 6px; }
+    .nav a {
+      text-decoration: none;
+      color: rgba(255,255,255,0.78);
+      padding: 10px 14px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: 0.2s ease;
+      font-size: 14px;
+    }
+    .nav a:hover, .nav a.active {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .nav .count {
+      min-width: 26px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.3);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .sidebar-footer { margin-top: auto; font-size: 14px; }
+
+    /* Main Container */
+    .main-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .main {
+      width: 100%;
+      max-width: 900px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Topbar Layout */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(241, 245, 249, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 12px 0;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      height: 44px; width: 44px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      align-items: center; justify-content: center;
+    }
+
+    .topbar-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      white-space: nowrap;
+      flex: 0 0 auto;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--primary);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .menu-toggle { display: inline-flex; }
+      .sidebar {
+        position: fixed; left: 0; top: 0; bottom: 0;
+        z-index: 1000;
+        transform: translateX(-100%);
+      }
+      .sidebar.open { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Фон-оверлей при открытии меню -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-badge">T</div>
+        <div>TechService</div>
+      </div>
+
+      <div class="profile">
+        <div>
+          <strong>Евгений В.</strong>
+          <small>ИТ директор</small>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="https://assetzhan.github.io/TechService/Monitoring.htm">
+          <span>Мониторинг</span>
+          <span class="count">3</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Reports.htm">
+          <span>Отчеты по парку</span>
+          <span class="count">128</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Tasks.htm">
+          <span>Задачи</span>
+          <span class="count">24</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Incidents.htm">
+          <span>Инциденты</span>
+          <span class="count">51</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Locations.htm">
+          <span>Локации</span>
+          <span class="count">10</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Users.htm">
+          <span>Пользователи</span>
+          <span class="count">35</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Topics.htm">
+          <span>Темы</span>
+          <span class="count">35</span>
+        </a>
+        <a class="active" href="https://assetzhan.github.io/TechService/Attractions.htm">
+          <span>Аттракционы</span>
+          <span class="count">10</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/AttractionsList.htm">
+          <span>Список аттракционов</span>
+          <span class="count">10</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Assignees.htm">
+          <span>Ответственные</span>
+          <span class="count">35</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Observers.htm">
+          <span>Наблюдатели</span>
+          <span class="count">35</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/RootCauses.htm">
+          <span>Первопричины</span>
+          <span class="count">35</span>
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <nav class="nav">
+          <a href="https://support.mykids.kz/">
+            <span>Заявка в ИТ</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <main class="main">
+        <!-- Верхняя панель -->
+        <div class="topbar">
+          <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
+          <h1 class="topbar-title">Добавление нового аттракциона</h1>
+          <a href="https://assetzhan.github.io/TechService/Attractions.htm" class="btn btn-secondary">Назад</a>
+        </div>
+
+        <!-- Форма создания аттракциона -->
+        <section class="content">
+          <div class="panel">
+            <form id="newAttractionForm" class="form-grid">
+              
+              <div class="form-group">
+                <label class="form-label" for="attractionName">Название аттракциона</label>
+                <input type="text" id="attractionName" class="form-input" required placeholder="Например: Батутный комплекс" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="attractionLocation">Локация / Зона</label>
+                <select id="attractionLocation" class="form-select" required>
+                  <option value="" disabled selected>Выберите локацию</option>
+                  <option value="1">Зона 1 — Первый этаж</option>
+                  <option value="2">Зона 2 — Активная зона</option>
+                  <option value="3">Зона 3 — Семейная зона</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="workingCount">Количество работающих элементов</label>
+                <input type="number" id="workingCount" class="form-input" min="0" value="0" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="brokenCount">Количество неработающих элементов</label>
+                <input type="number" id="brokenCount" class="form-input" min="0" value="0" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="attractionDescription">Описание и примечания</label>
+                <textarea id="attractionDescription" class="form-textarea" placeholder="Введите дополнительную информацию об аттракционе..."></textarea>
+              </div>
+
+              <div class="form-actions">
+                <a href="https://assetzhan.github.io/TechService/Attractions.htm" class="btn btn-secondary">Отмена</a>
+                <button type="submit" class="btn btn-primary">Создать аттракцион</button>
+              </div>
+
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Управление боковым меню и оверлеем
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      const menuToggle = document.getElementById('menuToggle');
+
+      function openSidebar() { 
+        sidebar.classList.add('open'); 
+        overlay.classList.add('active'); 
+      }
+      function closeSidebar() { 
+        sidebar.classList.remove('open'); 
+        overlay.classList.remove('active'); 
+      }
+
+      if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+      if (overlay) overlay.addEventListener('click', closeSidebar);
+
+      // 2. Обработка отправки формы
+      const form = document.getElementById('newAttractionForm');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Здесь можно добавить логику сохранения данных (например, через API или localStorage)
+        alert('Аттракцион успешно создан!');
+        window.location.href = 'https://assetzhan.github.io/TechService/Attractions.htm';
+      });
+    });
+  </script>
+</body>
+</html>

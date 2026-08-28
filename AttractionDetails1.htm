@@ -142,7 +142,7 @@
       padding: 12px 0;
     }
 
-    .topbar-left {
+    .topbar-controls {
       display: flex;
       align-items: center;
       gap: 12px;
@@ -374,6 +374,27 @@
         transform: translateX(-100%);
       }
       .sidebar.open { transform: translateX(0); }
+
+      /* Трехуровневая мобильная верстка для Topbar */
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .topbar-controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .topbar-title {
+        font-size: 1.15rem;
+      }
+      .btn-add-wrapper {
+        width: 100%;
+      }
+      .btn-add-wrapper .btn-primary {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -505,12 +526,19 @@
       <main class="main">
         <!-- Верхняя панель -->
         <div class="topbar">
-          <div class="topbar-left">
-            <a href="https://assetzhan.github.io/TechService/Attractions.htm" class="btn btn-back">← Назад</a>
+          <!-- 1-я строка на мобильных: Кнопка меню, затем Кнопка Назад -->
+          <div class="topbar-controls">
             <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
-            <h1 class="topbar-title">Реестр проверки: Батуты</h1>
+            <a href="https://assetzhan.github.io/TechService/Attractions.htm" class="btn btn-back">← Назад</a>
           </div>
-          <button class="btn btn-primary" id="openAddModalBtn">+ Добавить элемент</button>
+          
+          <!-- 2-я строка на мобильных: Заголовок -->
+          <h1 class="topbar-title">Реестр проверки: Батуты</h1>
+          
+          <!-- 3-я строка на мобильных: Добавить элемент -->
+          <div class="btn-add-wrapper">
+            <button class="btn btn-primary" id="openAddModalBtn">+ Добавить элемент</button>
+          </div>
         </div>
 
         <!-- Таблица элементов -->

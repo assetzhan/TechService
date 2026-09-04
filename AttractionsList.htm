@@ -26,26 +26,19 @@
       grid-template-columns: 280px 1fr;
     }
 
-    /* Оверлей для мобильного меню */
+    /* Sidebar Overlay (из Attractions (3).htm) */
     .sidebar-overlay {
       position: fixed;
-      top: 0; 
-      left: 0; 
-      width: 100vw; 
-      height: 100vh;
-      background: rgba(15, 23, 42, 0.6);
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.5);
       backdrop-filter: blur(4px);
-      opacity: 0; 
-      visibility: hidden;
+      opacity: 0; visibility: hidden;
       transition: opacity 0.3s ease, visibility 0.3s ease;
       z-index: 999;
     }
-    .sidebar-overlay.active { 
-      opacity: 1; 
-      visibility: visible; 
-    }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
 
-    /* Сайдбар */
+    /* Sidebar (из Attractions (3).htm) */
     .sidebar {
       background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
       color: #fff;
@@ -53,7 +46,7 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.3s ease;
       position: sticky;
       top: 0;
       height: 100vh;
@@ -69,47 +62,31 @@
       font-size: 1.1rem;
     }
     .brand-badge {
-      width: 42px; 
-      height: 42px;
+      width: 42px; height: 42px;
       border-radius: 14px;
-      display: grid; 
-      place-items: center;
+      display: grid; place-items: center;
       background: linear-gradient(135deg, #2563eb, #06b6d4);
       box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
       font-size: 1.1rem;
     }
 
-    .profile { 
-      display: flex; 
-      align-items: center; 
-      gap: 12px; 
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .profile small { 
-      color: rgba(255, 255, 255, 0.65); 
-      display: block; 
-      margin-top: 2px; 
-    }
+    .profile { display: flex; align-items: center; gap: 12px; }
+    .profile small { color: rgba(255,255,255,0.65); display: block; margin-top: 2px; }
 
-    .nav { 
-      display: grid; 
-      gap: 6px; 
-    }
+    .nav { display: grid; gap: 6px; }
     .nav a {
       text-decoration: none;
-      color: rgba(255, 255, 255, 0.78);
-      padding: 12px 14px;
+      color: rgba(255,255,255,0.78);
+      padding: 10px 14px;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       transition: 0.2s ease;
       font-size: 14px;
-      min-height: 44px;
     }
     .nav a:hover, .nav a.active {
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255,255,255,0.12);
       color: #fff;
     }
     .nav .count {
@@ -121,12 +98,7 @@
       font-size: 12px;
     }
 
-    .sidebar-footer { 
-      margin-top: auto; 
-      font-size: 14px; 
-      padding-top: 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
+    .sidebar-footer { margin-top: auto; font-size: 14px; }
 
     /* Основной контент */
     .main-content {
@@ -275,7 +247,7 @@
       min-height: 44px;
     }
 
-    /* Таблица с прокруткой для тач-скринов */
+    /* Таблица */
     .table-card {
       background: #fff;
       border-radius: 16px;
@@ -335,7 +307,7 @@
     .badge-danger { background: #fee2e2; color: #b91c1c; }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-    /* Модальное окно (редактирование) */
+    /* Модальное окно */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -400,7 +372,7 @@
     }
 
     /* Адаптивность */
-    @media (max-width: 1024px) {
+    @media (max-width: 900px) {
       .app { 
         grid-template-columns: 1fr; 
       }
@@ -479,7 +451,7 @@
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <div class="app">
-    <!-- Левое меню (Sidebar) -->
+    <!-- Левое меню (Sidebar из Attractions (3).htm) -->
     <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-badge">T</div>
@@ -494,24 +466,59 @@
       </div>
 
       <nav class="nav">
-        <!-- Ссылки меню идентичны оригиналу -->
-        <a href="https://assetzhan.github.io/TechService/Monitoring.htm"><span>Мониторинг</span><span class="count">3</span></a>
-        <a href="https://assetzhan.github.io/TechService/Reports.htm"><span>Отчеты по парку</span><span class="count">128</span></a>
-        <a href="https://assetzhan.github.io/TechService/Tasks.htm"><span>Задачи</span><span class="count">24</span></a>
-        <a href="https://assetzhan.github.io/TechService/Incidents.htm"><span>Инциденты</span><span class="count">51</span></a>
-        <a href="https://assetzhan.github.io/TechService/Locations.htm"><span>Локации</span><span class="count">10</span></a>
-        <a href="https://assetzhan.github.io/TechService/Users.htm"><span>Пользователи</span><span class="count">35</span></a>
-        <a href="https://assetzhan.github.io/TechService/Topics.htm"><span>Темы</span><span class="count">35</span></a>
-        <a href="https://assetzhan.github.io/TechService/Attractions.htm"><span>Аттракционы</span><span class="count">35</span></a>
-        <a class="active" href="https://assetzhan.github.io/TechService/AttractionsList.htm"><span>Список аттракционов</span><span class="count">35</span></a>
-        <a href="https://assetzhan.github.io/TechService/Assignees.htm"><span>Ответственные</span><span class="count">35</span></a>
-        <a href="https://assetzhan.github.io/TechService/Observers.htm"><span>Наблюдатели</span><span class="count">35</span></a>
-        <a href="https://assetzhan.github.io/TechService/RootCauses.htm"><span>Первопричины</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Monitoring.htm">
+          <span>Мониторинг</span>
+          <span class="count">3</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Reports.htm">
+          <span>Отчеты по парку</span>
+          <span class="count">128</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Tasks.htm">
+          <span>Задачи</span>
+          <span class="count">24</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Incidents.htm">
+          <span>Инциденты</span>
+          <span class="count">51</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Locations.htm">
+          <span>Локации</span>
+          <span class="count">10</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Users.htm">
+          <span>Пользователи</span>
+          <span class="count">35</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Topics.htm">
+          <span>Темы</span>
+          <span class="count">35</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Attractions.htm">
+          <span>Аттракционы</span>
+          <span class="count">10</span>
+        </a>
+        <a class="active" href="https://assetzhan.github.io/TechService/AttractionsList.htm">
+          <span>Список аттракционов</span>
+          <span class="count">10</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Assignees.htm">
+          <span>Ответственные</span>
+          <span class="count">35</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Observers.htm">
+          <span>Наблюдатели</span>
+          <span class="count">35</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/RootCauses.htm">
+          <span>Первопричины</span>
+          <span class="count">35</span>
+        </a>
       </nav>
 
       <div class="sidebar-footer">
         <nav class="nav">
-          <a href="https://support.mykids.kz/" target="_blank">
+          <a href="https://support.mykids.kz/">
             <span>Заявка в ИТ</span>
           </a>
         </nav>
@@ -563,7 +570,6 @@
             <option value="ТРЦ Forum">ТРЦ Forum</option>
             <option value="ТРЦ Dostyk Plaza">ТРЦ Dostyk Plaza</option>
           </select>
-          <!-- Новый фильтр по типу/категории аттракционов -->
           <select class="select-control" id="categoryFilter">
             <option value="">Все аттракционы</option>
             <option value="Семейные">Семейные</option>
@@ -721,7 +727,7 @@
       const navLinks = sidebar.querySelectorAll('.nav a');
       navLinks.forEach(link => {
         link.addEventListener('click', () => {
-          if (window.innerWidth <= 1024) closeSidebar();
+          if (window.innerWidth <= 900) closeSidebar();
         });
       });
 
@@ -780,7 +786,6 @@
         el.addEventListener('change', filterTable);
       });
 
-
       // --- Модальное окно (Редактирование) ---
       const editModal = document.getElementById('editModal');
       const cancelEditBtn = document.getElementById('cancelEditBtn');
@@ -795,7 +800,6 @@
       function openModal(row) {
         currentRowContext = row;
         
-        // Заполняем данные из строки в модальное окно
         const codeText = row.querySelector('.col-code').textContent.trim();
         const locationText = row.querySelector('.col-location').textContent.trim();
         const statusText = row.querySelector('.badge').getAttribute('data-status');
@@ -812,7 +816,6 @@
         currentRowContext = null;
       }
 
-      // Привязка клика ко всем строкам таблицы
       tableRows.forEach(row => {
         row.addEventListener('click', () => openModal(row));
       });
@@ -822,16 +825,11 @@
         if (e.target === editModal) closeModal();
       });
 
-      // Сохранение данных
       saveEditBtn.addEventListener('click', () => {
         if (currentRowContext) {
-          // Обновляем код
           currentRowContext.querySelector('.col-code').innerHTML = `<strong>${editCodeInput.value}</strong>`;
-          
-          // Обновляем локацию
           currentRowContext.querySelector('.col-location').textContent = editLocationSelect.value;
           
-          // Обновляем бейдж статуса
           const statusCol = currentRowContext.querySelector('.col-status');
           let badgeClass = 'badge-success';
           
@@ -844,12 +842,10 @@
             </span>
           `;
           
-          // Повторно применяем фильтры после сохранения, чтобы данные обновились на лету
           filterTable();
         }
         closeModal();
       });
-
     });
   </script>
 </body>

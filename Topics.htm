@@ -7,29 +7,31 @@
   <style>
     :root {
       --bg: #0f172a;
-      --panel: #111827;
-      --panel-2: #1f2937;
-      --card: #ffffff;
+      --panel: #ffffff;
       --muted: #64748b;
       --text: #0f172a;
-      --line: #e5e7eb;
+      --line: #e2e8f0;
       --primary: #2563eb;
-      --primary-2: #1d4ed8;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
       --success: #16a34a;
-      --warning: #f59e0b;
+      --warning: #d97706;
       --danger: #dc2626;
-      --info: #06b6d4;
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --info: #0891b2;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
       --radius: 18px;
     }
 
     * { box-sizing: border-box; }
+
+    html {
+      overflow-y: scroll;
+    }
+
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 28%),
-        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      background: #f1f5f9;
       color: var(--text);
     }
 
@@ -39,6 +41,18 @@
       grid-template-columns: 280px 1fr;
     }
 
+    /* Sidebar Overlay for Mobile */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 999;
+    }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
     /* Sidebar */
     .sidebar {
       background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
@@ -47,6 +61,11 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
+      transition: transform 0.3s ease;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
     }
 
     .brand {
@@ -55,120 +74,104 @@
       gap: 12px;
       font-weight: 700;
       font-size: 1.1rem;
-      letter-spacing: 0.2px;
     }
-
     .brand-badge {
-      width: 42px;
-      height: 42px;
+      width: 42px; height: 42px;
       border-radius: 14px;
-      display: grid;
-      place-items: center;
+      display: grid; place-items: center;
       background: linear-gradient(135deg, #2563eb, #06b6d4);
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
       font-size: 1.1rem;
     }
 
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .profile { display: flex; align-items: center; gap: 12px; }
+    .profile small { color: rgba(255,255,255,0.65); display: block; margin-top: 2px; }
 
-    .profile small {
-      color: rgba(255,255,255,0.65);
-      display: block;
-      margin-top: 2px;
-    }
-
-    .nav {
-      display: grid;
-      gap: 10px;
-    }
-
+    .nav { display: grid; gap: 6px; }
     .nav a {
       text-decoration: none;
       color: rgba(255,255,255,0.78);
-      padding: 12px 14px;
-      border-radius: 14px;
+      padding: 10px 14px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       transition: 0.2s ease;
-      background: transparent;
+      font-size: 14px;
     }
-
-    .nav a:hover,
-    .nav a.active {
-      background: rgba(255,255,255,0.1);
+    .nav a:hover, .nav a.active {
+      background: rgba(255,255,255,0.12);
       color: #fff;
     }
-
     .nav .count {
-      min-width: 28px;
-      padding: 4px 8px;
+      min-width: 26px;
+      padding: 2px 8px;
       border-radius: 999px;
-      background: rgba(37, 99, 235, 0.2);
+      background: rgba(37, 99, 235, 0.3);
       text-align: center;
       font-size: 12px;
     }
 
-    .sidebar-footer {
-      margin-top: auto;
-      font-size: 14px;
-      color: rgba(255,255,255,0.7);
-      line-height: 1.5;
+    .sidebar-footer { margin-top: auto; font-size: 14px; }
+
+    /* Main Container */
+    .main-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
 
-    /* Main */
     .main {
-      padding: 28px;
-      display: grid;
+      width: 100%;
+      max-width: 1360px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
       gap: 20px;
     }
 
+    /* Topbar Layout */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(241, 245, 249, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 12px 0;
     }
 
-    .search-row {
-      display: flex;
-      align-items: stretch;
-      gap: 12px;
-      width: 100%;
-      max-width: 100%;
-    }
-
-    .search {
-      flex: 1 1 auto;
-      min-width: 0;
+    .topbar-left {
       display: flex;
       align-items: center;
-      gap: 10px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: var(--shadow);
+      gap: 16px;
     }
 
-    .search input {
-      width: 100%;
-      min-width: 0;
-      border: 0;
-      outline: none;
-      font-size: 15px;
-      background: transparent;
+    .topbar-title {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      height: 44px; width: 44px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      align-items: center; justify-content: center;
     }
 
     .btn {
       border: 0;
       border-radius: 14px;
-      padding: 12px 16px;
+      padding: 12px 20px;
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s ease;
@@ -178,22 +181,51 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text);
+      font-size: 14px;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      background: var(--primary);
       color: #fff;
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
     }
 
-    .btn-filter { min-width: 110px; padding-inline: 18px; }
-    .btn-new { min-width: 120px; color: #fff; padding-inline: 20px; }
+    .btn-new { min-width: 120px; }
 
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .stat-card .label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .stat-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Content & Panels */
     .content {
       display: grid;
       grid-template-columns: 1fr;
@@ -202,43 +234,57 @@
     }
 
     .panel {
-      background: rgba(255,255,255,0.88);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(229,231,235,0.9);
+      background: #ffffff;
+      border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
 
-    .panel-head {
-      padding: 18px 18px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+    /* Filter Bar */
+    .filter-bar {
+      padding: 16px 20px;
       border-bottom: 1px solid var(--line);
-    }
-
-    .panel-title {
-      margin: 0;
-      font-size: 1.05rem;
-    }
-
-    .filters {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--line);
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+    }
+
+    .search-box {
+      flex: 1 1 280px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+    }
+
+    .filters-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .chip {
       border: 1px solid var(--line);
       background: #fff;
       color: #334155;
-      padding: 8px 14px;
+      padding: 8px 16px;
       border-radius: 999px;
       font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
       transition: 0.2s ease;
     }
@@ -246,29 +292,30 @@
     .chip.active,
     .chip:hover {
       border-color: rgba(37,99,235,0.3);
-      background: rgba(37,99,235,0.08);
-      color: var(--primary-2);
+      background: var(--primary-light);
+      color: var(--primary);
     }
 
+    /* Topics List */
     .tickets {
       display: grid;
       gap: 12px;
-      padding: 18px;
+      padding: 20px;
     }
 
     .ticket {
       background: #fff;
       border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
+      border-radius: 16px;
+      padding: 18px;
       display: grid;
       gap: 12px;
-      transition: 0.2s ease;
+      transition: all 0.2s ease;
     }
 
     .ticket:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+      box-shadow: var(--shadow);
     }
 
     .ticket-top {
@@ -287,15 +334,22 @@
 
     .ticket-title {
       margin: 0 0 8px;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
+      font-weight: 700;
     }
 
     .ticket-meta {
       color: var(--muted);
       font-size: 13px;
       display: flex;
-      gap: 12px;
+      gap: 16px;
       flex-wrap: wrap;
+    }
+
+    .ticket-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .badge {
@@ -309,20 +363,37 @@
       white-space: nowrap;
     }
 
-    .badge.success { background: rgba(22, 163, 74, 0.12); color: var(--success); }
-    .badge.warning { background: rgba(245, 158, 11, 0.15); color: #b45309; }
-    .badge.danger  { background: rgba(220, 38, 38, 0.12); color: var(--danger); }
-    .badge.info    { background: rgba(6, 182, 212, 0.12); color: #0891b2; }
+    .badge.success { background: rgba(22, 163, 74, 0.1); color: var(--success); }
+    .badge.warning { background: rgba(217, 119, 6, 0.1); color: var(--warning); }
+    .badge.danger  { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
+    .badge.info    { background: rgba(8, 145, 178, 0.1); color: var(--info); }
 
+    /* Responsive */
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
+      .sidebar {
+        position: fixed;
+        left: 0; top: 0;
+        z-index: 1000;
+        height: 100vh;
+        width: 280px;
+        transform: translateX(-100%);
+        box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .menu-toggle { display: flex; }
+      .main { padding: 16px; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
 <body>
+  <!-- Overlay для мобильного меню -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   <div class="app">
-    <aside class="sidebar">
+    <!-- Боковая панель -->
+    <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-badge">T</div>
         <div>TechService</div>
@@ -366,7 +437,11 @@
         </a>
         <a href="https://assetzhan.github.io/TechService/Attractions.htm">
           <span>Аттракционы</span>
-          <span class="count">35</span>
+          <span class="count">10</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/AttractionsList.htm">
+          <span>Список аттракционов</span>
+          <span class="count">10</span>
         </a>
         <a href="https://assetzhan.github.io/TechService/Assignees.htm">
           <span>Ответственные</span>
@@ -391,105 +466,157 @@
       </div>
     </aside>
 
-    <main class="main">
-      <div class="topbar">
-        <div class="search-row">
-          <label class="search">
-            <span>🔎</span>
-            <input type="text" id="topicSearch" placeholder="Поиск по категории, теме обращения или SLA..." />
-          </label>
-        </div>
-        <div class="topbar">
-          <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost btn-filter">Фильтры</a>
+    <!-- Основной контент -->
+    <div class="main-wrapper">
+      <main class="main">
+        <!-- Шапка -->
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
+            <h1 class="topbar-title">Категории и темы обращений</h1>
+          </div>
           <a href="https://assetzhan.github.io/TechService/NewTopic.htm" class="btn btn-primary btn-new">+ Новая тема</a>
-        </div>
-      </div>
+        </header>
 
-      <section class="content">
-        <div class="panel">
-          <div class="panel-head">
-            <h2 class="panel-title">Категории и темы обращений</h2>
+        <!-- Метрики -->
+        <section class="stats-grid">
+          <div class="stat-card">
+            <span class="label">Всего тем</span>
+            <span class="value">35</span>
           </div>
-
-          <!-- Фильтры по департаментам/типам -->
-          <div class="filters">
-            <button class="chip active" data-filter="all">Все (35)</button>
-            <button class="chip" data-filter="hardware">Оборудование</button>
-            <button class="chip" data-filter="software">ПО и Сети</button>
-            <button class="chip" data-filter="access">Права доступа</button>
+          <div class="stat-card">
+            <span class="label">Критический SLA (≤1ч)</span>
+            <span class="value" style="color: var(--danger);">4</span>
           </div>
-
-          <div class="tickets" id="topicList">
-            <article class="ticket" data-category="hardware">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#TOP-001 · Департамент: ИТ Оборудование</div>
-                  <h3 class="ticket-title">Неисправность чекового принтера / кассы</h3>
-                  <div class="ticket-meta">
-                    <span>SLA: 2 часа</span>
-                    <span>Приоритет по умолчанию: Высокий</span>
-                    <span>Заявок за месяц: 42</span>
-                  </div>
-                </div>
-                <span class="badge danger">Высокий приоритет</span>
-              </div>
-            </article>
-
-            <article class="ticket" data-category="software">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#TOP-002 · Департамент: Системное ПО</div>
-                  <h3 class="ticket-title">Ошибка авторизации в платежной системе</h3>
-                  <div class="ticket-meta">
-                    <span>SLA: 1 час</span>
-                    <span>Приоритет по умолчанию: Критический</span>
-                    <span>Заявок за месяц: 18</span>
-                  </div>
-                </div>
-                <span class="badge warning">Критический</span>
-              </div>
-            </article>
-
-            <article class="ticket" data-category="hardware">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#TOP-003 · Департамент: Инженерные системы</div>
-                  <h3 class="ticket-title">Техническое обслуживание турникетов</h3>
-                  <div class="ticket-meta">
-                    <span>SLA: 24 часа</span>
-                    <span>Приоритет по умолчанию: Средний</span>
-                    <span>Заявок за месяц: 12</span>
-                  </div>
-                </div>
-                <span class="badge info">Средний приоритет</span>
-              </div>
-            </article>
-
-            <article class="ticket" data-category="access">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#TOP-004 · Департамент: Безопасность</div>
-                  <h3 class="ticket-title">Сброс пароля и настройка доступа</h3>
-                  <div class="ticket-meta">
-                    <span>SLA: 4 часа</span>
-                    <span>Приоритет по умолчанию: Низкий</span>
-                    <span>Заявок за месяц: 65</span>
-                  </div>
-                </div>
-                <span class="badge success">Низкий приоритет</span>
-              </div>
-            </article>
+          <div class="stat-card">
+            <span class="label">Высокая активность</span>
+            <span class="value" style="color: var(--warning);">12</span>
           </div>
-        </div>
-      </section>
-    </main>
+          <div class="stat-card">
+            <span class="label">Средний SLA</span>
+            <span class="value" style="color: var(--info);">3.5 ч</span>
+          </div>
+        </section>
+
+        <!-- Главная панель со списком -->
+        <section class="content">
+          <div class="panel">
+            <div class="filter-bar">
+              <div class="search-box">
+                <input type="text" id="topicSearch" placeholder="Поиск по категории, теме обращения или SLA..." />
+              </div>
+
+              <!-- Фильтры по категориям -->
+              <div class="filters-group">
+                <button class="chip active" data-filter="all">Все (35)</button>
+                <button class="chip" data-filter="hardware">Оборудование</button>
+                <button class="chip" data-filter="software">ПО и Сети</button>
+                <button class="chip" data-filter="access">Права доступа</button>
+              </div>
+            </div>
+
+            <div class="tickets" id="topicList">
+              <article class="ticket" data-category="hardware">
+                <div class="ticket-top">
+                  <div>
+                    <div class="ticket-id">#TOP-001 · Департамент: ИТ Оборудование</div>
+                    <h3 class="ticket-title">Неисправность чекового принтера / кассы</h3>
+                    <div class="ticket-meta">
+                      <span>⏱️ SLA: 2 часа</span>
+                      <span>⚡ Приоритет: Высокий</span>
+                      <span>📊 Заявок за месяц: 42</span>
+                    </div>
+                  </div>
+                  <span class="badge danger">Высокий приоритет</span>
+                </div>
+              </article>
+
+              <article class="ticket" data-category="software">
+                <div class="ticket-top">
+                  <div>
+                    <div class="ticket-id">#TOP-002 · Департамент: Системное ПО</div>
+                    <h3 class="ticket-title">Ошибка авторизации в платежной системе</h3>
+                    <div class="ticket-meta">
+                      <span>⏱️ SLA: 1 час</span>
+                      <span>⚡ Приоритет: Критический</span>
+                      <span>📊 Заявок за месяц: 18</span>
+                    </div>
+                  </div>
+                  <span class="badge warning">Критический</span>
+                </div>
+              </article>
+
+              <article class="ticket" data-category="hardware">
+                <div class="ticket-top">
+                  <div>
+                    <div class="ticket-id">#TOP-003 · Департамент: Инженерные системы</div>
+                    <h3 class="ticket-title">Техническое обслуживание турникетов</h3>
+                    <div class="ticket-meta">
+                      <span>⏱️ SLA: 24 часа</span>
+                      <span>⚡ Приоритет: Средний</span>
+                      <span>📊 Заявок за месяц: 12</span>
+                    </div>
+                  </div>
+                  <span class="badge info">Средний приоритет</span>
+                </div>
+              </article>
+
+              <article class="ticket" data-category="access">
+                <div class="ticket-top">
+                  <div>
+                    <div class="ticket-id">#TOP-004 · Департамент: Безопасность</div>
+                    <h3 class="ticket-title">Сброс пароля и настройка доступа</h3>
+                    <div class="ticket-meta">
+                      <span>⏱️ SLA: 4 часа</span>
+                      <span>⚡ Приоритет: Низкий</span>
+                      <span>📊 Заявок за месяц: 65</span>
+                    </div>
+                  </div>
+                  <span class="badge success">Низкий приоритет</span>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
   </div>
 
-  <!-- СКРИПТ ДЛЯ Topics.htm -->
+  <!-- СКРИПТ УПРАВЛЕНИЯ И НАВИГАЦИИ -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Карта всех переходов системы
+      // 1. Управление шторкой бокового меню (Sidebar Drawer)
+      const menuToggle = document.getElementById('menuToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+      function openSidebar() {
+        sidebar.classList.add('open');
+        sidebarOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+      if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+      // Жесты (свайпы)
+      let touchStartX = 0, touchEndX = 0;
+      document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+      document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 70 && sidebar.classList.contains('open')) closeSidebar();
+        if (touchEndX - touchStartX > 70 && touchStartX < 30 && !sidebar.classList.contains('open')) openSidebar();
+      }, false);
+
+      // 2. Универсальный роутинг
       const routes = {
+        "Мониторинг": "https://assetzhan.github.io/TechService/Monitoring.htm",
         "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
         "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
         "Инциденты": "https://assetzhan.github.io/TechService/Incidents.htm",
@@ -497,15 +624,14 @@
         "Пользователи": "https://assetzhan.github.io/TechService/Users.htm",
         "Темы": "https://assetzhan.github.io/TechService/Topics.htm",
         "Аттракционы": "https://assetzhan.github.io/TechService/Attractions.htm",
+        "Список аттракционов": "https://assetzhan.github.io/TechService/AttractionsList.htm",
         "Ответственные": "https://assetzhan.github.io/TechService/Assignees.htm",
         "Наблюдатели": "https://assetzhan.github.io/TechService/Observers.htm",
         "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
         "Заявка в ИТ": "https://support.mykids.kz/",
-        "Фильтры": "https://assetzhan.github.io/TechService/Filters.htm",
         "+ Новая тема": "https://assetzhan.github.io/TechService/NewTopic.htm"
       };
 
-      // 2. Универсальный обработчик переходов по кнопкам и ссылкам
       document.querySelectorAll('a, button').forEach(element => {
         element.addEventListener('click', (e) => {
           const text = element.textContent.trim().split('\n')[0].trim();
@@ -516,42 +642,41 @@
         });
       });
 
-      // 3. Интерактивная фильтрация тем по категориям
-      const chips = document.querySelectorAll('.filters .chip');
+      // 3. Интерактивная фильтрация и поиск
+      const chips = document.querySelectorAll('.chip');
       const tickets = document.querySelectorAll('#topicList .ticket');
+      const searchInput = document.getElementById('topicSearch');
+
+      function filterTopics() {
+        const activeChip = document.querySelector('.chip.active');
+        const categoryFilter = activeChip ? activeChip.getAttribute('data-filter') : 'all';
+        const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        tickets.forEach(ticket => {
+          const category = ticket.getAttribute('data-category');
+          const content = ticket.textContent.toLowerCase();
+
+          const matchesCategory = (categoryFilter === 'all' || category === categoryFilter);
+          const matchesSearch = content.includes(searchQuery);
+
+          if (matchesCategory && matchesSearch) {
+            ticket.style.display = 'grid';
+          } else {
+            ticket.style.display = 'none';
+          }
+        });
+      }
 
       chips.forEach(chip => {
         chip.addEventListener('click', () => {
           chips.forEach(c => c.classList.remove('active'));
           chip.classList.add('active');
-
-          const filter = chip.getAttribute('data-filter');
-
-          tickets.forEach(ticket => {
-            if (filter === 'all' || ticket.getAttribute('data-category') === filter) {
-              ticket.style.display = 'grid';
-            } else {
-              ticket.style.display = 'none';
-            }
-          });
+          filterTopics();
         });
       });
 
-      // 4. Поиск по темам
-      const searchInput = document.getElementById('topicSearch');
       if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          const query = e.target.value.toLowerCase().trim();
-
-          tickets.forEach(ticket => {
-            const text = ticket.textContent.toLowerCase();
-            if (text.includes(query)) {
-              ticket.style.display = 'grid';
-            } else {
-              ticket.style.display = 'none';
-            }
-          });
-        });
+        searchInput.addEventListener('input', filterTopics);
       }
     });
   </script>

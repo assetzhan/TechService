@@ -61,7 +61,19 @@
     }
     .sidebar-overlay.active { opacity: 1; visibility: visible; }
 
-    /* Sidebar (из Attractions (3).htm) */
+        /* Sidebar Overlay */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 999;
+    }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+    /* Sidebar */
     .sidebar {
       background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
       color: #fff;
@@ -74,7 +86,6 @@
       top: 0;
       height: 100vh;
       overflow-y: auto;
-      z-index: 1000;
     }
 
     .brand {
@@ -122,6 +133,7 @@
     }
 
     .sidebar-footer { margin-top: auto; font-size: 14px; }
+
 
     /* Основной контент */
     .main-content {

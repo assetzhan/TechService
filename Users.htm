@@ -14,7 +14,6 @@
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
       --primary-light: #eff6ff;
-      --process: #2563eb;
       --success: #16a34a;
       --warning: #d97706;
       --danger: #dc2626;
@@ -27,7 +26,7 @@
     * { box-sizing: border-box; }
     
     html {
-      overflow-y: scroll; /* Стабильная ширина без прыжков полосы прокрутки */
+      overflow-y: scroll;
     }
 
     body {
@@ -144,20 +143,19 @@
       background: rgba(241, 245, 249, 0.85);
       backdrop-filter: blur(12px);
       padding: 12px 0;
-      flex-wrap: wrap;
     }
 
     .topbar-left {
       display: flex;
       align-items: center;
-      gap: 12px;
-      flex: 1 1 300px;
+      gap: 16px;
     }
 
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .topbar-title {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
     }
 
     .menu-toggle {
@@ -169,29 +167,6 @@
       font-size: 1.2rem;
       cursor: pointer;
       align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .search {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 10px 14px;
-      box-shadow: var(--shadow);
-      height: 44px;
-    }
-
-    .search input {
-      width: 100%;
-      border: 0;
-      outline: none;
-      font-size: 14px;
-      background: transparent;
-      color: var(--text);
     }
 
     .btn {
@@ -208,16 +183,6 @@
       align-items: center;
       justify-content: center;
       font-size: 14px;
-      height: 44px;
-    }
-
-    .btn-ghost {
-      background: #fff;
-      color: var(--text);
-      border: 1px solid var(--line);
-    }
-    .btn-ghost:hover {
-      background: #f8fafc;
     }
 
     .btn-primary {
@@ -229,9 +194,48 @@
       background: var(--primary-hover);
     }
 
-    .btn-filter { min-width: 100px; }
+    .btn-secondary {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+    .btn-secondary:hover {
+      background: #f8fafc;
+    }
+
     .btn-new { min-width: 120px; }
 
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .stat-card .label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .stat-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Content & Panels */
     .content {
       display: grid;
       grid-template-columns: 1fr;
@@ -247,31 +251,47 @@
       overflow: hidden;
     }
 
-    .panel-head {
-      padding: 20px 24px;
+    /* Filter Bar */
+    .filter-bar {
+      padding: 16px 20px;
       border-bottom: 1px solid var(--line);
-    }
-
-    .panel-title {
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    .filters {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--line);
-      background: #f8fafc;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+    }
+
+    .search-box {
+      flex: 1 1 280px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+    }
+
+    .filters-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .chip {
       border: 1px solid var(--line);
       background: #fff;
-      color: var(--muted);
-      padding: 6px 16px;
+      color: #334155;
+      padding: 8px 16px;
       border-radius: 999px;
       font-size: 13px;
       font-weight: 600;
@@ -281,53 +301,51 @@
 
     .chip.active,
     .chip:hover {
-      border-color: var(--primary);
+      border-color: rgba(37,99,235,0.3);
       background: var(--primary-light);
       color: var(--primary);
     }
 
+    /* User Cards List */
     .tickets {
       display: grid;
       gap: 12px;
-      padding: 20px 24px;
+      padding: 20px;
     }
 
     .ticket {
       background: #fff;
       border: 1px solid var(--line);
       border-radius: 16px;
-      padding: 18px 20px;
-      display: flex;
-      flex-direction: column;
+      padding: 18px;
+      display: grid;
       gap: 12px;
       transition: all 0.2s ease;
-      cursor: pointer;
     }
 
     .ticket:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
     }
 
     .ticket-top {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
+      gap: 12px;
+      align-items: start;
     }
 
     .ticket-id {
       font-size: 12px;
       color: var(--muted);
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .ticket-title {
       margin: 0 0 8px;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      color: var(--text);
     }
 
     .ticket-meta {
@@ -338,51 +356,53 @@
       flex-wrap: wrap;
     }
 
+    .ticket-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .badge {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      padding: 4px 12px;
+      gap: 6px;
+      padding: 6px 12px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
       white-space: nowrap;
     }
 
-    .badge.success { background: #dcfce7; color: var(--success); }
-    .badge.warning { background: #fef3c7; color: var(--warning); }
-    .badge.danger  { background: #fee2e2; color: var(--danger); }
-    .badge.info    { background: #e0f2fe; color: var(--info); }
+    .badge.success { background: rgba(22, 163, 74, 0.1); color: var(--success); }
+    .badge.warning { background: rgba(217, 119, 6, 0.1); color: var(--warning); }
+    .badge.danger  { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
+    .badge.info    { background: rgba(8, 145, 178, 0.1); color: var(--info); }
 
     /* Responsive adjustments */
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
-      .menu-toggle { display: inline-flex; }
       .sidebar {
-        position: fixed; left: 0; top: 0; bottom: 0;
+        position: fixed;
+        left: 0; top: 0;
         z-index: 1000;
+        height: 100vh;
+        width: 280px;
         transform: translateX(-100%);
+        box-shadow: 10px 0 30px rgba(0,0,0,0.2);
       }
       .sidebar.open { transform: translateX(0); }
-    }
-
-    @media (max-width: 600px) {
-      .topbar { flex-direction: column; align-items: stretch; }
-      .topbar-left { width: 100%; }
-      .topbar-actions { width: 100%; justify-content: space-between; }
-      .btn { flex: 1; }
-      .ticket-top { flex-direction: column; gap: 8px; }
-      .badge { align-self: flex-start; }
+      .menu-toggle { display: flex; }
+      .main { padding: 16px; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
 <body>
-
-  <!-- Фон-оверлей при открытии меню -->
+  <!-- Overlay для мобильного меню -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <div class="app">
-    <!-- Боковое меню полностью повторяет Attractions (4) -->
+    <!-- Боковая панель -->
     <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-badge">T</div>
@@ -456,39 +476,55 @@
       </div>
     </aside>
 
+    <!-- Основной контент -->
     <div class="main-wrapper">
       <main class="main">
-        <!-- Верхняя панель -->
-        <div class="topbar">
+        <!-- Шапка -->
+        <header class="topbar">
           <div class="topbar-left">
             <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
-            <label class="search">
-              <span>🔎</span>
-              <input type="text" id="userSearch" placeholder="Поиск по имени, должности, email или локации..." />
-            </label>
+            <h1 class="topbar-title">Управление пользователями</h1>
           </div>
-          <div class="topbar-actions">
-            <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost btn-filter">Фильтры</a>
-            <a href="https://assetzhan.github.io/TechService/NewUser.htm" class="btn btn-primary btn-new">+ Новый пользователь</a>
-          </div>
-        </div>
+          <a href="https://assetzhan.github.io/TechService/NewUser.htm" class="btn btn-primary btn-new">+ Новый пользователь</a>
+        </header>
 
-        <!-- Контент страницы -->
+        <!-- Метрики -->
+        <section class="stats-grid">
+          <div class="stat-card">
+            <span class="label">Всего пользователей</span>
+            <span class="value" id="statTotal">35</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Администраторы</span>
+            <span class="value" style="color: var(--info);">5</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Инженеры</span>
+            <span class="value" style="color: var(--success);">18</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Операторы</span>
+            <span class="value" style="color: var(--warning);">12</span>
+          </div>
+        </section>
+
+        <!-- Главная панель со списком -->
         <section class="content">
           <div class="panel">
-            <div class="panel-head">
-              <h2 class="panel-title">Управление пользователями</h2>
+            <div class="filter-bar">
+              <div class="search-box">
+                <input type="text" id="userSearch" placeholder="Поиск по имени, должности, email или локации..." />
+              </div>
+
+              <!-- Фильтры ролей -->
+              <div class="filters-group">
+                <button class="chip active" data-filter="all">Все (35)</button>
+                <button class="chip" data-filter="admin">Администраторы</button>
+                <button class="chip" data-filter="engineer">Инженеры</button>
+                <button class="chip" data-filter="operator">Операторы</button>
+              </div>
             </div>
 
-            <!-- Фильтры ролей -->
-            <div class="filters">
-              <button class="chip active" data-filter="all">Все (35)</button>
-              <button class="chip" data-filter="admin">Администраторы</button>
-              <button class="chip" data-filter="engineer">Инженеры</button>
-              <button class="chip" data-filter="operator">Операторы</button>
-            </div>
-
-            <!-- Список пользователей -->
             <div class="tickets" id="userList">
               <article class="ticket" data-role="admin">
                 <div class="ticket-top">
@@ -496,9 +532,9 @@
                     <div class="ticket-id">#USR-001 · e.volkov@techservice.kz</div>
                     <h3 class="ticket-title">Евгений В.</h3>
                     <div class="ticket-meta">
-                      <span>Должность: ИТ директор</span>
-                      <span>Локация: Головной офис</span>
-                      <span>Телефон: +7 (701) 000-01-01</span>
+                      <span>💼 Должность: ИТ директор</span>
+                      <span>📍 Локация: Головной офис</span>
+                      <span>📞 Телефон: +7 (701) 000-01-01</span>
                     </div>
                   </div>
                   <span class="badge info">Администратор</span>
@@ -511,9 +547,9 @@
                     <div class="ticket-id">#USR-002 · s.samat@techservice.kz</div>
                     <h3 class="ticket-title">Самат С.</h3>
                     <div class="ticket-meta">
-                      <span>Должность: Главный инженер</span>
-                      <span>Локация: Алматы Атакент</span>
-                      <span>Телефон: +7 (702) 111-22-33</span>
+                      <span>💼 Должность: Главный инженер</span>
+                      <span>📍 Локация: Алматы Атакент</span>
+                      <span>📞 Телефон: +7 (702) 111-22-33</span>
                     </div>
                   </div>
                   <span class="badge success">Инженер</span>
@@ -526,9 +562,9 @@
                     <div class="ticket-id">#USR-003 · i.ivanov@techservice.kz</div>
                     <h3 class="ticket-title">Иванов И.</h3>
                     <div class="ticket-meta">
-                      <span>Должность: Сервисный техник</span>
-                      <span>Локация: Шымкент Royal Plaza</span>
-                      <span>Телефон: +7 (705) 444-55-66</span>
+                      <span>💼 Должность: Сервисный техник</span>
+                      <span>📍 Локация: Шымкент Royal Plaza</span>
+                      <span>📞 Телефон: +7 (705) 444-55-66</span>
                     </div>
                   </div>
                   <span class="badge success">Инженер</span>
@@ -541,9 +577,9 @@
                     <div class="ticket-id">#USR-004 · a.petrova@techservice.kz</div>
                     <h3 class="ticket-title">Петрова А.</h3>
                     <div class="ticket-meta">
-                      <span>Должность: Старший кассир</span>
-                      <span>Локация: Алматы Алатау</span>
-                      <span>Телефон: +7 (707) 777-88-99</span>
+                      <span>💼 Должность: Старший кассир</span>
+                      <span>📍 Локация: Алматы Алатау</span>
+                      <span>📞 Телефон: +7 (707) 777-88-99</span>
                     </div>
                   </div>
                   <span class="badge warning">Оператор</span>
@@ -556,53 +592,39 @@
     </div>
   </div>
 
+  <!-- СКРИПТ УПРАВЛЕНИЯ И НАВИГАЦИИ -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Управление боковым меню и оверлеем (из Attractions.htm)
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('sidebarOverlay');
+      // 1. Управление шторкой бокового меню (Sidebar Drawer)
       const menuToggle = document.getElementById('menuToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-      function openSidebar() { 
-        sidebar.classList.add('open'); 
-        overlay.classList.add('active'); 
+      function openSidebar() {
+        sidebar.classList.add('open');
+        sidebarOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
       }
-      function closeSidebar() { 
-        sidebar.classList.remove('open'); 
-        overlay.classList.remove('active'); 
+
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('active');
+        document.body.style.overflow = '';
       }
 
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
-      if (overlay) overlay.addEventListener('click', closeSidebar);
+      if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
-      // Жесты (свайпы) на мобильных устройствах
-      let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
+      // Жесты (свайпы)
+      let touchStartX = 0, touchEndX = 0;
+      document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+      document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 70 && sidebar.classList.contains('open')) closeSidebar();
+        if (touchEndX - touchStartX > 70 && touchStartX < 30 && !sidebar.classList.contains('open')) openSidebar();
+      }, false);
 
-      document.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].clientX;
-        touchStartY = e.changedTouches[0].clientY;
-      }, { passive: true });
-
-      document.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].clientX;
-        touchEndY = e.changedTouches[0].clientY;
-        handleSwipe();
-      }, { passive: true });
-
-      function handleSwipe() {
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = touchEndY - touchStartY;
-
-        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-          if (deltaX > 0 && !sidebar.classList.contains('open') && touchStartX < 100) {
-            openSidebar();
-          } else if (deltaX < 0 && sidebar.classList.contains('open')) {
-            closeSidebar();
-          }
-        }
-      }
-
-      // 2. Обработка навигации по роутам
+      // 2. Универсальный роутинг
       const routes = {
         "Мониторинг": "https://assetzhan.github.io/TechService/Monitoring.htm",
         "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
@@ -617,14 +639,11 @@
         "Наблюдатели": "https://assetzhan.github.io/TechService/Observers.htm",
         "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
         "Заявка в ИТ": "https://support.mykids.kz/",
-        "Фильтры": "https://assetzhan.github.io/TechService/Filters.htm",
         "+ Новый пользователь": "https://assetzhan.github.io/TechService/NewUser.htm"
       };
 
       document.querySelectorAll('a, button').forEach(element => {
         element.addEventListener('click', (e) => {
-          if(element.classList.contains('btn-new') || element.id === 'menuToggle' || element.classList.contains('chip')) return;
-
           const text = element.textContent.trim().split('\n')[0].trim();
           if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {
             e.preventDefault();
@@ -633,42 +652,41 @@
         });
       });
 
-      // 3. Интерактивная фильтрация пользователей по ролям
-      const chips = document.querySelectorAll('.filters .chip');
+      // 3. Интерактивная фильтрация и поиск
+      const chips = document.querySelectorAll('.chip');
       const tickets = document.querySelectorAll('#userList .ticket');
+      const searchInput = document.getElementById('userSearch');
+
+      function filterUsers() {
+        const activeChip = document.querySelector('.chip.active');
+        const roleFilter = activeChip ? activeChip.getAttribute('data-filter') : 'all';
+        const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        tickets.forEach(ticket => {
+          const role = ticket.getAttribute('data-role');
+          const content = ticket.textContent.toLowerCase();
+
+          const matchesRole = (roleFilter === 'all' || role === roleFilter);
+          const matchesSearch = content.includes(searchQuery);
+
+          if (matchesRole && matchesSearch) {
+            ticket.style.display = 'grid';
+          } else {
+            ticket.style.display = 'none';
+          }
+        });
+      }
 
       chips.forEach(chip => {
         chip.addEventListener('click', () => {
           chips.forEach(c => c.classList.remove('active'));
           chip.classList.add('active');
-
-          const filter = chip.getAttribute('data-filter');
-
-          tickets.forEach(ticket => {
-            if (filter === 'all' || ticket.getAttribute('data-role') === filter) {
-              ticket.style.display = 'flex';
-            } else {
-              ticket.style.display = 'none';
-            }
-          });
+          filterUsers();
         });
       });
 
-      // 4. Логика поиска по пользователям
-      const searchInput = document.getElementById('userSearch');
       if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          const query = e.target.value.toLowerCase().trim();
-
-          tickets.forEach(ticket => {
-            const text = ticket.textContent.toLowerCase();
-            if (text.includes(query)) {
-              ticket.style.display = 'flex';
-            } else {
-              ticket.style.display = 'none';
-            }
-          });
-        });
+        searchInput.addEventListener('input', filterUsers);
       }
     });
   </script>

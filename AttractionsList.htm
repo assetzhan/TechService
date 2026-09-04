@@ -2,698 +2,855 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Список аттракционов — TechService</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
   <style>
-    :root {
-      --bg-body: #f8fafc;
-      --bg-sidebar: #ffffff;
-      --bg-card: #ffffff;
-      --border-color: #e2e8f0;
-      
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --text-light: #94a3b8;
-      
-      --primary: #4f46e5;
-      --primary-hover: #4338ca;
-      --primary-light: #eef2ff;
-      --primary-text: #3730a3;
-      
-      --success-bg: #dcfce7;
-      --success-text: #166534;
-      --danger-bg: #fee2e2;
-      --danger-text: #991b1b;
-      --warning-bg: #fef3c7;
-      --warning-text: #92400e;
-      
-      --radius-sm: 6px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-
+    /* Сброс стилей и переменные */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
-
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: var(--bg-body);
-      color: var(--text-main);
-      display: flex;
-      min-height: 100vh;
-      font-size: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
       line-height: 1.5;
     }
 
-    /* Мобильная кнопка меню */
-    .mobile-header {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 56px;
-      background: #ffffff;
-      border-bottom: 1px solid var(--border-color);
-      padding: 0 16px;
-      align-items: center;
-      justify-content: space-between;
-      z-index: 40;
+    /* Главный контейнер */
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
     }
 
-    .mobile-menu-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-main);
-    }
-
+    /* Оверлей для мобильного меню */
     .sidebar-overlay {
-      display: none;
       position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.4);
-      z-index: 45;
-      backdrop-filter: blur(2px);
+      top: 0; 
+      left: 0; 
+      width: 100vw; 
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      opacity: 0; 
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 999;
+    }
+    .sidebar-overlay.active { 
+      opacity: 1; 
+      visibility: visible; 
     }
 
-    /* ===== Боковое меню (Sidebar) ===== */
+    /* Сайдбар */
     .sidebar {
-      width: 260px;
-      background-color: var(--bg-sidebar);
-      border-right: 1px solid var(--border-color);
+      background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+      color: #fff;
+      padding: 24px;
       display: flex;
       flex-direction: column;
-      flex-shrink: 0;
+      gap: 24px;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: sticky;
       top: 0;
       height: 100vh;
-      z-index: 50;
-      transition: transform 0.2s ease;
-    }
-
-    /* Бренд */
-    .brand {
-      padding: 20px 20px 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text-main);
-      letter-spacing: -0.02em;
-    }
-
-    .brand-badge {
-      width: 34px;
-      height: 34px;
-      background: var(--primary);
-      color: #ffffff;
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 18px;
-      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
-    }
-
-    /* Профиль пользователя */
-    .profile {
-      padding: 12px 20px 16px 20px;
-      margin-bottom: 8px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .profile-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #e2e8f0;
-      color: #475569;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 13px;
-      flex-shrink: 0;
-    }
-
-    .profile-info {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .profile-info strong {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-main);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .profile-info small {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    /* Навигация */
-    .nav-container {
-      flex: 1;
       overflow-y: auto;
-      padding: 0 12px;
+      z-index: 1000;
     }
 
-    .nav {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .nav a {
+    .brand {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 9px 12px;
-      color: #475569;
-      text-decoration: none;
-      font-size: 13.5px;
-      font-weight: 500;
-      border-radius: var(--radius-md);
-      transition: all 0.15s ease;
-    }
-
-    .nav a:hover {
-      background-color: #f1f5f9;
-      color: var(--text-main);
-    }
-
-    .nav a.active {
-      background-color: var(--primary-light);
-      color: var(--primary-text);
-      font-weight: 600;
-    }
-
-    .nav a .count {
-      font-size: 12px;
-      padding: 2px 8px;
-      border-radius: 12px;
-      background-color: #f1f5f9;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .nav a.active .count {
-      background-color: #e0e7ff;
-      color: var(--primary-hover);
-    }
-
-    /* Нижняя секция бокового меню */
-    .sidebar-footer {
-      padding: 12px;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .sidebar-footer .nav a {
-      color: var(--primary);
-    }
-
-    .sidebar-footer .nav a:hover {
-      background-color: var(--primary-light);
-    }
-
-    /* ===== Основной контент ===== */
-    .layout-wrapper {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .main-content {
-      flex: 1;
-      padding: 24px 32px;
-      max-width: 1400px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    /* Верхняя панель контента */
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .page-title {
-      font-size: 22px;
+      gap: 12px;
       font-weight: 700;
-      color: var(--text-main);
-      letter-spacing: -0.01em;
+      font-size: 1.1rem;
+    }
+    .brand-badge {
+      width: 42px; 
+      height: 42px;
+      border-radius: 14px;
+      display: grid; 
+      place-items: center;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+      font-size: 1.1rem;
+    }
+
+    .profile { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .profile small { 
+      color: rgba(255, 255, 255, 0.65); 
+      display: block; 
+      margin-top: 2px; 
+    }
+
+    .nav { 
+      display: grid; 
+      gap: 6px; 
+    }
+    .nav a {
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.78);
+      padding: 12px 14px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: 0.2s ease;
+      font-size: 14px;
+      min-height: 44px;
+    }
+    .nav a:hover, .nav a.active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+    .nav .count {
+      min-width: 26px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.3);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .sidebar-footer { 
+      margin-top: auto; 
+      font-size: 14px; 
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Основной контент */
+    .main-content {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    /* Верхняя панель */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      padding: 16px 24px;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      gap: 12px;
+    }
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .menu-toggle-btn {
+      display: none;
+      background: #f1f5f9;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #0f172a;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn-primary {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      background-color: var(--primary);
-      color: #ffffff;
-      padding: 9px 16px;
-      border-radius: var(--radius-md);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 13.5px;
-      border: none;
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      transition: background-color 0.15s ease;
+      transition: background 0.2s;
+      min-height: 44px;
+      white-space: nowrap;
     }
-
     .btn-primary:hover {
-      background-color: var(--primary-hover);
+      background: #1d4ed8;
+    }
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
     }
 
-    /* Фильтры и поиск */
-    .filters-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow-sm);
+    /* Сетка карточек метрик */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .stat-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
       display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-card .label {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .stat-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
     }
 
-    .search-input-wrapper {
-      position: relative;
+    /* Панель фильтров */
+    .filter-bar {
+      background: #fff;
+      padding: 16px 20px;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .search-box {
       flex: 1;
       min-width: 240px;
     }
-
-    .search-input-wrapper svg {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-light);
-    }
-
-    .search-input {
+    .search-box input {
       width: 100%;
-      padding: 9px 12px 9px 38px;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      font-size: 13.5px;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
       outline: none;
-      transition: border-color 0.15s ease;
+      transition: border-color 0.2s;
+      min-height: 44px;
     }
-
-    .search-input:focus {
-      border-color: var(--primary);
+    .search-box input:focus, .form-control:focus {
+      border-color: #2563eb;
     }
-
-    .select-input {
-      padding: 9px 32px 9px 12px;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      font-size: 13.5px;
+    .filters-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .select-control {
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      background-color: #fff;
+      color: #334155;
       outline: none;
-      background-color: #ffffff;
-      color: var(--text-main);
       cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2064748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      background-size: 16px;
+      min-height: 44px;
     }
 
-    /* Таблица */
+    /* Таблица с прокруткой для тач-скринов */
     .table-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
       overflow: hidden;
     }
-
-    .table-responsive {
+    .table-container {
+      width: 100%;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
+      font-size: 14px;
+      min-width: 600px;
     }
-
     th {
-      background-color: #f8fafc;
-      padding: 12px 16px;
-      font-size: 12px;
+      background: #f8fafc;
+      padding: 14px 20px;
       font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid var(--border-color);
+      color: #475569;
+      border-bottom: 1px solid #e2e8f0;
       white-space: nowrap;
     }
-
     td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border-color);
-      color: var(--text-main);
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
       vertical-align: middle;
-      font-size: 13.5px;
+      white-space: nowrap;
     }
-
-    tbody tr:last-child td {
+    tr.clickable-row {
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    tr.clickable-row:last-child td {
       border-bottom: none;
     }
-
-    tbody tr:hover {
-      background-color: #f8fafc;
+    tr.clickable-row:hover td {
+      background-color: #f1f5f9;
     }
 
-    .attraction-title {
-      font-weight: 600;
-      color: var(--text-main);
-      text-decoration: none;
-    }
-
-    .attraction-title:hover {
-      color: var(--primary);
-    }
-
-    .status-badge {
+    /* Статусы */
+    .badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 4px 10px;
-      border-radius: 12px;
+      border-radius: 999px;
       font-size: 12px;
       font-weight: 600;
     }
+    .badge-success { background: #dcfce7; color: #15803d; }
+    .badge-warning { background: #fef3c7; color: #b45309; }
+    .badge-danger { background: #fee2e2; color: #b91c1c; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-    .status-badge.active {
-      background-color: var(--success-bg);
-      color: var(--success-text);
+    /* Модальное окно (редактирование) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+      z-index: 1001;
+      padding: 16px;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-content {
+      background: #fff;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      transform: translateY(20px);
+      transition: transform 0.3s;
+    }
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+    }
+    .modal-header {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #0f172a;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
     }
 
-    .status-badge.inactive {
-      background-color: var(--danger-bg);
-      color: var(--danger-text);
-    }
-
-    .status-badge.maintenance {
-      background-color: var(--warning-bg);
-      color: var(--warning-text);
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-weight: currentColor;
-      background-color: currentColor;
-    }
-
-    .text-muted {
-      color: var(--text-muted);
-    }
-
-    /* Адаптивность для мобильных устройств */
-    @media (max-width: 768px) {
-      .mobile-header {
-        display: flex;
+    /* Адаптивность */
+    @media (max-width: 1024px) {
+      .app { 
+        grid-template-columns: 1fr; 
       }
-
       .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
+        position: fixed; 
+        left: 0; 
+        top: 0; 
         bottom: 0;
         transform: translateX(-100%);
+        width: 280px;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.15);
       }
-
-      .sidebar.open {
-        transform: translateX(0);
+      .sidebar.open { 
+        transform: translateX(0); 
       }
-
-      .sidebar-overlay.open {
-        display: block;
+      .menu-toggle-btn {
+        display: inline-flex;
       }
+    }
 
+    @media (max-width: 600px) {
       .main-content {
-        padding: 72px 16px 24px 16px;
+        padding: 12px;
+        gap: 14px;
+      }
+      .top-bar {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+      }
+      .top-bar h2 {
+        font-size: 1.25rem;
+      }
+      .btn-primary {
+        width: 100%;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .stat-card {
+        padding: 14px;
+      }
+      .stat-card .value {
+        font-size: 22px;
+      }
+      .filter-bar {
+        padding: 12px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-box {
+        min-width: 100%;
+      }
+      .filters-group {
+        width: 100%;
+        flex-direction: column;
+      }
+      .select-control {
+        width: 100%;
+      }
+      th, td {
+        padding: 12px 14px;
+      }
+      .modal-actions {
+        flex-direction: column-reverse;
+      }
+      .modal-actions button {
+        width: 100%;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Мобильная шапка -->
-  <div class="mobile-header">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <div class="brand-badge" style="width: 28px; height: 28px; font-size: 14px;">T</div>
-      <strong style="font-size: 16px;">TechService</strong>
-    </div>
-    <button class="mobile-menu-btn" id="menuToggle" aria-label="Открыть меню">
-      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-      </svg>
-    </button>
-  </div>
-
+  <!-- Фон-оверлей -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <!-- Боковое меню (соответствует Attractions.htm) -->
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">
-      <div class="brand-badge">T</div>
-      <div>TechService</div>
-    </div>
-
-    <div class="profile">
-      <div class="profile-avatar">ЕВ</div>
-      <div class="profile-info">
-        <strong>Евгений В.</strong>
-        <small>ИТ директор</small>
+  <div class="app">
+    <!-- Левое меню (Sidebar) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-badge">T</div>
+        <div>TechService</div>
       </div>
-    </div>
 
-    <div class="nav-container">
+      <div class="profile">
+        <div>
+          <strong>Евгений В.</strong>
+          <small>ИТ директор</small>
+        </div>
+      </div>
+
       <nav class="nav">
-        <a href="https://assetzhan.github.io/TechService/Monitoring.htm">
-          <span>Мониторинг</span>
-          <span class="count">3</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Reports.htm">
-          <span>Отчеты по парку</span>
-          <span class="count">128</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Tasks.htm">
-          <span>Задачи</span>
-          <span class="count">24</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Incidents.htm">
-          <span>Инциденты</span>
-          <span class="count">51</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Locations.htm">
-          <span>Локации</span>
-          <span class="count">10</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Users.htm">
-          <span>Пользователи</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Topics.htm">
-          <span>Темы</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Attractions.htm">
-          <span>Аттракционы</span>
-          <span class="count">10</span>
-        </a>
-        <a class="active" href="https://assetzhan.github.io/TechService/AttractionsList.htm">
-          <span>Список аттракционов</span>
-          <span class="count">10</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Assignees.htm">
-          <span>Ответственные</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Observers.htm">
-          <span>Наблюдатели</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/RootCauses.htm">
-          <span>Первопричины</span>
-          <span class="count">35</span>
-        </a>
+        <!-- Ссылки меню идентичны оригиналу -->
+        <a href="https://assetzhan.github.io/TechService/Monitoring.htm"><span>Мониторинг</span><span class="count">3</span></a>
+        <a href="https://assetzhan.github.io/TechService/Reports.htm"><span>Отчеты по парку</span><span class="count">128</span></a>
+        <a href="https://assetzhan.github.io/TechService/Tasks.htm"><span>Задачи</span><span class="count">24</span></a>
+        <a href="https://assetzhan.github.io/TechService/Incidents.htm"><span>Инциденты</span><span class="count">51</span></a>
+        <a href="https://assetzhan.github.io/TechService/Locations.htm"><span>Локации</span><span class="count">10</span></a>
+        <a href="https://assetzhan.github.io/TechService/Users.htm"><span>Пользователи</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Topics.htm"><span>Темы</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Attractions.htm"><span>Аттракционы</span><span class="count">35</span></a>
+        <a class="active" href="https://assetzhan.github.io/TechService/AttractionsList.htm"><span>Список аттракционов</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Assignees.htm"><span>Ответственные</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Observers.htm"><span>Наблюдатели</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/RootCauses.htm"><span>Первопричины</span><span class="count">35</span></a>
       </nav>
-    </div>
 
-    <div class="sidebar-footer">
-      <nav class="nav">
-        <a href="https://support.mykids.kz/" target="_blank">
-          <span>Заявка в ИТ</span>
-        </a>
-      </nav>
-    </div>
-  </aside>
+      <div class="sidebar-footer">
+        <nav class="nav">
+          <a href="https://support.mykids.kz/" target="_blank">
+            <span>Заявка в ИТ</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
 
-  <!-- Основной контент страницы -->
-  <div class="layout-wrapper">
+    <!-- Основной контент -->
     <main class="main-content">
-      
-      <div class="page-header">
-        <h1 class="page-title">Список аттракционов</h1>
-        <a href="https://assetzhan.github.io/TechService/NewAttraction.htm" class="btn-primary">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-          </svg>
-          Новый аттракцион
-        </a>
-      </div>
+      <!-- Шапка -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <button class="menu-toggle-btn" id="menuToggle" aria-label="Открыть меню">☰</button>
+          <h2>Список аттракционов в локациях</h2>
+        </div>
+        <button class="btn-primary">
+          <span>+ Добавить аттракцион</span>
+        </button>
+      </header>
+
+      <!-- Карточки статусов -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <span class="label">Всего</span>
+          <span class="value">35</span>
+        </div>
+        <div class="stat-card">
+          <span class="label">В работе</span>
+          <span class="value" style="color: #16a34a;">28</span>
+        </div>
+        <div class="stat-card">
+          <span class="label">На ТО</span>
+          <span class="value" style="color: #d97706;">5</span>
+        </div>
+        <div class="stat-card">
+          <span class="label">Остановлены</span>
+          <span class="value" style="color: #dc2626;">2</span>
+        </div>
+      </section>
 
       <!-- Фильтры -->
-      <div class="filters-card">
-        <div class="search-input-wrapper">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-          </svg>
-          <input type="text" class="search-input" placeholder="Поиск по названию или категории...">
+      <section class="filter-bar">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Поиск по названию или коду...">
         </div>
+        <div class="filters-group">
+          <select class="select-control" id="locationFilter">
+            <option value="">Все локации</option>
+            <option value="ТРЦ Mega Center">ТРЦ Mega Center</option>
+            <option value="ТРЦ Forum">ТРЦ Forum</option>
+            <option value="ТРЦ Dostyk Plaza">ТРЦ Dostyk Plaza</option>
+          </select>
+          <!-- Новый фильтр по типу/категории аттракционов -->
+          <select class="select-control" id="categoryFilter">
+            <option value="">Все аттракционы</option>
+            <option value="Семейные">Семейные</option>
+            <option value="Детские">Детские</option>
+            <option value="Экстремальные">Экстремальные</option>
+          </select>
+          <select class="select-control" id="statusFilter">
+            <option value="">Все статусы</option>
+            <option value="В работе">В работе</option>
+            <option value="На ТО">На ТО</option>
+            <option value="Остановлен">Остановлен</option>
+          </select>
+        </div>
+      </section>
 
-        <select class="select-input">
-          <option value="">Все категории</option>
-          <option value="batut">Батуты</option>
-          <option value="gorki">Горки</option>
-          <option value="bashni">Башни</option>
-        </select>
-
-        <select class="select-input">
-          <option value="">Все статусы</option>
-          <option value="active">Работает</option>
-          <option value="inactive">Не работает</option>
-          <option value="maintenance">Обслуживание</option>
-        </select>
-      </div>
-
-      <!-- Таблица данных -->
-      <div class="table-card">
-        <div class="table-responsive">
+      <!-- Таблица -->
+      <section class="table-card">
+        <div class="table-container">
           <table>
             <thead>
               <tr>
-                <th>Наименование</th>
-                <th>Категория</th>
+                <th>Код</th>
+                <th>Аттракцион</th>
                 <th>Локация</th>
+                <th>Категория</th>
                 <th>Статус</th>
-                <th>Ответственный</th>
+                <th>Последняя активность (отчет)</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><a href="#" class="attraction-title">Батут Профи 1</a></td>
-                <td class="text-muted">Батуты</td>
-                <td class="text-muted">Зона А</td>
-                <td>
-                  <span class="status-badge active">
-                    <span class="status-dot"></span>
-                    Работает
+            <tbody id="attractionsTableBody">
+              <tr class="clickable-row">
+                <td class="col-code"><strong>ATR-001</strong></td>
+                <td>Батуты</td>
+                <td class="col-location">ТРЦ Mega Center</td>
+                <td class="col-category">Семейные</td>
+                <td class="col-status">
+                  <span class="badge badge-success" data-status="В работе">
+                    <span class="badge-dot"></span> В работе
                   </span>
                 </td>
-                <td class="text-muted">Алексей С.</td>
+                <td style="color: #64748b;">03.09.2026</td>
               </tr>
-              <tr>
-                <td><a href="#" class="attraction-title">Волновая горка</a></td>
-                <td class="text-muted">Горки</td>
-                <td class="text-muted">Зона B</td>
-                <td>
-                  <span class="status-badge active">
-                    <span class="status-dot"></span>
-                    Работает
+              <tr class="clickable-row">
+                <td class="col-code"><strong>ATR-002</strong></td>
+                <td>Автодром "Формула-1"</td>
+                <td class="col-location">ТРЦ Mega Center</td>
+                <td class="col-category">Семейные</td>
+                <td class="col-status">
+                  <span class="badge badge-success" data-status="В работе">
+                    <span class="badge-dot"></span> В работе
                   </span>
                 </td>
-                <td class="text-muted">Иван П.</td>
+                <td style="color: #64748b;">01.09.2026</td>
               </tr>
-              <tr>
-                <td><a href="#" class="attraction-title">Башня свободного падения</a></td>
-                <td class="text-muted">Башни</td>
-                <td class="text-muted">Зона C</td>
-                <td>
-                  <span class="status-badge inactive">
-                    <span class="status-dot"></span>
-                    Не работает
+              <tr class="clickable-row">
+                <td class="col-code"><strong>ATR-003</strong></td>
+                <td>Колесо обозрения</td>
+                <td class="col-location">ТРЦ Forum</td>
+                <td class="col-category">Семейные</td>
+                <td class="col-status">
+                  <span class="badge badge-warning" data-status="На ТО">
+                    <span class="badge-dot"></span> На ТО
                   </span>
                 </td>
-                <td class="text-muted">Максим К.</td>
+                <td style="color: #64748b;">28.08.2026</td>
               </tr>
-              <tr>
-                <td><a href="#" class="attraction-title">Картинг Драйв</a></td>
-                <td class="text-muted">Автодром</td>
-                <td class="text-muted">Зона D</td>
-                <td>
-                  <span class="status-badge maintenance">
-                    <span class="status-dot"></span>
-                    Обслуживание
+              <tr class="clickable-row">
+                <td class="col-code"><strong>ATR-004</strong></td>
+                <td>Карусель "Сказка"</td>
+                <td class="col-location">ТРЦ Dostyk Plaza</td>
+                <td class="col-category">Детские</td>
+                <td class="col-status">
+                  <span class="badge badge-success" data-status="В работе">
+                    <span class="badge-dot"></span> В работе
                   </span>
                 </td>
-                <td class="text-muted">Сергей Д.</td>
+                <td style="color: #64748b;">02.09.2026</td>
+              </tr>
+              <tr class="clickable-row">
+                <td class="col-code"><strong>ATR-005</strong></td>
+                <td>Башня свободного падения</td>
+                <td class="col-location">ТРЦ Mega Center</td>
+                <td class="col-category">Экстремальные</td>
+                <td class="col-status">
+                  <span class="badge badge-danger" data-status="Остановлен">
+                    <span class="badge-dot"></span> Остановлен
+                  </span>
+                </td>
+                <td style="color: #64748b;">25.08.2026</td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
-
+      </section>
     </main>
   </div>
 
+  <!-- Модальное окно редактирования -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">Редактировать аттракцион</div>
+      
+      <div class="form-group">
+        <label>Код аттракциона</label>
+        <input type="text" id="editCode" class="form-control">
+      </div>
+      
+      <div class="form-group">
+        <label>Локация</label>
+        <select id="editLocation" class="form-control">
+          <option value="ТРЦ Mega Center">ТРЦ Mega Center</option>
+          <option value="ТРЦ Forum">ТРЦ Forum</option>
+          <option value="ТРЦ Dostyk Plaza">ТРЦ Dostyk Plaza</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Активность (Статус)</label>
+        <select id="editStatus" class="form-control">
+          <option value="В работе">В работе</option>
+          <option value="На ТО">На ТО</option>
+          <option value="Остановлен">Остановлен</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" id="cancelEditBtn">Отмена</button>
+        <button class="btn-primary" id="saveEditBtn">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Скрипт для открытия/закрытия мобильного бокового меню
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- Боковое меню и свайпы ---
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      const menuToggle = document.getElementById('menuToggle');
 
-    function toggleMenu() {
-      sidebar.classList.toggle('open');
-      sidebarOverlay.classList.toggle('open');
-    }
+      function openSidebar() { 
+        sidebar.classList.add('open'); 
+        overlay.classList.add('active'); 
+        document.body.style.overflow = 'hidden';
+      }
 
-    if (menuToggle) {
-      menuToggle.addEventListener('click', toggleMenu);
-    }
-    if (sidebarOverlay) {
-      sidebarOverlay.addEventListener('click', toggleMenu);
-    }
+      function closeSidebar() { 
+        sidebar.classList.remove('open'); 
+        overlay.classList.remove('active'); 
+        document.body.style.overflow = ''; 
+      }
+
+      if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+      if (overlay) overlay.addEventListener('click', closeSidebar);
+
+      const navLinks = sidebar.querySelectorAll('.nav a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 1024) closeSidebar();
+        });
+      });
+
+      let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
+      document.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].clientX;
+        touchStartY = e.changedTouches[0].clientY;
+      }, { passive: true });
+
+      document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].clientX;
+        touchEndY = e.changedTouches[0].clientY;
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+          if (deltaX > 0 && !sidebar.classList.contains('open') && touchStartX < 60) openSidebar();
+          else if (deltaX < 0 && sidebar.classList.contains('open')) closeSidebar();
+        }
+      }, { passive: true });
+
+      // --- Фильтрация ---
+      const searchInput = document.getElementById('searchInput');
+      const locationFilter = document.getElementById('locationFilter');
+      const categoryFilter = document.getElementById('categoryFilter');
+      const statusFilter = document.getElementById('statusFilter');
+      const tableRows = document.querySelectorAll('#attractionsTableBody tr');
+
+      function filterTable() {
+        const query = searchInput.value.toLowerCase();
+        const locVal = locationFilter.value;
+        const catVal = categoryFilter.value;
+        const statVal = statusFilter.value;
+
+        tableRows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          const rowLoc = row.querySelector('.col-location').textContent.trim();
+          const rowCat = row.querySelector('.col-category').textContent.trim();
+          const rowStat = row.querySelector('.badge').getAttribute('data-status');
+
+          const matchesSearch = text.includes(query);
+          const matchesLoc = !locVal || rowLoc === locVal;
+          const matchesCat = !catVal || rowCat === catVal;
+          const matchesStat = !statVal || rowStat === statVal;
+
+          if (matchesSearch && matchesLoc && matchesCat && matchesStat) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      }
+
+      [searchInput, locationFilter, categoryFilter, statusFilter].forEach(el => {
+        el.addEventListener('input', filterTable);
+        el.addEventListener('change', filterTable);
+      });
+
+
+      // --- Модальное окно (Редактирование) ---
+      const editModal = document.getElementById('editModal');
+      const cancelEditBtn = document.getElementById('cancelEditBtn');
+      const saveEditBtn = document.getElementById('saveEditBtn');
+      
+      const editCodeInput = document.getElementById('editCode');
+      const editLocationSelect = document.getElementById('editLocation');
+      const editStatusSelect = document.getElementById('editStatus');
+      
+      let currentRowContext = null;
+
+      function openModal(row) {
+        currentRowContext = row;
+        
+        // Заполняем данные из строки в модальное окно
+        const codeText = row.querySelector('.col-code').textContent.trim();
+        const locationText = row.querySelector('.col-location').textContent.trim();
+        const statusText = row.querySelector('.badge').getAttribute('data-status');
+
+        editCodeInput.value = codeText;
+        editLocationSelect.value = locationText;
+        editStatusSelect.value = statusText;
+
+        editModal.classList.add('active');
+      }
+
+      function closeModal() {
+        editModal.classList.remove('active');
+        currentRowContext = null;
+      }
+
+      // Привязка клика ко всем строкам таблицы
+      tableRows.forEach(row => {
+        row.addEventListener('click', () => openModal(row));
+      });
+
+      cancelEditBtn.addEventListener('click', closeModal);
+      editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) closeModal();
+      });
+
+      // Сохранение данных
+      saveEditBtn.addEventListener('click', () => {
+        if (currentRowContext) {
+          // Обновляем код
+          currentRowContext.querySelector('.col-code').innerHTML = `<strong>${editCodeInput.value}</strong>`;
+          
+          // Обновляем локацию
+          currentRowContext.querySelector('.col-location').textContent = editLocationSelect.value;
+          
+          // Обновляем бейдж статуса
+          const statusCol = currentRowContext.querySelector('.col-status');
+          let badgeClass = 'badge-success';
+          
+          if (editStatusSelect.value === 'На ТО') badgeClass = 'badge-warning';
+          if (editStatusSelect.value === 'Остановлен') badgeClass = 'badge-danger';
+          
+          statusCol.innerHTML = `
+            <span class="badge ${badgeClass}" data-status="${editStatusSelect.value}">
+              <span class="badge-dot"></span> ${editStatusSelect.value}
+            </span>
+          `;
+          
+          // Повторно применяем фильтры после сохранения, чтобы данные обновились на лету
+          filterTable();
+        }
+        closeModal();
+      });
+
+    });
   </script>
 </body>
 </html>

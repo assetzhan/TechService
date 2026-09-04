@@ -3,33 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TechService</title>
+  <title>Отчеты по парку — TechService</title>
   <style>
     :root {
       --bg: #0f172a;
-      --panel: #111827;
-      --panel-2: #1f2937;
-      --card: #ffffff;
+      --panel: #ffffff;
       --muted: #64748b;
       --text: #0f172a;
-      --line: #e5e7eb;
+      --line: #e2e8f0;
       --primary: #2563eb;
-      --primary-2: #1d4ed8;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
       --success: #16a34a;
-      --warning: #f59e0b;
+      --warning: #d97706;
       --danger: #dc2626;
-      --info: #06b6d4;
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --info: #0891b2;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
       --radius: 18px;
     }
 
     * { box-sizing: border-box; }
+
+    html {
+      overflow-y: scroll;
+    }
+
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 28%),
-        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      background: #f1f5f9;
       color: var(--text);
     }
 
@@ -39,6 +41,18 @@
       grid-template-columns: 280px 1fr;
     }
 
+    /* Sidebar Overlay for Mobile */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 999;
+    }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
     /* Sidebar */
     .sidebar {
       background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
@@ -47,6 +61,11 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
+      transition: transform 0.3s ease;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
     }
 
     .brand {
@@ -55,144 +74,110 @@
       gap: 12px;
       font-weight: 700;
       font-size: 1.1rem;
-      letter-spacing: 0.2px;
     }
-
     .brand-badge {
-      width: 42px;
-      height: 42px;
+      width: 42px; height: 42px;
       border-radius: 14px;
-      display: grid;
-      place-items: center;
+      display: grid; place-items: center;
       background: linear-gradient(135deg, #2563eb, #06b6d4);
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
       font-size: 1.1rem;
     }
 
-    .sidebar-card {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 18px;
-      backdrop-filter: blur(8px);
-    }
+    .profile { display: flex; align-items: center; gap: 12px; }
+    .profile small { color: rgba(255,255,255,0.65); display: block; margin-top: 2px; }
 
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .avatar {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #f97316, #ec4899);
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-    }
-
-    .profile small {
-      color: rgba(255,255,255,0.65);
-      display: block;
-      margin-top: 2px;
-    }
-
-    .nav {
-      display: grid;
-      gap: 10px;
-    }
-
+    .nav { display: grid; gap: 6px; }
     .nav a {
       text-decoration: none;
       color: rgba(255,255,255,0.78);
-      padding: 12px 14px;
-      border-radius: 14px;
+      padding: 10px 14px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       transition: 0.2s ease;
-      background: transparent;
+      font-size: 14px;
     }
-
-    .nav a:hover,
-    .nav a.active {
-      background: rgba(255,255,255,0.1);
+    .nav a:hover, .nav a.active {
+      background: rgba(255,255,255,0.12);
       color: #fff;
     }
-
     .nav .count {
-      min-width: 28px;
-      padding: 4px 8px;
+      min-width: 26px;
+      padding: 2px 8px;
       border-radius: 999px;
-      background: rgba(37, 99, 235, 0.2);
+      background: rgba(37, 99, 235, 0.3);
       text-align: center;
       font-size: 12px;
     }
 
-    .sidebar-footer {
-      margin-top: auto;
-      font-size: 14px;
-      color: rgba(255,255,255,0.7);
-      line-height: 1.5;
+    .sidebar-footer { margin-top: auto; font-size: 14px; }
+
+    /* Main Container */
+    .main-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
 
-    /* Main */
     .main {
-      padding: 28px;
-      display: grid;
+      width: 100%;
+      max-width: 1360px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
       gap: 20px;
     }
 
+    /* Topbar Layout */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(241, 245, 249, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 12px 0;
     }
 
-    .topbar h1 {
-      margin: 0;
-      font-size: 1.65rem;
-      color: #0f172a;
-    }
-
-    .search-row {
+    .topbar-left {
       display: flex;
-      align-items: stretch;
-      gap: 12px;
-      width: 100%;
-      max-width: 100%;
+      align-items: center;
+      gap: 16px;
     }
 
-    .search {
-      flex: 1 1 auto;
-      min-width: 0;
+    .topbar-title {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .topbar-actions {
       display: flex;
       align-items: center;
       gap: 10px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: var(--shadow);
     }
 
-    .search input {
-      width: 100%;
-      min-width: 0;
-      border: 0;
-      outline: none;
-      font-size: 15px;
-      background: transparent;
+    .menu-toggle {
+      display: none;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      height: 44px; width: 44px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      align-items: center; justify-content: center;
     }
 
     .btn {
       border: 0;
       border-radius: 14px;
-      padding: 12px 16px;
+      padding: 12px 20px;
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s ease;
@@ -202,73 +187,62 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      font-size: 14px;
     }
 
     .btn-ghost {
-      background: transparent;
+      background: #fff;
       color: var(--text);
+      border: 1px solid var(--line);
+    }
+    .btn-ghost:hover {
+      background: var(--primary-light);
+      border-color: rgba(37, 99, 235, 0.3);
+      color: var(--primary);
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      background: var(--primary);
       color: #fff;
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
     }
 
-    /* Управление размерами кнопок */
-	.btn-filter {
-	  min-width: 110px;
-	  padding-inline: 18px;
-	}
+    .btn-new { min-width: 120px; }
 
-	.btn-new {
-	  min-width: 120px;
-	  color: #fff;
-	  padding-inline: 20px;
-	}
-
-    /* Если нужно совсем компактно или наоборот шире */
-	.btn-sm { padding: 10px 12px; font-size: 13px; min-width: auto; }
-	.btn-lg { padding: 14px 22px; font-size: 15px; }
-
-    /* KPI cards */
-    .stats {
+    /* Stats Grid */
+    .stats-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px;
     }
 
-    .stat {
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(229,231,235,0.8);
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 18px;
+      padding: 20px;
       box-shadow: var(--shadow);
-    }
-
-    .stat .label {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .stat .value {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .stat .trend {
-      margin-top: 10px;
-      font-size: 13px;
-      color: var(--success);
       display: flex;
+      flex-direction: column;
       gap: 6px;
-      align-items: center;
     }
 
-    /* Content grid */
+    .stat-card .label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .stat-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Content Layout */
     .content {
       display: grid;
       grid-template-columns: 1.35fr 0.9fr;
@@ -277,16 +251,15 @@
     }
 
     .panel {
-      background: rgba(255,255,255,0.88);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(229,231,235,0.9);
+      background: #ffffff;
+      border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
 
     .panel-head {
-      padding: 18px 18px 14px;
+      padding: 18px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -297,29 +270,53 @@
     .panel-title {
       margin: 0;
       font-size: 1.05rem;
+      font-weight: 700;
     }
 
-    .panel-subtitle {
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 4px;
-    }
-
-    .filters {
+    /* Filter Bar */
+    .filter-bar {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      padding: 14px 18px 18px;
-      border-bottom: 1px solid var(--line);
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+    }
+
+    .search-box {
+      flex: 1 1 240px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+    }
+
+    .filters-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .chip {
       border: 1px solid var(--line);
       background: #fff;
       color: #334155;
-      padding: 10px 14px;
+      padding: 8px 16px;
       border-radius: 999px;
       font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
       transition: 0.2s ease;
     }
@@ -327,30 +324,36 @@
     .chip.active,
     .chip:hover {
       border-color: rgba(37,99,235,0.3);
-      background: rgba(37,99,235,0.08);
-      color: var(--primary-2);
+      background: var(--primary-light);
+      color: var(--primary);
     }
 
-    /* Ticket list */
+    /* Reports / Ticket list */
     .tickets {
       display: grid;
       gap: 12px;
-      padding: 18px;
+      padding: 20px;
+    }
+
+    .ticket-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
     }
 
     .ticket {
       background: #fff;
       border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
+      border-radius: 16px;
+      padding: 18px;
       display: grid;
       gap: 12px;
-      transition: 0.2s ease;
+      transition: all 0.2s ease;
     }
 
     .ticket:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+      box-shadow: var(--shadow);
     }
 
     .ticket-top {
@@ -368,7 +371,7 @@
     }
 
     .ticket-title {
-      margin: 0 0 4px;
+      margin: 0;
       font-size: 1rem;
     }
 
@@ -376,7 +379,7 @@
       color: var(--muted);
       font-size: 13px;
       display: flex;
-      gap: 12px;
+      gap: 16px;
       flex-wrap: wrap;
     }
 
@@ -384,32 +387,21 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 12px;
+      padding: 6px 12px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
       white-space: nowrap;
     }
 
-    .badge.success { background: rgba(22, 163, 74, 0.12); color: var(--success); }
-    .badge.warning { background: rgba(245, 158, 11, 0.15); color: #b45309; }
-    .badge.danger  { background: rgba(220, 38, 38, 0.12); color: var(--danger); }
-    .badge.info    { background: rgba(6, 182, 212, 0.12); color: #0891b2; }
+    .badge.success { background: rgba(22, 163, 74, 0.1); color: var(--success); }
+    .badge.warning { background: rgba(217, 119, 6, 0.1); color: var(--warning); }
+    .badge.danger  { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
+    .badge.info    { background: rgba(8, 145, 178, 0.1); color: var(--info); }
 
-    .ticket-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .ticket-actions .btn {
-      padding: 10px 14px;
-      font-size: 13px;
-    }
-
-    /* Detail */
+    /* Side Panel Details */
     .detail {
-      padding: 18px;
+      padding: 20px;
       display: grid;
       gap: 16px;
     }
@@ -417,48 +409,14 @@
     .detail-card {
       background: #fff;
       border: 1px solid var(--line);
-      border-radius: 18px;
+      border-radius: 16px;
       padding: 16px;
     }
 
     .detail-card h3 {
-      margin: 0 0 10px;
+      margin: 0 0 12px;
       font-size: 1rem;
-    }
-
-    .timeline {
-      display: grid;
-      gap: 14px;
-      margin-top: 12px;
-    }
-
-    .timeline-item {
-      display: grid;
-      grid-template-columns: 14px 1fr;
-      gap: 12px;
-      align-items: start;
-    }
-
-    .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      margin-top: 5px;
-      background: var(--primary);
-      box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.08);
-    }
-
-    .timeline-item p {
-      margin: 0;
-      color: #334155;
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .timeline-item small {
-      color: var(--muted);
-      display: block;
-      margin-bottom: 4px;
+      font-weight: 700;
     }
 
     .meta-grid {
@@ -481,43 +439,72 @@
       padding-bottom: 0;
     }
 
-    .avatar-list {
-      display: flex;
-      align-items: center;
-    }
-
-    .mini-avatar {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      margin-left: -10px;
+    .timeline {
       display: grid;
-      place-items: center;
-      font-size: 12px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+      gap: 14px;
+      margin-top: 8px;
     }
 
-    .mini-avatar:first-child { margin-left: 0; }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 14px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-top: 5px;
+      background: var(--primary);
+      box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.1);
+    }
+
+    .timeline-item p {
+      margin: 0;
+      color: #334155;
+      line-height: 1.4;
+      font-size: 13px;
+    }
+
+    .timeline-item small {
+      color: var(--muted);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
 
     /* Responsive */
-    @media (max-width: 1200px) {
+    @media (max-width: 1100px) {
       .content { grid-template-columns: 1fr; }
-      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
-      .stats { grid-template-columns: 1fr; }
-      .search { min-width: 100%; }
+      .sidebar {
+        position: fixed;
+        left: 0; top: 0;
+        z-index: 1000;
+        height: 100vh;
+        width: 280px;
+        transform: translateX(-100%);
+        box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .menu-toggle { display: flex; }
+      .main { padding: 16px; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
 <body>
+  <!-- Overlay для мобильного меню -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   <div class="app">
-    <aside class="sidebar">
+    <!-- Боковая панель -->
+    <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-badge">T</div>
         <div>TechService</div>
@@ -561,7 +548,11 @@
         </a>
         <a href="https://assetzhan.github.io/TechService/Attractions.htm">
           <span>Аттракционы</span>
-          <span class="count">35</span>
+          <span class="count">10</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/AttractionsList.htm">
+          <span>Список аттракционов</span>
+          <span class="count">10</span>
         </a>
         <a href="https://assetzhan.github.io/TechService/Assignees.htm">
           <span>Ответственные</span>
@@ -586,137 +577,268 @@
       </div>
     </aside>
 
-    <main class="main">
-      <div class="topbar">
+    <!-- Основной контент -->
+    <div class="main-wrapper">
+      <main class="main">
+        <!-- Шапка -->
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
+            <h1 class="topbar-title">Отчеты по парку</h1>
+          </div>
+          <div class="topbar-actions">
+            <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost">Фильтры</a>
+            <a href="https://assetzhan.github.io/TechService/NewReport.htm" class="btn btn-primary btn-new">+ Новый отчет</a>
+          </div>
+        </header>
 
-        <div class="search-row">
-		  <label class="search">
-			<span>🔎</span>
-			<input type="text" placeholder="Поиск по локации, номеру, теме или клиенту..." />
-		  </label>
-		</div>
-		<div class="topbar">
-		  <button class="btn btn-ghost btn-filter">Фильтры</button>
-		  <button class="btn btn-primary btn-new">+ Новый отчет</button>
-		</div>
-      </div>
+        <!-- Метрики -->
+        <section class="stats-grid">
+          <div class="stat-card">
+            <span class="label">Всего отчетов сегодня</span>
+            <span class="value">128</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Исправно (Зеленый)</span>
+            <span class="value" style="color: var(--success);">104</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">С замечаниями (Желтый)</span>
+            <span class="value" style="color: var(--warning);">18</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Не работает (Красный)</span>
+            <span class="value" style="color: var(--danger);">6</span>
+          </div>
+        </section>
 
-      <section class="content">
-        <div class="panel">
-          <div class="panel-head">
-            <div>
-              <h2 class="panel-title">Загруженные отчеты</h2>
+        <!-- Главный блок -->
+        <section class="content">
+          <!-- Левая панель: Реестр отчетов -->
+          <div class="panel">
+            <div class="filter-bar">
+              <div class="search-box">
+                <input type="text" id="reportSearch" placeholder="Поиск по локации, номеру, автору или аттракциону..." />
+              </div>
+
+              <div class="filters-group">
+                <button class="chip active" data-filter="all">Все (128)</button>
+                <button class="chip" data-filter="danger">Красный</button>
+                <button class="chip" data-filter="warning">Желтый</button>
+                <button class="chip" data-filter="success">Зеленый</button>
+              </div>
+            </div>
+
+            <div class="tickets" id="reportList">
+              <a href="https://assetzhan.github.io/TechService/ReportDetail.htm" class="ticket-link">
+                <article class="ticket" data-status="danger">
+                  <div class="ticket-top">
+                    <div>
+                      <div class="ticket-id">#103458 · Создан: 14:20 · Автор: Иванов И.</div>
+                      <div class="ticket-title">
+                        <div class="ticket-meta">
+                          <span>📍 Локация: Шымкент Royal Plaza</span>
+                          <span>🎡 Аттракцион: Скаладром</span>
+                          <span>📊 Статус: Красный</span>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="badge danger">Не работает</span>
+                  </div>
+                </article>
+              </a>
+
+              <article class="ticket" data-status="warning">
+                <div class="ticket-top">
+                  <div>
+                    <div class="ticket-id">#103457 · Создан: 14:15 · Автор: Сидоров И.</div>
+                    <div class="ticket-title">
+                      <div class="ticket-meta">
+                        <span>📍 Локация: Алматы Атакент</span>
+                        <span>🎡 Аттракцион: Скаладром</span>
+                        <span>📊 Статус: Желтый</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="badge warning">Временно отключен</span>
+                </div>
+              </article>
+
+              <article class="ticket" data-status="success">
+                <div class="ticket-top">
+                  <div>
+                    <div class="ticket-id">#103456 · Создан: 14:00 · Автор: Романенко И.</div>
+                    <div class="ticket-title">
+                      <div class="ticket-meta">
+                        <span>📍 Локация: Алматы Алатау</span>
+                        <span>🎡 Аттракцион: Скаладром</span>
+                        <span>📊 Статус: Зеленый</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="badge success">Работает</span>
+                </div>
+              </article>
             </div>
           </div>
 
-          <div class="tickets">
-            <article class="ticket">
-			<a href="https://assetzhan.github.io/TechService/ReportDetail.htm">
-              <div class="ticket-top">
-                <div>
-				  
-                  <div class="ticket-id">#103458 · Создан: 14:20 · Автор: Иванов И.</div>
-                  <h3 class="ticket-title">
-                    <div class="ticket-meta">
-                      <span>Локация: Шымкент Royal Plaza</span>
-                      <span>Аттракцион: Скаладром</span>
-                      <span>Статус: Красный</span>
-                    </div>
-                  </h3>
-                </div>
-                <span class="badge danger">Не работает</span>
-              </div>
-			  </a>
-            </article>
-
-            <article class="ticket">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#103458 · Создан: 14:20 · Автор: Сидоров И.</div>
-                  <h3 class="ticket-title">
-                    <div class="ticket-meta">
-                      <span>Локация: Алматы Атакент</span>
-                      <span>Аттракцион: Скаладром</span>
-                      <span>Статус: Желтый</span>
-                    </div>
-                  </h3>
-                </div>
-                <span class="badge warning">Временно отключен</span>
-              </div>
-            </article>
-
-            <article class="ticket">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-id">#103458 · Создан: 14:20 · Автор: Романенко И.</div>
-                  <h3 class="ticket-title">
-                    <div class="ticket-meta">
-                      <span>Локация: Алматы Алатау</span>
-                      <span>Аттракцион: Скаладром</span>
-                      <span>Статус: Зеленый</span>
-                    </div>
-                  </h3>
-                </div>
-                <span class="badge success">Работает</span>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <aside class="panel">
-          <div class="panel-head">
-            <div>
+          <!-- Правая панель: Сводка и Таймлайн -->
+          <aside class="panel">
+            <div class="panel-head">
               <h2 class="panel-title">Отчеты на сегодня</h2>
-            </div>
-            <span class="badge warning">Не все отчеты отправлены</span>
-          </div>
-
-          <div class="detail">
-            <div class="detail-card">
-              <h3>Аттракционы</h3>
-              <div class="meta-grid">
-                <div class="meta-row"><span>Парк</span><strong>Загружены все отчеты</strong></div>
-                <div class="meta-row"><span>Скаладром</span><strong>Загружены все отчеты</strong></div>
-                <div class="meta-row"><span>Картинг</span><strong>Загружены 6 парков</strong></div>
-                <div class="meta-row"><span>Велосипед</span><strong>Загружены 0 парков</strong></div>
-                <div class="meta-row"></div>
-              </div>
+              <span class="badge warning">Не все отправлены</span>
             </div>
 
-            <div class="detail-card">
-              <h3>Таймлайн</h3>
-              <div class="timeline">
-                <div class="timeline-item">
-                  <div class="dot" style="background: var(--success); box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.08);"></div>
-                  <div>
-                    <small>09:22 — Загружен отчет</small>
-                    <p>Пользователь Самат.С загрузил отчет по аттракциону Лестница в небеса</p>
-                  </div>
-                </div>
-                <div class="timeline-item">
-                  <div class="dot" style="background: var(--warning); box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.08);"></div>
-                  <div>
-                    <small>09:15 — Изменен отчет</small>
-                    <p>Пользователь Самат.С изменил отчет по аттракциону Башния падения</p>
-                  </div>
-                </div>
-                <div class="timeline-item">
-                  <div class="dot" style="background: var(--success); box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.08);"></div>
-                  <div>
-                    <small>09:10 — Загружен отчет</small>
-                    <p>Пользователь Самат.С загрузил отчет по аттракциону Башния падения</p>
-                  </div>
+            <div class="detail">
+              <div class="detail-card">
+                <h3>Загруженность по объектам</h3>
+                <div class="meta-grid">
+                  <div class="meta-row"><span>Парк</span><strong style="color: var(--success);">Загружены все отчеты</strong></div>
+                  <div class="meta-row"><span>Скаладром</span><strong style="color: var(--success);">Загружены все отчеты</strong></div>
+                  <div class="meta-row"><span>Картинг</span><strong style="color: var(--warning);">Загружены 6 парков</strong></div>
+                  <div class="meta-row"><span>Велосипед</span><strong style="color: var(--danger);">Загружены 0 парков</strong></div>
                 </div>
               </div>
-            </div>
 
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <a href="https://assetzhan.github.io/TechService/Logs.htm" class="btn btn-ghost" style="flex:1;">Показать все логи</a>
+              <div class="detail-card">
+                <h3>Таймлайн событий</h3>
+                <div class="timeline">
+                  <div class="timeline-item">
+                    <div class="dot" style="background: var(--success);"></div>
+                    <div>
+                      <small>09:22 — Загружен отчет</small>
+                      <p>Самат С. загрузил отчет по аттракциону «Лестница в небеса»</p>
+                    </div>
+                  </div>
+                  <div class="timeline-item">
+                    <div class="dot" style="background: var(--warning);"></div>
+                    <div>
+                      <small>09:15 — Изменен отчет</small>
+                      <p>Самат С. изменил отчет по аттракциону «Башня падения»</p>
+                    </div>
+                  </div>
+                  <div class="timeline-item">
+                    <div class="dot" style="background: var(--success);"></div>
+                    <div>
+                      <small>09:10 — Загружен отчет</small>
+                      <p>Самат С. загрузил отчет по аттракциону «Башня падения»</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex; gap:10px;">
+                <a href="https://assetzhan.github.io/TechService/Logs.htm" class="btn btn-ghost" style="flex:1;">Показать все логи</a>
+              </div>
             </div>
-          </div>
-        </aside>
-      </section>
-    </main>
+          </aside>
+        </section>
+      </main>
+    </div>
   </div>
+
+  <!-- СКРИПТ УПРАВЛЕНИЯ И НАВИГАЦИИ -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Управление шторкой бокового меню (Sidebar Drawer)
+      const menuToggle = document.getElementById('menuToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+      function openSidebar() {
+        sidebar.classList.add('open');
+        sidebarOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+      if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+      // Жесты (свайпы)
+      let touchStartX = 0, touchEndX = 0;
+      document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+      document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 70 && sidebar.classList.contains('open')) closeSidebar();
+        if (touchEndX - touchStartX > 70 && touchStartX < 30 && !sidebar.classList.contains('open')) openSidebar();
+      }, false);
+
+      // 2. Универсальный роутинг
+      const routes = {
+        "Мониторинг": "https://assetzhan.github.io/TechService/Monitoring.htm",
+        "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
+        "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
+        "Инциденты": "https://assetzhan.github.io/TechService/Incidents.htm",
+        "Локации": "https://assetzhan.github.io/TechService/Locations.htm",
+        "Пользователи": "https://assetzhan.github.io/TechService/Users.htm",
+        "Темы": "https://assetzhan.github.io/TechService/Topics.htm",
+        "Аттракционы": "https://assetzhan.github.io/TechService/Attractions.htm",
+        "Список аттракционов": "https://assetzhan.github.io/TechService/AttractionsList.htm",
+        "Ответственные": "https://assetzhan.github.io/TechService/Assignees.htm",
+        "Наблюдатели": "https://assetzhan.github.io/TechService/Observers.htm",
+        "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
+        "Заявка в ИТ": "https://support.mykids.kz/",
+        "Фильтры": "https://assetzhan.github.io/TechService/Filters.htm",
+        "+ Новый отчет": "https://assetzhan.github.io/TechService/NewReport.htm",
+        "Показать все логи": "https://assetzhan.github.io/TechService/Logs.htm"
+      };
+
+      document.querySelectorAll('a, button').forEach(element => {
+        element.addEventListener('click', (e) => {
+          const text = element.textContent.trim().split('\n')[0].trim();
+          if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {
+            e.preventDefault();
+            window.location.href = routes[text];
+          }
+        });
+      });
+
+      // 3. Интерактивная фильтрация и поиск
+      const chips = document.querySelectorAll('.chip');
+      const tickets = document.querySelectorAll('#reportList .ticket');
+      const searchInput = document.getElementById('reportSearch');
+
+      function filterReports() {
+        const activeChip = document.querySelector('.chip.active');
+        const filterStatus = activeChip ? activeChip.getAttribute('data-filter') : 'all';
+        const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        tickets.forEach(ticket => {
+          const status = ticket.getAttribute('data-status');
+          const content = ticket.textContent.toLowerCase();
+
+          const matchesStatus = (filterStatus === 'all' || status === filterStatus);
+          const matchesSearch = content.includes(searchQuery);
+
+          // Скрываем/показываем карточку целиком (включая ссылку-обертку, если она есть)
+          const target = ticket.closest('.ticket-link') || ticket;
+
+          if (matchesStatus && matchesSearch) {
+            target.style.display = 'block';
+          } else {
+            target.style.display = 'none';
+          }
+        });
+      }
+
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          chips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          filterReports();
+        });
+      });
+
+      if (searchInput) {
+        searchInput.addEventListener('input', filterReports);
+      }
+    });
+  </script>
 </body>
 </html>

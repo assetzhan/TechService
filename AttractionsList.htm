@@ -188,6 +188,20 @@
     .btn-primary:hover {
       background: #1d4ed8;
     }
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
 
     /* Сетка карточек метрик */
     .stats-grid {
@@ -241,7 +255,7 @@
       transition: border-color 0.2s;
       min-height: 44px;
     }
-    .search-box input:focus {
+    .search-box input:focus, .form-control:focus {
       border-color: #2563eb;
     }
     .filters-group {
@@ -278,7 +292,7 @@
       border-collapse: collapse;
       text-align: left;
       font-size: 14px;
-      min-width: 700px; /* Гарантирует читаемость таблицы без сжатия */
+      min-width: 600px;
     }
     th {
       background: #f8fafc;
@@ -295,11 +309,15 @@
       vertical-align: middle;
       white-space: nowrap;
     }
-    tr:last-child td {
+    tr.clickable-row {
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    tr.clickable-row:last-child td {
       border-bottom: none;
     }
-    tr:hover td {
-      background-color: #f8fafc;
+    tr.clickable-row:hover td {
+      background-color: #f1f5f9;
     }
 
     /* Статусы */
@@ -317,27 +335,71 @@
     .badge-danger { background: #fee2e2; color: #b91c1c; }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-    .action-btn {
-      background: #f1f5f9;
-      border: none;
-      color: #334155;
-      cursor: pointer;
-      padding: 8px 14px;
-      border-radius: 8px;
-      transition: all 0.2s;
-      font-weight: 500;
-      min-height: 36px;
+    /* Модальное окно (редактирование) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+      z-index: 1001;
+      padding: 16px;
     }
-    .action-btn:hover {
-      background: #e2e8f0;
-      color: #2563eb;
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-content {
+      background: #fff;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      transform: translateY(20px);
+      transition: transform 0.3s;
+    }
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+    }
+    .modal-header {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #0f172a;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
     }
 
-    /* ===================================================
-       АДАПТИВНОСТЬ: ПЛАНШЕТЫ И МОБИЛЬНЫЕ УСТРОЙСТВА
-    =================================================== */
-
-    /* Планшеты (до 1024px) */
+    /* Адаптивность */
     @media (max-width: 1024px) {
       .app { 
         grid-template-columns: 1fr; 
@@ -359,13 +421,11 @@
       }
     }
 
-    /* Мобильные телефоны (до 600px) */
     @media (max-width: 600px) {
       .main-content {
         padding: 12px;
         gap: 14px;
       }
-
       .top-bar {
         padding: 12px 16px;
         flex-wrap: wrap;
@@ -374,11 +434,10 @@
         font-size: 1.25rem;
       }
       .btn-primary {
-        width: 100%; /* Кнопка во всю ширину на смартфонах */
+        width: 100%;
       }
-
       .stats-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 колонки для метрик */
+        grid-template-columns: repeat(2, 1fr);
         gap: 10px;
       }
       .stat-card {
@@ -387,7 +446,6 @@
       .stat-card .value {
         font-size: 22px;
       }
-
       .filter-bar {
         padding: 12px;
         flex-direction: column;
@@ -403,9 +461,14 @@
       .select-control {
         width: 100%;
       }
-
       th, td {
         padding: 12px 14px;
+      }
+      .modal-actions {
+        flex-direction: column-reverse;
+      }
+      .modal-actions button {
+        width: 100%;
       }
     }
   </style>
@@ -431,55 +494,19 @@
       </div>
 
       <nav class="nav">
-        <a href="https://assetzhan.github.io/TechService/Monitoring.htm">
-          <span>Мониторинг</span>
-          <span class="count">3</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Reports.htm">
-          <span>Отчеты по парку</span>
-          <span class="count">128</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Tasks.htm">
-          <span>Задачи</span>
-          <span class="count">24</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Incidents.htm">
-          <span>Инциденты</span>
-          <span class="count">51</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Locations.htm">
-          <span>Локации</span>
-          <span class="count">10</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Users.htm">
-          <span>Пользователи</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Topics.htm">
-          <span>Темы</span>
-          <span class="count">35</span>
-        </a>
-
-        <a href="https://assetzhan.github.io/TechService/Attractions.htm">
-          <span>Аттракционы</span>
-          <span class="count">35</span>
-        </a>
-        <a class="active" href="https://assetzhan.github.io/TechService/AttractionsList.htm">
-          <span>Список аттракционов</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Assignees.htm">
-          <span>Ответственные</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Observers.htm">
-          <span>Наблюдатели</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/RootCauses.htm">
-          <span>Первопричины</span>
-          <span class="count">35</span>
-        </a>
+        <!-- Ссылки меню идентичны оригиналу -->
+        <a href="https://assetzhan.github.io/TechService/Monitoring.htm"><span>Мониторинг</span><span class="count">3</span></a>
+        <a href="https://assetzhan.github.io/TechService/Reports.htm"><span>Отчеты по парку</span><span class="count">128</span></a>
+        <a href="https://assetzhan.github.io/TechService/Tasks.htm"><span>Задачи</span><span class="count">24</span></a>
+        <a href="https://assetzhan.github.io/TechService/Incidents.htm"><span>Инциденты</span><span class="count">51</span></a>
+        <a href="https://assetzhan.github.io/TechService/Locations.htm"><span>Локации</span><span class="count">10</span></a>
+        <a href="https://assetzhan.github.io/TechService/Users.htm"><span>Пользователи</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Topics.htm"><span>Темы</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Attractions.htm"><span>Аттракционы</span><span class="count">35</span></a>
+        <a class="active" href="https://assetzhan.github.io/TechService/AttractionsList.htm"><span>Список аттракционов</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Assignees.htm"><span>Ответственные</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Observers.htm"><span>Наблюдатели</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/RootCauses.htm"><span>Первопричины</span><span class="count">35</span></a>
       </nav>
 
       <div class="sidebar-footer">
@@ -532,15 +559,22 @@
         <div class="filters-group">
           <select class="select-control" id="locationFilter">
             <option value="">Все локации</option>
-            <option value="mega">ТРЦ Mega Center</option>
-            <option value="forum">ТРЦ Forum</option>
-            <option value="dostyk">ТРЦ Dostyk Plaza</option>
+            <option value="ТРЦ Mega Center">ТРЦ Mega Center</option>
+            <option value="ТРЦ Forum">ТРЦ Forum</option>
+            <option value="ТРЦ Dostyk Plaza">ТРЦ Dostyk Plaza</option>
+          </select>
+          <!-- Новый фильтр по типу/категории аттракционов -->
+          <select class="select-control" id="categoryFilter">
+            <option value="">Все аттракционы</option>
+            <option value="Семейные">Семейные</option>
+            <option value="Детские">Детские</option>
+            <option value="Экстремальные">Экстремальные</option>
           </select>
           <select class="select-control" id="statusFilter">
             <option value="">Все статусы</option>
-            <option value="active">В работе</option>
-            <option value="maintenance">На ТО</option>
-            <option value="stopped">Остановлен</option>
+            <option value="В работе">В работе</option>
+            <option value="На ТО">На ТО</option>
+            <option value="Остановлен">Остановлен</option>
           </select>
         </div>
       </section>
@@ -556,75 +590,69 @@
                 <th>Локация</th>
                 <th>Категория</th>
                 <th>Статус</th>
-                <th>Ответственный</th>
-                <th>Последняя активность</th>
+                <th>Последняя активность (отчет)</th>
               </tr>
             </thead>
             <tbody id="attractionsTableBody">
-              <tr>
-                <td><strong>ATR-001</strong></td>
+              <tr class="clickable-row">
+                <td class="col-code"><strong>ATR-001</strong></td>
                 <td>Батуты</td>
-                <td>ТРЦ Mega Center</td>
-                <td>Семейные</td>
-                <td>
-                  <span class="badge badge-success">
+                <td class="col-location">ТРЦ Mega Center</td>
+                <td class="col-category">Семейные</td>
+                <td class="col-status">
+                  <span class="badge badge-success" data-status="В работе">
                     <span class="badge-dot"></span> В работе
                   </span>
                 </td>
-                <td>Алексей И.</td>
-                <td><button class="action-btn">Открыть</button></td>
+                <td style="color: #64748b;">03.09.2026</td>
               </tr>
-              <tr>
-                <td><strong>ATR-002</strong></td>
+              <tr class="clickable-row">
+                <td class="col-code"><strong>ATR-002</strong></td>
                 <td>Автодром "Формула-1"</td>
-                <td>ТРЦ Mega Center</td>
-                <td>Семейные</td>
-                <td>
-                  <span class="badge badge-success">
+                <td class="col-location">ТРЦ Mega Center</td>
+                <td class="col-category">Семейные</td>
+                <td class="col-status">
+                  <span class="badge badge-success" data-status="В работе">
                     <span class="badge-dot"></span> В работе
                   </span>
                 </td>
-                <td>Иван П.</td>
-                <td><button class="action-btn">Открыть</button></td>
+                <td style="color: #64748b;">01.09.2026</td>
               </tr>
-              <tr>
-                <td><strong>ATR-003</strong></td>
+              <tr class="clickable-row">
+                <td class="col-code"><strong>ATR-003</strong></td>
                 <td>Колесо обозрения</td>
-                <td>ТРЦ Forum</td>
-                <td>Семейные</td>
-                <td>
-                  <span class="badge badge-warning">
+                <td class="col-location">ТРЦ Forum</td>
+                <td class="col-category">Семейные</td>
+                <td class="col-status">
+                  <span class="badge badge-warning" data-status="На ТО">
                     <span class="badge-dot"></span> На ТО
                   </span>
                 </td>
-                <td>Дмитрий С.</td>
-                <td><button class="action-btn">Открыть</button></td>
+                <td style="color: #64748b;">28.08.2026</td>
               </tr>
-              <tr>
-                <td><strong>ATR-004</strong></td>
+              <tr class="clickable-row">
+                <td class="col-code"><strong>ATR-004</strong></td>
                 <td>Карусель "Сказка"</td>
-                <td>ТРЦ Dostyk Plaza</td>
-                <td>Детские</td>
-                <td>
-                  <span class="badge badge-success">
+                <td class="col-location">ТРЦ Dostyk Plaza</td>
+                <td class="col-category">Детские</td>
+                <td class="col-status">
+                  <span class="badge badge-success" data-status="В работе">
                     <span class="badge-dot"></span> В работе
                   </span>
                 </td>
-                <td>Анна К.</td>
-                <td><button class="action-btn">Открыть</button></td>
+                <td style="color: #64748b;">02.09.2026</td>
               </tr>
-              <tr>
-                <td><strong>ATR-005</strong></td>
+              <tr class="clickable-row">
+                <td class="col-code"><strong>ATR-005</strong></td>
                 <td>Башня свободного падения</td>
-                <td>ТРЦ Mega Center</td>
-                <td>Экстремальные</td>
-                <td>
-                  <span class="badge badge-danger">
+                <td class="col-location">ТРЦ Mega Center</td>
+                <td class="col-category">Экстремальные</td>
+                <td class="col-status">
+                  <span class="badge badge-danger" data-status="Остановлен">
                     <span class="badge-dot"></span> Остановлен
                   </span>
                 </td>
-                <td>Алексей И.</td>
-                <td><button class="action-btn">Открыть</button></td>
+                <td style="color: #64748b;">25.08.2026</td>
               </tr>
             </tbody>
           </table>
@@ -633,8 +661,44 @@
     </main>
   </div>
 
+  <!-- Модальное окно редактирования -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">Редактировать аттракцион</div>
+      
+      <div class="form-group">
+        <label>Код аттракциона</label>
+        <input type="text" id="editCode" class="form-control">
+      </div>
+      
+      <div class="form-group">
+        <label>Локация</label>
+        <select id="editLocation" class="form-control">
+          <option value="ТРЦ Mega Center">ТРЦ Mega Center</option>
+          <option value="ТРЦ Forum">ТРЦ Forum</option>
+          <option value="ТРЦ Dostyk Plaza">ТРЦ Dostyk Plaza</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Активность (Статус)</label>
+        <select id="editStatus" class="form-control">
+          <option value="В работе">В работе</option>
+          <option value="На ТО">На ТО</option>
+          <option value="Остановлен">Остановлен</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" id="cancelEditBtn">Отмена</button>
+        <button class="btn-primary" id="saveEditBtn">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // --- Боковое меню и свайпы ---
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
       const menuToggle = document.getElementById('menuToggle');
@@ -642,7 +706,7 @@
       function openSidebar() { 
         sidebar.classList.add('open'); 
         overlay.classList.add('active'); 
-        document.body.style.overflow = 'hidden'; // Блокируем скролл фона
+        document.body.style.overflow = 'hidden';
       }
 
       function closeSidebar() { 
@@ -654,7 +718,6 @@
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (overlay) overlay.addEventListener('click', closeSidebar);
 
-      // Закрытие по клику на пункт меню на мобильных
       const navLinks = sidebar.querySelectorAll('.nav a');
       navLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -662,49 +725,131 @@
         });
       });
 
-      // Жесты (свайпы)
       let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
-
-      document.addEventListener('touchstart', (e) => {
+      document.addEventListener('touchstart', e => {
         touchStartX = e.changedTouches[0].clientX;
         touchStartY = e.changedTouches[0].clientY;
       }, { passive: true });
 
-      document.addEventListener('touchend', (e) => {
+      document.addEventListener('touchend', e => {
         touchEndX = e.changedTouches[0].clientX;
         touchEndY = e.changedTouches[0].clientY;
-        handleSwipe();
-      }, { passive: true });
-
-      function handleSwipe() {
         const deltaX = touchEndX - touchStartX;
         const deltaY = touchEndY - touchStartY;
 
         if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-          // Свайп вправо от левого края для открытия
-          if (deltaX > 0 && !sidebar.classList.contains('open') && touchStartX < 60) {
-            openSidebar();
-          } 
-          // Свайп влево для закрытия
-          else if (deltaX < 0 && sidebar.classList.contains('open')) {
-            closeSidebar();
-          }
+          if (deltaX > 0 && !sidebar.classList.contains('open') && touchStartX < 60) openSidebar();
+          else if (deltaX < 0 && sidebar.classList.contains('open')) closeSidebar();
         }
-      }
+      }, { passive: true });
 
-      // Быстрый поиск по таблице
+      // --- Фильтрация ---
       const searchInput = document.getElementById('searchInput');
+      const locationFilter = document.getElementById('locationFilter');
+      const categoryFilter = document.getElementById('categoryFilter');
+      const statusFilter = document.getElementById('statusFilter');
       const tableRows = document.querySelectorAll('#attractionsTableBody tr');
 
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          const query = e.target.value.toLowerCase();
-          tableRows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(query) ? '' : 'none';
-          });
+      function filterTable() {
+        const query = searchInput.value.toLowerCase();
+        const locVal = locationFilter.value;
+        const catVal = categoryFilter.value;
+        const statVal = statusFilter.value;
+
+        tableRows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          const rowLoc = row.querySelector('.col-location').textContent.trim();
+          const rowCat = row.querySelector('.col-category').textContent.trim();
+          const rowStat = row.querySelector('.badge').getAttribute('data-status');
+
+          const matchesSearch = text.includes(query);
+          const matchesLoc = !locVal || rowLoc === locVal;
+          const matchesCat = !catVal || rowCat === catVal;
+          const matchesStat = !statVal || rowStat === statVal;
+
+          if (matchesSearch && matchesLoc && matchesCat && matchesStat) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
         });
       }
+
+      [searchInput, locationFilter, categoryFilter, statusFilter].forEach(el => {
+        el.addEventListener('input', filterTable);
+        el.addEventListener('change', filterTable);
+      });
+
+
+      // --- Модальное окно (Редактирование) ---
+      const editModal = document.getElementById('editModal');
+      const cancelEditBtn = document.getElementById('cancelEditBtn');
+      const saveEditBtn = document.getElementById('saveEditBtn');
+      
+      const editCodeInput = document.getElementById('editCode');
+      const editLocationSelect = document.getElementById('editLocation');
+      const editStatusSelect = document.getElementById('editStatus');
+      
+      let currentRowContext = null;
+
+      function openModal(row) {
+        currentRowContext = row;
+        
+        // Заполняем данные из строки в модальное окно
+        const codeText = row.querySelector('.col-code').textContent.trim();
+        const locationText = row.querySelector('.col-location').textContent.trim();
+        const statusText = row.querySelector('.badge').getAttribute('data-status');
+
+        editCodeInput.value = codeText;
+        editLocationSelect.value = locationText;
+        editStatusSelect.value = statusText;
+
+        editModal.classList.add('active');
+      }
+
+      function closeModal() {
+        editModal.classList.remove('active');
+        currentRowContext = null;
+      }
+
+      // Привязка клика ко всем строкам таблицы
+      tableRows.forEach(row => {
+        row.addEventListener('click', () => openModal(row));
+      });
+
+      cancelEditBtn.addEventListener('click', closeModal);
+      editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) closeModal();
+      });
+
+      // Сохранение данных
+      saveEditBtn.addEventListener('click', () => {
+        if (currentRowContext) {
+          // Обновляем код
+          currentRowContext.querySelector('.col-code').innerHTML = `<strong>${editCodeInput.value}</strong>`;
+          
+          // Обновляем локацию
+          currentRowContext.querySelector('.col-location').textContent = editLocationSelect.value;
+          
+          // Обновляем бейдж статуса
+          const statusCol = currentRowContext.querySelector('.col-status');
+          let badgeClass = 'badge-success';
+          
+          if (editStatusSelect.value === 'На ТО') badgeClass = 'badge-warning';
+          if (editStatusSelect.value === 'Остановлен') badgeClass = 'badge-danger';
+          
+          statusCol.innerHTML = `
+            <span class="badge ${badgeClass}" data-status="${editStatusSelect.value}">
+              <span class="badge-dot"></span> ${editStatusSelect.value}
+            </span>
+          `;
+          
+          // Повторно применяем фильтры после сохранения, чтобы данные обновились на лету
+          filterTable();
+        }
+        closeModal();
+      });
+
     });
   </script>
 </body>

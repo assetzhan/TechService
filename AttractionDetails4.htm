@@ -265,8 +265,33 @@
     .custom-checkbox {
       width: 18px;
       height: 18px;
+      cursor: not-allowed;
       accent-color: var(--primary);
-      pointer-events: none;
+    }
+
+    /* Иконки важности */
+    .badge-importance {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-high {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .badge-medium {
+      background: #fffbeeb;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
+    .badge-low {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
     }
 
     /* Modal styles */
@@ -322,7 +347,7 @@
       color: var(--muted);
     }
 
-    .form-input, .form-textarea {
+    .form-input, .form-textarea, .form-select {
       width: 100%;
       padding: 12px 14px;
       border: 1px solid var(--line);
@@ -332,7 +357,7 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .form-input:focus, .form-textarea:focus {
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
       border-color: var(--primary);
     }
 
@@ -351,6 +376,7 @@
     .actions-cell {
       display: flex;
       gap: 8px;
+      justify-content: center;
     }
 
     .btn-icon {
@@ -407,15 +433,15 @@
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <!-- Модальное окно создания/редактирования элемента -->
-  <div class="modal-overlay" id="itemModalOverlay" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
+  <div class="modal-overlay" id="itemModalOverlay">
     <div class="modal">
       <h3 class="modal-title" id="modalTitle">Добавить проверяемый элемент</h3>
-      <form id="itemForm">
+      <form id="itemForm" style="display: contents;">
         <input type="hidden" id="editIndex" value="-1" />
         
         <div class="form-group">
           <label class="form-label" for="inputIndex">Порядковый номер (строка)</label>
-          <input type="number" id="inputIndex" class="form-input" required placeholder="Например: 1" min="1" />
+          <input type="number" id="inputIndex" class="form-input" required placeholder="Например: 1" />
         </div>
 
         <div class="form-group">
@@ -436,6 +462,15 @@
         <div class="form-group">
           <label class="form-label" for="inputNorm">Признаки нормы</label>
           <textarea id="inputNorm" class="form-textarea" required placeholder="Критерии нормального состояния..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inputImportance">Важность</label>
+          <select id="inputImportance" class="form-select" required>
+            <option value="Высокая">Высокая</option>
+            <option value="Средняя" selected>Средняя</option>
+            <option value="Низкая">Низкая</option>
+          </select>
         </div>
 
         <div class="form-group form-group-checkbox">
@@ -528,18 +563,21 @@
     <div class="main-wrapper">
       <main class="main">
         <!-- Верхняя панель -->
-        <header class="topbar">
+        <div class="topbar">
+          <!-- 1-я строка на мобильных: Кнопка меню слева, Кнопка Назад справа -->
           <div class="topbar-controls">
             <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
             <a href="https://assetzhan.github.io/TechService/Attractions.htm" class="btn btn-back">← Назад</a>
           </div>
           
+          <!-- 2-я строка на мобильных: Заголовок -->
           <h1 class="topbar-title">Реестр проверки: Башня-кран</h1>
           
+          <!-- 3-я строка на мобильных: Добавить элемент -->
           <div class="btn-add-wrapper">
             <button class="btn btn-primary" id="openAddModalBtn">+ Добавить элемент</button>
           </div>
-        </header>
+        </div>
 
         <!-- Таблица элементов -->
         <section class="content">
@@ -554,7 +592,8 @@
                     <th>Как проверяется</th>
                     <th>Признаки нормы</th>
                     <th style="width: 100px; text-align: center;">Активность</th>
-                    <th style="width: 80px;">Действия</th>
+                    <th style="width: 120px;">Важность</th>
+                    <th style="width: 50px;"></th>
                   </tr>
                 </thead>
                 <tbody id="elementsTableBody">
@@ -570,6 +609,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // 1. Сайдбар и оверлей
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
       const menuToggle = document.getElementById('menuToggle');
@@ -580,6 +620,7 @@
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (overlay) overlay.addEventListener('click', closeSidebar);
 
+      // 2. Список проверяемых элементов для «Башня-кран»
       let checkItems = [
         {
           id: 1,
@@ -587,7 +628,8 @@
           what: "Каркас, стойки, рамы, соединения и анкерные крепления.",
           how: "Осмотреть конструкцию;\nпроверить анкеры и доступные соединения;\nвручную проверить отсутствие шатания.",
           norm: "Конструкция жёсткая;\nлюфт, трещины, деформации, коррозия и ослабленные крепления отсутствуют.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 2,
@@ -595,7 +637,8 @@
           what: "Покрытие груши, подвес, соединители и верхнее крепление.",
           how: "Осмотреть по всей доступной поверхности;\nпроверить целостность подвеса и креплений без рывковых нагрузок.",
           norm: "Разрывы, проколы, оголённые жёсткие элементы и повреждения отсутствуют;\nгруша закреплена надёжно.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 3,
@@ -603,7 +646,8 @@
           what: "Ступени, настил, поручни, ограждения, калитка площадки и их крепления.",
           how: "Осмотреть;\nпроверить устойчивость, фиксацию ступеней, поручней, ограждений и калитки.",
           norm: "Люфт, повреждения и скользкие загрязнения отсутствуют;\nэлементы закреплены;\nкалитка фиксируется.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 4,
@@ -611,7 +655,8 @@
           what: "Корпус, крепление, стропа по всей доступной длине, втягивание и тормозной механизм.",
           how: "Осмотреть по инструкции изготовителя;\nплавно вытянуть и втянуть стропу;\nвыполнить контроль срабатывания без пользователя.",
           norm: "Корпус и стропа без дефектов;\nвтягивание плавное;\nторможение контролируемое;\nсвободное падение отсутствует.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 5,
@@ -619,7 +664,8 @@
           what: "Обе стороны стропы, кромки, швы, индикаторы износа и концевое соединение.",
           how: "Осмотреть по всей доступной длине при медленном вытягивании, не допуская перекручивания.",
           norm: "Порезы, надрывы, оплавления, истирание, распущенные швы и сработавшие индикаторы отсутствуют.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 6,
@@ -627,7 +673,8 @@
           what: "Корпус, защёлка, муфта, шарниры, вертлюг и точки присоединения.",
           how: "Осмотреть;\nпроверить закрытие и блокировку;\nубедиться в правильном соединении и отсутствии боковой нагрузки.",
           norm: "Трещины, деформации, коррозия и заедание отсутствуют;\nзащёлка и блокировка полностью закрываются.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 7,
@@ -635,7 +682,8 @@
           what: "Ремни, швы, пряжки, регулировки, петли и маркировка.",
           how: "Осмотреть каждый элемент;\nпроверить пряжки и регулировки;\nсверить отсутствие браковочных признаков.",
           norm: "Порезы, надрывы, оплавления и повреждённые швы отсутствуют;\nпряжки исправны;\nмаркировка читаема.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 8,
@@ -643,7 +691,8 @@
           what: "Корпус, внутренняя оснастка, подбородочный ремень, застёжка и регулировка.",
           how: "Осмотреть;\nпроверить застёгивание и регулировку;\nизъять каски после удара или с неизвестной историей удара.",
           norm: "Трещины, сколы и деформации отсутствуют;\nвнутренняя оснастка, ремень и застёжка исправны.",
-          active: true
+          active: true,
+          importance: "Средняя"
         },
         {
           id: 9,
@@ -651,7 +700,8 @@
           what: "Маты, стыки, покрытие и отсутствие твёрдых предметов в защищаемой зоне.",
           how: "Осмотреть и пройти по поверхности;\nпроверить фиксацию, отсутствие просадки, зазоров и посторонних предметов.",
           norm: "Зона закрыта матами полностью;\nсмещение, разрывы, просадки, опасные зазоры и препятствия отсутствуют.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 10,
@@ -659,7 +709,8 @@
           what: "Сетки, стойки, крепления и мягкие защитные элементы.",
           how: "Осмотреть;\nвручную проверить натяжение и крепление;\nубедиться, что жёсткие элементы закрыты.",
           norm: "Повреждения и опасные зазоры отсутствуют;\nкрепления надёжны;\nзащита установлена и не смещается.",
-          active: true
+          active: true,
+          importance: "Средняя"
         },
         {
           id: 11,
@@ -667,7 +718,8 @@
           what: "Калитка, петли, доводчик/самозакрывание, замок и ограничение доступа.",
           how: "Несколько раз открыть и закрыть;\nпроверить полное закрытие и фиксацию.",
           norm: "Калитка закрывается полностью и фиксируется;\nсамопроизвольное открытие и опасный люфт отсутствуют.",
-          active: true
+          active: true,
+          importance: "Средняя"
         },
         {
           id: 12,
@@ -675,7 +727,8 @@
           what: "Стартовая зона, траектория движения, зона приземления и проходы персонала.",
           how: "Осмотреть всю зону;\nубрать посторонние предметы;\nпроверить освещение и отсутствие доступа посторонних.",
           norm: "Траектория и зоны свободны;\nосвещение достаточное;\nограждение исключает случайный вход посетителей.",
-          active: true
+          active: true,
+          importance: "Средняя"
         },
         {
           id: 13,
@@ -683,7 +736,8 @@
           what: "Правила, ограничения, предупреждения и идентификационная маркировка.",
           how: "Проверить наличие, актуальность, закрепление и читаемость с места входа.",
           norm: "Информация присутствует, соответствует аттракциону, читаема и не повреждена.",
-          active: true
+          active: true,
+          importance: "Низкая"
         },
         {
           id: 14,
@@ -691,7 +745,8 @@
           what: "Работа страховки, движение стропы, отсутствие посторонних звуков и готовность зоны.",
           how: "Выполнить пробную проверку и убедиться в штатной работе.",
           norm: "Все элементы работают штатно;\nрывки, заедание, посторонние звуки и иные отклонения отсутствуют.",
-          active: true
+          active: true,
+          importance: "Высокая"
         }
       ];
 
@@ -708,7 +763,44 @@
       const inputWhat = document.getElementById('inputWhat');
       const inputHow = document.getElementById('inputHow');
       const inputNorm = document.getElementById('inputNorm');
+      const inputImportance = document.getElementById('inputImportance');
       const inputActive = document.getElementById('inputActive');
+
+      function getImportanceBadgeClass(importance) {
+        switch (importance) {
+          case 'Высокая': return 'badge-high';
+          case 'Средняя': return 'badge-medium';
+          case 'Низкая': return 'badge-low';
+          default: return 'badge-medium';
+        }
+      }
+
+      function renderTable() {
+        tableBody.innerHTML = '';
+        checkItems.forEach((item, index) => {
+          const tr = document.createElement('tr');
+          const badgeClass = getImportanceBadgeClass(item.importance);
+          tr.innerHTML = `
+            <td><strong>${item.id}</strong></td>
+            <td><strong>${escapeHtml(item.name)}</strong></td>
+            <td>${escapeHtml(item.what).replace(/\n/g, '<br>')}</td>
+            <td>${escapeHtml(item.how).replace(/\n/g, '<br>')}</td>
+            <td>${escapeHtml(item.norm).replace(/\n/g, '<br>')}</td>
+            <td class="checkbox-cell">
+              <input type="checkbox" class="custom-checkbox" ${item.active ? 'checked' : ''} onclick="return false;" tabindex="-1" />
+            </td>
+            <td>
+              <span class="badge-importance ${badgeClass}">${escapeHtml(item.importance || 'Средняя')}</span>
+            </td>
+            <td>
+              <div class="actions-cell">
+                <button class="btn-icon" onclick="editItem(${index})" title="Редактировать">✏️</button>
+              </div>
+            </td>
+          `;
+          tableBody.appendChild(tr);
+        });
+      }
 
       function escapeHtml(text) {
         if (!text) return '';
@@ -720,51 +812,7 @@
           .replace(/'/g, "&#039;");
       }
 
-      function renderTable() {
-        tableBody.innerHTML = '';
-        checkItems.forEach((item, index) => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong>${item.id}</strong></td>
-            <td><strong>${escapeHtml(item.name)}</strong></td>
-            <td>${escapeHtml(item.what).replace(/\n/g, '<br>')}</td>
-            <td>${escapeHtml(item.how).replace(/\n/g, '<br>')}</td>
-            <td>${escapeHtml(item.norm).replace(/\n/g, '<br>')}</td>
-            <td class="checkbox-cell">
-              <input type="checkbox" class="custom-checkbox" ${item.active ? 'checked' : ''} disabled aria-label="Статус активности" />
-            </td>
-            <td>
-              <div class="actions-cell">
-                <button class="btn-icon btn-edit" data-index="${index}" title="Редактировать" aria-label="Редактировать элемент">✏️</button>
-              </div>
-            </td>
-          `;
-          tableBody.appendChild(tr);
-        });
-      }
-
-      // Делегирование событий для кнопок редактирования
-      tableBody.addEventListener('click', (e) => {
-        const editBtn = e.target.closest('.btn-edit');
-        if (editBtn) {
-          const index = parseInt(editBtn.dataset.index, 10);
-          openEditModal(index);
-        }
-      });
-
-      function openEditModal(index) {
-        const item = checkItems[index];
-        modalTitle.textContent = "Редактировать проверяемый элемент";
-        editIndexInput.value = index;
-        inputIndex.value = item.id;
-        inputName.value = item.name;
-        inputWhat.value = item.what;
-        inputHow.value = item.how;
-        inputNorm.value = item.norm;
-        inputActive.checked = item.active;
-        modalOverlay.classList.add('active');
-      }
-
+      // Открытие модального окна для создания
       openAddModalBtn.addEventListener('click', () => {
         modalTitle.textContent = "Добавить проверяемый элемент";
         editIndexInput.value = "-1";
@@ -773,10 +821,12 @@
         inputWhat.value = "";
         inputHow.value = "";
         inputNorm.value = "";
+        inputImportance.value = "Средняя";
         inputActive.checked = true;
         modalOverlay.classList.add('active');
       });
 
+      // Закрытие модального окна
       closeModalBtn.addEventListener('click', () => {
         modalOverlay.classList.remove('active');
       });
@@ -787,6 +837,22 @@
         }
       });
 
+      // Редактирование элемента
+      window.editItem = function(index) {
+        const item = checkItems[index];
+        modalTitle.textContent = "Редактировать проверяемый элемент";
+        editIndexInput.value = index;
+        inputIndex.value = item.id;
+        inputName.value = item.name;
+        inputWhat.value = item.what;
+        inputHow.value = item.how;
+        inputNorm.value = item.norm;
+        inputImportance.value = item.importance || "Средняя";
+        inputActive.checked = item.active;
+        modalOverlay.classList.add('active');
+      };
+
+      // Сохранение формы
       itemForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const index = parseInt(editIndexInput.value, 10);
@@ -796,6 +862,7 @@
           what: inputWhat.value.trim(),
           how: inputHow.value.trim(),
           norm: inputNorm.value.trim(),
+          importance: inputImportance.value,
           active: inputActive.checked
         };
 
@@ -809,6 +876,7 @@
         renderTable();
       });
 
+      // Первичный рендер
       renderTable();
     });
   </script>

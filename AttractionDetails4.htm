@@ -265,8 +265,8 @@
     .custom-checkbox {
       width: 18px;
       height: 18px;
-      cursor: not-allowed;
       accent-color: var(--primary);
+      pointer-events: none;
     }
 
     /* Modal styles */
@@ -407,15 +407,15 @@
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <!-- Модальное окно создания/редактирования элемента -->
-  <div class="modal-overlay" id="itemModalOverlay">
+  <div class="modal-overlay" id="itemModalOverlay" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
     <div class="modal">
       <h3 class="modal-title" id="modalTitle">Добавить проверяемый элемент</h3>
-      <form id="itemForm" style="display: contents;">
+      <form id="itemForm">
         <input type="hidden" id="editIndex" value="-1" />
         
         <div class="form-group">
           <label class="form-label" for="inputIndex">Порядковый номер (строка)</label>
-          <input type="number" id="inputIndex" class="form-input" required placeholder="Например: 1" />
+          <input type="number" id="inputIndex" class="form-input" required placeholder="Например: 1" min="1" />
         </div>
 
         <div class="form-group">
@@ -528,21 +528,18 @@
     <div class="main-wrapper">
       <main class="main">
         <!-- Верхняя панель -->
-        <div class="topbar">
-          <!-- 1-я строка на мобильных: Кнопка меню слева, Кнопка Назад справа -->
+        <header class="topbar">
           <div class="topbar-controls">
             <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
             <a href="https://assetzhan.github.io/TechService/Attractions.htm" class="btn btn-back">← Назад</a>
           </div>
           
-          <!-- 2-я строка на мобильных: Заголовок -->
           <h1 class="topbar-title">Реестр проверки: Башня-кран</h1>
           
-          <!-- 3-я строка на мобильных: Добавить элемент -->
           <div class="btn-add-wrapper">
             <button class="btn btn-primary" id="openAddModalBtn">+ Добавить элемент</button>
           </div>
-        </div>
+        </header>
 
         <!-- Таблица элементов -->
         <section class="content">
@@ -573,7 +570,6 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Сайдбар и оверлей
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
       const menuToggle = document.getElementById('menuToggle');
@@ -584,7 +580,6 @@
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (overlay) overlay.addEventListener('click', closeSidebar);
 
-      // 2. Список проверяемых элементов для «Башня-кран»
       let checkItems = [
         {
           id: 1,
@@ -715,6 +710,16 @@
       const inputNorm = document.getElementById('inputNorm');
       const inputActive = document.getElementById('inputActive');
 
+      function escapeHtml(text) {
+        if (!text) return '';
+        return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
       function renderTable() {
         tableBody.innerHTML = '';
         checkItems.forEach((item, index) => {
@@ -726,11 +731,11 @@
             <td>${escapeHtml(item.how).replace(/\n/g, '<br>')}</td>
             <td>${escapeHtml(item.norm).replace(/\n/g, '<br>')}</td>
             <td class="checkbox-cell">
-              <input type="checkbox" class="custom-checkbox" ${item.active ? 'checked' : ''} onclick="return false;" tabindex="-1" />
+              <input type="checkbox" class="custom-checkbox" ${item.active ? 'checked' : ''} disabled aria-label="Статус активности" />
             </td>
             <td>
               <div class="actions-cell">
-                <button class="btn-icon" onclick="editItem(${index})" title="Редактировать">✏️</button>
+                <button class="btn-icon btn-edit" data-index="${index}" title="Редактировать" aria-label="Редактировать элемент">✏️</button>
               </div>
             </td>
           `;
@@ -738,17 +743,28 @@
         });
       }
 
-      function escapeHtml(text) {
-        if (!text) return '';
-        return text
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
+      // Делегирование событий для кнопок редактирования
+      tableBody.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.btn-edit');
+        if (editBtn) {
+          const index = parseInt(editBtn.dataset.index, 10);
+          openEditModal(index);
+        }
+      });
+
+      function openEditModal(index) {
+        const item = checkItems[index];
+        modalTitle.textContent = "Редактировать проверяемый элемент";
+        editIndexInput.value = index;
+        inputIndex.value = item.id;
+        inputName.value = item.name;
+        inputWhat.value = item.what;
+        inputHow.value = item.how;
+        inputNorm.value = item.norm;
+        inputActive.checked = item.active;
+        modalOverlay.classList.add('active');
       }
 
-      // Открытие модального окна для создания
       openAddModalBtn.addEventListener('click', () => {
         modalTitle.textContent = "Добавить проверяемый элемент";
         editIndexInput.value = "-1";
@@ -761,7 +777,6 @@
         modalOverlay.classList.add('active');
       });
 
-      // Закрытие модального окна
       closeModalBtn.addEventListener('click', () => {
         modalOverlay.classList.remove('active');
       });
@@ -772,21 +787,6 @@
         }
       });
 
-      // Редактирование элемента
-      window.editItem = function(index) {
-        const item = checkItems[index];
-        modalTitle.textContent = "Редактировать проверяемый элемент";
-        editIndexInput.value = index;
-        inputIndex.value = item.id;
-        inputName.value = item.name;
-        inputWhat.value = item.what;
-        inputHow.value = item.how;
-        inputNorm.value = item.norm;
-        inputActive.checked = item.active;
-        modalOverlay.classList.add('active');
-      };
-
-      // Сохранение формы
       itemForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const index = parseInt(editIndexInput.value, 10);
@@ -809,7 +809,6 @@
         renderTable();
       });
 
-      // Первичный рендер
       renderTable();
     });
   </script>

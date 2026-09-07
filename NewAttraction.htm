@@ -357,12 +357,29 @@
             <form id="newAttractionForm" class="form-grid">
               
               <div class="form-group">
-                <label class="form-label" for="attractionName">Название аттракциона</label>
-                <input type="text" id="attractionName" class="form-input" required placeholder="Например: Батутный комплекс" />
+                <label class="form-label" for="attractionCode">Код аттракциона</label>
+                <input type="text" id="attractionCode" class="form-input" required placeholder="ATR-1234" />
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="attractionLocation">Локация / Зона</label>
+                <label class="form-label" for="attractionName">Аттракцион</label>
+                <select id="attractionName" class="form-select" required>
+                  <option value="" disabled selected>Выберите аттракцион</option>
+                  <option value="Актау">Актау</option>
+                  <option value="Актобе">Актобе</option>
+                  <option value="Алматы Алатау">Алматы Алатау</option>
+                  <option value="Алматы Атакент">Алматы Атакент</option>
+                  <option value="Караганда">Караганда</option>
+                  <option value="Темиртау">Темиртау</option>
+                  <option value="Уральск">Уральск</option>
+                  <option value="Шымкент City Mall">Шымкент City Mall</option>
+                  <option value="Шымкент Dala Mall">Шымкент Dala Mall</option>
+                  <option value="Шымкент Royal Plaza">Шымкент Royal Plaza</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="attractionLocation">Локация</label>
                 <select id="attractionLocation" class="form-select" required>
                   <option value="" disabled selected>Выберите локацию</option>
                   <option value="Актау">Актау</option>
@@ -379,13 +396,13 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="workingCount">Количество работающих элементов</label>
-                <input type="number" id="workingCount" class="form-input" min="0" value="0" required />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="brokenCount">Количество неработающих элементов</label>
-                <input type="number" id="brokenCount" class="form-input" min="0" value="0" required />
+                <label class="form-label" for="attractionCategory">Категория</label>
+                <select id="attractionCategory" class="form-select" required>
+                  <option value="" disabled selected>Категория</option>
+                  <option value="Семейные">Семейные</option>
+                  <option value="Детские">Детские</option>
+                  <option value="Экстремальные">Экстремальные</option>
+                </select>
               </div>
 
               <div class="form-group">

@@ -14,15 +14,17 @@
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
       --primary-light: #eff6ff;
+      --success: #16a34a;
       --danger: #dc2626;
-      --danger-hover: #b91c1c;
       --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
       --radius: 18px;
     }
 
     * { box-sizing: border-box; }
     
-    html { overflow-y: scroll; }
+    html {
+      overflow-y: scroll;
+    }
 
     body {
       margin: 0;
@@ -184,7 +186,9 @@
       color: #fff;
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
     }
-    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
 
     .btn-back {
       background: transparent;
@@ -199,8 +203,13 @@
       border-color: var(--line);
     }
 
-    .btn-secondary { background: #e2e8f0; color: var(--text); }
-    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
 
     .content {
       display: grid;
@@ -217,6 +226,7 @@
       overflow: hidden;
     }
 
+    /* Table styles */
     .table-container {
       width: 100%;
       overflow-x: auto;
@@ -244,15 +254,44 @@
       letter-spacing: 0.5px;
     }
 
-    tr:hover td { background: #f8fafc; }
+    tr:hover td {
+      background: #f8fafc;
+    }
 
-    .checkbox-cell { text-align: center; }
+    .checkbox-cell {
+      text-align: center;
+    }
 
     .custom-checkbox {
       width: 18px;
       height: 18px;
-      cursor: pointer;
+      cursor: not-allowed;
       accent-color: var(--primary);
+    }
+
+    /* Иконки важности */
+    .badge-importance {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-high {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .badge-medium {
+      background: #fffbeb;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
+    .badge-low {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
     }
 
     /* Modal styles */
@@ -284,14 +323,31 @@
       overflow-y: auto;
     }
 
-    .modal-title { font-size: 1.2rem; font-weight: 700; margin: 0; }
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0;
+    }
 
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-group-checkbox { flex-direction: row; align-items: center; gap: 10px; }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-    .form-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+    .form-group-checkbox {
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    }
 
-    .form-input, .form-textarea {
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .form-input, .form-textarea, .form-select {
       width: 100%;
       padding: 12px 14px;
       border: 1px solid var(--line);
@@ -301,9 +357,14 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .form-input:focus, .form-textarea:focus { border-color: var(--primary); }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--primary);
+    }
 
-    .form-textarea { resize: vertical; min-height: 80px; }
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
 
     .modal-actions {
       display: flex;
@@ -312,7 +373,11 @@
       margin-top: 10px;
     }
 
-    .actions-cell { display: flex; gap: 8px; }
+    .actions-cell {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
 
     .btn-icon {
       background: #f1f5f9;
@@ -323,11 +388,11 @@
       display: grid;
       place-items: center;
       font-size: 14px;
-      transition: background 0.2s, color 0.2s;
+      transition: background 0.2s;
     }
     .btn-icon:hover { background: #e2e8f0; }
-    .btn-icon.danger:hover { background: #fee2e2; color: var(--danger); }
 
+    /* Responsive adjustments */
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
       .menu-toggle { display: inline-flex; }
@@ -338,6 +403,7 @@
       }
       .sidebar.open { transform: translateX(0); }
 
+      /* Мобильная верстка для Topbar */
       .topbar {
         flex-direction: column;
         align-items: stretch;
@@ -349,9 +415,15 @@
         justify-content: space-between;
         width: 100%;
       }
-      .topbar-title { font-size: 1.15rem; }
-      .btn-add-wrapper { width: 100%; }
-      .btn-add-wrapper .btn-primary { width: 100%; }
+      .topbar-title {
+        font-size: 1.15rem;
+      }
+      .btn-add-wrapper {
+        width: 100%;
+      }
+      .btn-add-wrapper .btn-primary {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -392,8 +464,17 @@
           <textarea id="inputNorm" class="form-textarea" required placeholder="Критерии нормального состояния..."></textarea>
         </div>
 
+        <div class="form-group">
+          <label class="form-label" for="inputImportance">Важность</label>
+          <select id="inputImportance" class="form-select" required>
+            <option value="Высокая">Высокая</option>
+            <option value="Средняя" selected>Средняя</option>
+            <option value="Низкая">Низкая</option>
+          </select>
+        </div>
+
         <div class="form-group form-group-checkbox">
-          <input type="checkbox" id="inputActive" class="custom-checkbox" checked />
+          <input type="checkbox" id="inputActive" style="width: 18px; height: 18px; accent-color: var(--primary);" checked />
           <label class="form-label" for="inputActive" style="margin: 0; cursor: pointer; color: var(--text);">Активность (элемент включен)</label>
         </div>
 
@@ -420,42 +501,85 @@
       </div>
 
       <nav class="nav">
-        <a href="https://assetzhan.github.io/TechService/Monitoring.htm"><span>Мониторинг</span><span class="count">3</span></a>
-        <a href="https://assetzhan.github.io/TechService/Reports.htm"><span>Отчеты по парку</span><span class="count">128</span></a>
-        <a href="https://assetzhan.github.io/TechService/Tasks.htm"><span>Задачи</span><span class="count">24</span></a>
-        <a href="https://assetzhan.github.io/TechService/Incidents.htm"><span>Инциденты</span><span class="count">51</span></a>
-        <a href="https://assetzhan.github.io/TechService/Locations.htm"><span>Локации</span><span class="count">10</span></a>
-        <a href="https://assetzhan.github.io/TechService/Users.htm"><span>Пользователи</span><span class="count">35</span></a>
-        <a href="https://assetzhan.github.io/TechService/Topics.htm"><span>Темы</span><span class="count">35</span></a>
-        <a class="active" href="https://assetzhan.github.io/TechService/Attractions.htm"><span>Аттракционы</span><span class="count">10</span></a>
-        <a href="https://assetzhan.github.io/TechService/AttractionsList.htm"><span>Список аттракционов</span><span class="count">10</span></a>
-        <a href="https://assetzhan.github.io/TechService/Assignees.htm"><span>Ответственные</span><span class="count">35</span></a>
-        <a href="https://assetzhan.github.io/TechService/Observers.htm"><span>Наблюдатели</span><span class="count">35</span></a>
-        <a href="https://assetzhan.github.io/TechService/RootCauses.htm"><span>Первопричины</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Monitoring.htm">
+          <span>Мониторинг</span>
+          <span class="count">3</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Reports.htm">
+          <span>Отчеты по парку</span>
+          <span class="count">128</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Tasks.htm">
+          <span>Задачи</span>
+          <span class="count">24</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Incidents.htm">
+          <span>Инциденты</span>
+          <span class="count">51</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Locations.htm">
+          <span>Локации</span>
+          <span class="count">10</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Users.htm">
+          <span>Пользователи</span>
+          <span class="count">35</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Topics.htm">
+          <span>Темы</span>
+          <span class="count">35</span>
+        </a>
+        <a class="active" href="https://assetzhan.github.io/TechService/Attractions.htm">
+          <span>Аттракционы</span>
+          <span class="count">10</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/AttractionsList.htm">
+          <span>Список аттракционов</span>
+          <span class="count">10</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Assignees.htm">
+          <span>Ответственные</span>
+          <span class="count">35</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/Observers.htm">
+          <span>Наблюдатели</span>
+          <span class="count">35</span>
+        </a>
+        <a href="https://assetzhan.github.io/TechService/RootCauses.htm">
+          <span>Первопричины</span>
+          <span class="count">35</span>
+        </a>
       </nav>
       
       <div class="sidebar-footer">
         <nav class="nav">
-          <a href="https://support.mykids.kz/"><span>Заявка в ИТ</span></a>
+          <a href="https://support.mykids.kz/">
+            <span>Заявка в ИТ</span>
+          </a>
         </nav>
       </div>
     </aside>
 
     <div class="main-wrapper">
       <main class="main">
+        <!-- Верхняя панель -->
         <div class="topbar">
+          <!-- 1-я строка на мобильных: Кнопка меню слева, Кнопка Назад справа -->
           <div class="topbar-controls">
             <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
             <a href="https://assetzhan.github.io/TechService/Attractions.htm" class="btn btn-back">← Назад</a>
           </div>
           
+          <!-- 2-я строка на мобильных: Заголовок -->
           <h1 class="topbar-title">Реестр проверки: Большая волна</h1>
           
+          <!-- 3-я строка на мобильных: Добавить элемент -->
           <div class="btn-add-wrapper">
             <button class="btn btn-primary" id="openAddModalBtn">+ Добавить элемент</button>
           </div>
         </div>
 
+        <!-- Таблица элементов -->
         <section class="content">
           <div class="panel">
             <div class="table-container">
@@ -468,7 +592,8 @@
                     <th>Как проверяется</th>
                     <th>Признаки нормы</th>
                     <th style="width: 100px; text-align: center;">Активность</th>
-                    <th style="width: 100px;">Действия</th>
+                    <th style="width: 120px;">Важность</th>
+                    <th style="width: 50px;"></th>
                   </tr>
                 </thead>
                 <tbody id="elementsTableBody">
@@ -484,18 +609,18 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Управление сайдбаром
+      // 1. Сайдбар и оверлей
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
       const menuToggle = document.getElementById('menuToggle');
 
-      const openSidebar = () => { sidebar.classList.add('open'); overlay.classList.add('active'); };
-      const closeSidebar = () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); };
+      function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('active'); }
+      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
 
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (overlay) overlay.addEventListener('click', closeSidebar);
 
-      // 2. Список проверяемых элементов
+      // 2. Список проверяемых элементов для «Большая волна»
       let checkItems = [
         {
           id: 1,
@@ -503,7 +628,8 @@
           what: "Каркас, стойки, балки, соединения и анкерные крепления к полу и конструкциям.",
           how: "Визуально осмотреть каркас, стойки, балки и соединения;\nпроверить анкерные крепления к полу и конструкциям;\nвручную проверить элементы на шатание.",
           norm: "Конструкция жёсткая;\nотсутствуют трещины, перекосы и коррозия;\nкрепёж не ослаблен.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 2,
@@ -511,7 +637,8 @@
           what: "Поверхность спуска по всей длине, места стыков и креплений, зоны изгибов и повышенной нагрузки;\nчистота и отсутствие посторонних предметов по всей длине спуска.",
           how: "Осмотреть поверхность спуска по всей длине;\nубедиться в отсутствии мусора, жидкостей и посторонних предметов;\nвыполнить пробный спуск для проверки плавности скольжения и отсутствия зацепов;\nосмотреть места стыков и креплений к конструкции;\nобратить внимание на зоны изгибов и повышенной нагрузки.",
           norm: "Поверхность гладкая, чистая и свободна от посторонних предметов;\nотсутствуют трещины, расслоения, сколы и острые кромки;\nсекции надёжно закреплены.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 3,
@@ -519,7 +646,8 @@
           what: "Вход в горку, защитные панели, ограждения и поверхность зоны старта.",
           how: "Осмотреть вход в горку;\nпроверить защитные панели и ограждения;\nубедиться в отсутствии загрязнений и скользких участков.",
           norm: "Вход свободен;\nэлементы целые и надёжно закреплены;\nповерхность чистая и безопасная.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 4,
@@ -527,7 +655,8 @@
           what: "Болты, заклёпки, пластины и отсутствие выступающих элементов.",
           how: "Визуально осмотреть болты, заклёпки и пластины;\nпроверить отсутствие выступающих элементов.",
           norm: "Крепёж установлен в полном комплекте, затянут и не имеет признаков ослабления;\nотсутствуют повреждения и смещения.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 5,
@@ -535,7 +664,8 @@
           what: "Мягкая обивка каркаса, сетки, их натяжение и отсутствие открытых жёстких элементов.",
           how: "Осмотреть мягкую обивку каркаса;\nпроверить сетки и их натяжение;\nубедиться в отсутствии открытых жёстких элементов.",
           norm: "Обивка целая;\nсетки натянуты и закреплены;\nотсутствуют острые и твёрдые части в зоне доступа.",
-          active: true
+          active: true,
+          importance: "Средняя"
         },
         {
           id: 6,
@@ -543,7 +673,8 @@
           what: "Наличие правил и читаемость информации.",
           how: "Проверить наличие правил и читаемость информации.",
           norm: "Информация читаема.",
-          active: true
+          active: true,
+          importance: "Низкая"
         }
       ];
 
@@ -560,9 +691,45 @@
       const inputWhat = document.getElementById('inputWhat');
       const inputHow = document.getElementById('inputHow');
       const inputNorm = document.getElementById('inputNorm');
+      const inputImportance = document.getElementById('inputImportance');
       const inputActive = document.getElementById('inputActive');
 
-      // Функция безопасности для строки HTML
+      function getImportanceBadgeClass(importance) {
+        switch (importance) {
+          case 'Высокая': return 'badge-high';
+          case 'Средняя': return 'badge-medium';
+          case 'Низкая': return 'badge-low';
+          default: return 'badge-medium';
+        }
+      }
+
+      function renderTable() {
+        tableBody.innerHTML = '';
+        checkItems.forEach((item, index) => {
+          const tr = document.createElement('tr');
+          const badgeClass = getImportanceBadgeClass(item.importance);
+          tr.innerHTML = `
+            <td><strong>${item.id}</strong></td>
+            <td><strong>${escapeHtml(item.name)}</strong></td>
+            <td>${escapeHtml(item.what).replace(/\n/g, '<br>')}</td>
+            <td>${escapeHtml(item.how).replace(/\n/g, '<br>')}</td>
+            <td>${escapeHtml(item.norm).replace(/\n/g, '<br>')}</td>
+            <td class="checkbox-cell">
+              <input type="checkbox" class="custom-checkbox" ${item.active ? 'checked' : ''} onclick="return false;" tabindex="-1" />
+            </td>
+            <td>
+              <span class="badge-importance ${badgeClass}">${escapeHtml(item.importance || 'Средняя')}</span>
+            </td>
+            <td>
+              <div class="actions-cell">
+                <button class="btn-icon" onclick="editItem(${index})" title="Редактировать">✏️</button>
+              </div>
+            </td>
+          `;
+          tableBody.appendChild(tr);
+        });
+      }
+
       function escapeHtml(text) {
         if (!text) return '';
         return text
@@ -573,39 +740,7 @@
           .replace(/'/g, "&#039;");
       }
 
-      // Отрисовка таблицы
-      function renderTable() {
-        tableBody.innerHTML = '';
-        checkItems.forEach((item, index) => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong>${item.id}</strong></td>
-            <td><strong>${escapeHtml(item.name)}</strong></td>
-            <td>${escapeHtml(item.what).replace(/\n/g, '<br>')}</td>
-            <td>${escapeHtml(item.how).replace(/\n/g, '<br>')}</td>
-            <td>${escapeHtml(item.norm).replace(/\n/g, '<br>')}</td>
-            <td class="checkbox-cell">
-              <input type="checkbox" class="custom-checkbox" ${item.active ? 'checked' : ''} onchange="toggleActive(${index})" />
-            </td>
-            <td>
-              <div class="actions-cell">
-                <button class="btn-icon" onclick="editItem(${index})" title="Редактировать">✏️</button>
-                <button class="btn-icon danger" onclick="deleteItem(${index})" title="Удалить">🗑️</button>
-              </div>
-            </td>
-          `;
-          tableBody.appendChild(tr);
-        });
-      }
-
-      // Включение / выключение активности
-      window.toggleActive = function(index) {
-        checkItems[index].active = !checkItems[index].active;
-      };
-
-      // Переключение состояния модального окна
-      const closeModal = () => modalOverlay.classList.remove('active');
-
+      // Открытие модального окна для создания
       openAddModalBtn.addEventListener('click', () => {
         modalTitle.textContent = "Добавить проверяемый элемент";
         editIndexInput.value = "-1";
@@ -614,23 +749,23 @@
         inputWhat.value = "";
         inputHow.value = "";
         inputNorm.value = "";
+        inputImportance.value = "Средняя";
         inputActive.checked = true;
         modalOverlay.classList.add('active');
       });
 
-      closeModalBtn.addEventListener('click', closeModal);
-
-      modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) closeModal();
+      // Закрытие модального окна
+      closeModalBtn.addEventListener('click', () => {
+        modalOverlay.classList.remove('active');
       });
 
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
-          closeModal();
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+          modalOverlay.classList.remove('active');
         }
       });
 
-      // Редактирование
+      // Редактирование элемента
       window.editItem = function(index) {
         const item = checkItems[index];
         modalTitle.textContent = "Редактировать проверяемый элемент";
@@ -640,16 +775,9 @@
         inputWhat.value = item.what;
         inputHow.value = item.how;
         inputNorm.value = item.norm;
+        inputImportance.value = item.importance || "Средняя";
         inputActive.checked = item.active;
         modalOverlay.classList.add('active');
-      };
-
-      // Удаление
-      window.deleteItem = function(index) {
-        if (confirm(`Вы действительно хотите удалить элемент "${checkItems[index].name}"?`)) {
-          checkItems.splice(index, 1);
-          renderTable();
-        }
       };
 
       // Сохранение формы
@@ -662,6 +790,7 @@
           what: inputWhat.value.trim(),
           how: inputHow.value.trim(),
           norm: inputNorm.value.trim(),
+          importance: inputImportance.value,
           active: inputActive.checked
         };
 
@@ -671,11 +800,11 @@
           checkItems[index] = newItem;
         }
 
-        closeModal();
+        modalOverlay.classList.remove('active');
         renderTable();
       });
 
-      // Первичная отрисовка
+      // Первичный рендер
       renderTable();
     });
   </script>

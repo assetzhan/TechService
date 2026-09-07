@@ -17,6 +17,7 @@
       --success: #16a34a;
       --warning: #d97706;
       --danger: #dc2626;
+      --danger-hover: #b91c1c;
       --info: #0891b2;
       --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
       --radius: 18px;
@@ -204,9 +205,19 @@
       box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
     }
 
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    }
+    .btn-danger:hover {
+      background: var(--danger-hover);
+      box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+    }
+
     .btn-lg {
-      padding: 14px 28px;
-      font-size: 1rem;
+      padding: 14px 24px;
+      font-size: 0.95rem;
       border-radius: 14px;
     }
 
@@ -251,7 +262,7 @@
     /* Metrics Grid */
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 16px;
     }
 
@@ -455,13 +466,61 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
+      gap: 12px;
       padding: 10px 0 20px;
+      flex-wrap: wrap;
+    }
+
+    /* Print Only Signature Block */
+    .print-signatures {
+      display: none;
     }
 
     @media print {
       .info-popover, .info-badge, .sidebar, .topbar, .report-footer { display: none !important; }
       .app { display: block; }
       .main { padding: 0; }
+      
+      .print-signatures {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 2px solid var(--line);
+      }
+      
+      .signature-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 13px;
+      }
+      
+      .signature-title {
+        font-weight: 700;
+        color: var(--text);
+      }
+      
+      .signature-line-group {
+        margin-top: 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      
+      .signature-line {
+        border-bottom: 1px solid #000;
+        width: 100%;
+        height: 1px;
+      }
+
+      .signature-sub {
+        font-size: 10px;
+        color: var(--muted);
+        display: flex;
+        justify-content: space-between;
+      }
     }
 
     /* Responsive */
@@ -500,8 +559,25 @@
         transform: translate(-50%, -50%) scale(1);
       }
 
-      .report-footer { justify-content: center; }
-      .btn-lg { width: 100%; justify-content: center; }
+      .report-footer { 
+        flex-direction: column; 
+        align-items: stretch;
+      }
+      .btn-lg { 
+        width: 100%; 
+        justify-content: center; 
+        white-space: normal;
+        text-align: center;
+      }
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -631,19 +707,19 @@
         <!-- Метрики проверки -->
         <section class="metrics-grid">
           <div class="metric-card">
-            <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Проверено пунктов</span>
-            <div class="num">11 / 11</div>
-          </div>
-          <div class="metric-card">
-            <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Ответ «Да» (Соответствует)</span>
+            <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Ответ «Да»</span>
             <div class="num" style="color: var(--success);">11</div>
           </div>
           <div class="metric-card">
-            <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Ответ «Нет» (Замечания)</span>
+            <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Ответ «Нет»</span>
             <div class="num">0</div>
           </div>
           <div class="metric-card">
-            <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Допуск к эксплуатации</span>
+            <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Примечание</span>
+            <div class="num" style="color: var(--info);">11</div>
+          </div>
+          <div class="metric-card">
+            <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Рекомендация к эксплуатации</span>
             <div class="num" style="color: var(--success);">Разрешен</div>
           </div>
         </section>
@@ -979,9 +1055,40 @@
           </div>
         </section>
 
+        <!-- Блок подписей для печати -->
+        <div class="print-signatures">
+          <div class="signature-item">
+            <span class="signature-title">Инспектор / Специалист:</span>
+            <span>ФИО: Аскаров Б.</span>
+            <div class="signature-line-group">
+              <div class="signature-line"></div>
+              <div class="signature-sub">
+                <span>Подпись</span>
+                <span>Дата</span>
+              </div>
+            </div>
+          </div>
+          <div class="signature-item">
+            <span class="signature-title">Ответственный за проверку:</span>
+            <span>ФИО: ______________________</span>
+            <div class="signature-line-group">
+              <div class="signature-line"></div>
+              <div class="signature-sub">
+                <span>Подпись</span>
+                <span>Дата</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Подтверждение отчета -->
         <footer class="report-footer">
-          <button class="btn btn-primary btn-lg" onclick="alert('Отчет проверен и утвержден')">✓ Отчет проверен</button>
+          <button class="btn btn-danger btn-lg" onclick="alert('Отчет проверен: остановка аттракциона!')">
+            ✕ Отчет проверен (остановка аттракциона)
+          </button>
+          <button class="btn btn-primary btn-lg" onclick="alert('Отчет проверен: запуск аттракциона!')">
+            ✓ Отчет проверен (запуск аттракциона)
+          </button>
         </footer>
       </main>
     </div>

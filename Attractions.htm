@@ -182,6 +182,14 @@
       background: var(--primary-hover);
     }
 
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
     .btn-new { min-width: 120px; }
 
     .content {
@@ -266,6 +274,98 @@
     .badge.success { background: #dcfce7; color: var(--success); }
     .badge.danger  { background: #fee2e2; color: var(--danger); }
 
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      z-index: 1050;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--popover-shadow);
+      width: 100%;
+      max-width: 480px;
+      padding: 24px;
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+    .modal-overlay.active .modal {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: 0;
+      font-size: 1.25rem;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus {
+      border-color: var(--primary);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
     /* Responsive adjustments */
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
@@ -295,6 +395,26 @@
 
   <!-- Фон-оверлей при открытии меню -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Модальное окно создания аттракциона -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Новый аттракцион</h2>
+        <button type="button" class="modal-close" id="modalCloseBtn" aria-label="Закрыть">&times;</button>
+      </div>
+      <form id="createAttractionForm">
+        <div class="form-group">
+          <label class="form-label" for="modalAttractionName">Название аттракциона</label>
+          <input type="text" id="modalAttractionName" class="form-input" placeholder="Введите название аттракциона..." required autofocus />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="modalCancelBtn">Отмена</button>
+          <button type="submit" class="btn btn-primary">Создать аттракцион</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <div class="app">
     <aside class="sidebar" id="sidebar">
@@ -375,7 +495,7 @@
         <!-- Верхняя панель с кнопкой меню и создания -->
         <div class="topbar">
           <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
-          <a href="https://assetzhan.github.io/TechService/NewAttraction.htm" class="btn btn-primary btn-new">+ Новый аттракцион</a>
+          <button type="button" class="btn btn-primary btn-new" id="openModalBtn">+ Новый аттракцион</button>
         </div>
 
         <!-- Реестр аттракционов -->
@@ -778,7 +898,44 @@
         }
       }
 
-      // 2. Обработка навигации по роутам
+      // 2. Управление модальным окном создания аттракциона
+      const modalOverlay = document.getElementById('modalOverlay');
+      const openModalBtn = document.getElementById('openModalBtn');
+      const modalCloseBtn = document.getElementById('modalCloseBtn');
+      const modalCancelBtn = document.getElementById('modalCancelBtn');
+      const createAttractionForm = document.getElementById('createAttractionForm');
+      const modalAttractionName = document.getElementById('modalAttractionName');
+
+      function openModal() {
+        modalOverlay.classList.add('active');
+        modalAttractionName.focus();
+      }
+
+      function closeModal() {
+        modalOverlay.classList.remove('active');
+        createAttractionForm.reset();
+      }
+
+      if (openModalBtn) openModalBtn.addEventListener('click', openModal);
+      if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+      if (modalCancelBtn) modalCancelBtn.addEventListener('click', closeModal);
+
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+
+      if (createAttractionForm) {
+        createAttractionForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = modalAttractionName.value.trim();
+          if (name) {
+            alert(`Аттракцион "${name}" успешно создан!`);
+            closeModal();
+          }
+        });
+      }
+
+      // 3. Обработка навигации по роутам
       const routes = {
         "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
         "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
@@ -791,13 +948,12 @@
         "Ответственные": "https://assetzhan.github.io/TechService/Assignees.htm",
         "Наблюдатели": "https://assetzhan.github.io/TechService/Observers.htm",
         "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
-        "Заявка в ИТ": "https://support.mykids.kz/",
-        "+ Новый аттракцион": "https://assetzhan.github.io/TechService/NewAttraction.htm"
+        "Заявка в ИТ": "https://support.mykids.kz/"
       };
 
       document.querySelectorAll('a, button').forEach(element => {
         element.addEventListener('click', (e) => {
-          if(element.classList.contains('btn-new') || element.id === 'menuToggle') return;
+          if(element.id === 'openModalBtn' || element.id === 'menuToggle' || element.closest('#modalOverlay')) return;
 
           const text = element.textContent.trim().split('\n')[0].trim();
           if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {

@@ -269,6 +269,31 @@
       accent-color: var(--primary);
     }
 
+    /* Иконки важности */
+    .badge-importance {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-high {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .badge-medium {
+      background: #fffbeb;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
+    .badge-low {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+
     /* Modal styles */
     .modal-overlay {
       position: fixed;
@@ -322,7 +347,7 @@
       color: var(--muted);
     }
 
-    .form-input, .form-textarea {
+    .form-input, .form-textarea, .form-select {
       width: 100%;
       padding: 12px 14px;
       border: 1px solid var(--line);
@@ -332,7 +357,7 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .form-input:focus, .form-textarea:focus {
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
       border-color: var(--primary);
     }
 
@@ -351,6 +376,7 @@
     .actions-cell {
       display: flex;
       gap: 8px;
+      justify-content: center;
     }
 
     .btn-icon {
@@ -436,6 +462,15 @@
         <div class="form-group">
           <label class="form-label" for="inputNorm">Признаки нормы</label>
           <textarea id="inputNorm" class="form-textarea" required placeholder="Критерии нормального состояния..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inputImportance">Важность</label>
+          <select id="inputImportance" class="form-select" required>
+            <option value="Высокая">Высокая</option>
+            <option value="Средняя" selected>Средняя</option>
+            <option value="Низкая">Низкая</option>
+          </select>
         </div>
 
         <div class="form-group form-group-checkbox">
@@ -557,7 +592,8 @@
                     <th>Как проверяется</th>
                     <th>Признаки нормы</th>
                     <th style="width: 100px; text-align: center;">Активность</th>
-                    <th style="width: 80px;">Действия</th>
+                    <th style="width: 120px;">Важность</th>
+                    <th style="width: 50px;"></th>
                   </tr>
                 </thead>
                 <tbody id="elementsTableBody">
@@ -592,7 +628,8 @@
           what: "Состояние металлоконструкции, сварных и болтовых соединений, анкеров и опорных элементов.",
           how: "Визуальный осмотр, проверка затяжки крепежа, лёгкое механическое воздействие на конструкцию для выявления люфта и раскачивания.",
           norm: "Трещины, деформации, коррозия и люфт отсутствуют, крепления затянуты, конструкция устойчива.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 2,
@@ -600,7 +637,8 @@
           what: "Каркас сферы, подвесные канаты и узлы крепления.",
           how: "Визуальный осмотр, проверка натяжения канатов и ручная проверка креплений на люфт.",
           norm: "Каркас без повреждений, канаты без износа, крепления надёжны, люфт отсутствует.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 3,
@@ -608,7 +646,8 @@
           what: "Крепление сидений, состояние каркаса и посадочной части.",
           how: "Визуальный осмотр и ручная проверка жёсткости крепления.",
           norm: "Повреждения отсутствуют, сиденья закреплены жёстко, смещение отсутствует.",
-          active: true
+          active: true,
+          importance: "Средняя"
         },
         {
           id: 4,
@@ -616,7 +655,8 @@
           what: "Лента ремней, замки, крепления и фиксаторы.",
           how: "Визуальный осмотр, застёгивание и проверка фиксации ремней вручную.",
           norm: "Надрывы отсутствуют, замки исправны, фиксация надёжная.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 5,
@@ -624,7 +664,8 @@
           what: "Состояние банджи-канатов, защитных чехлов и крепёжных узлов.",
           how: "Визуальный осмотр по всей длине и проверка креплений вручную.",
           norm: "Надрывы, истирание и повреждения отсутствуют, крепления надёжны.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 6,
@@ -632,7 +673,8 @@
           what: "Электромагнит, удерживающий сферу перед запуском, его крепление и освобождение сферы.",
           how: "Визуально проверить электромагнит и его крепление. Во время пробного запуска без пользователя проверить фиксацию сферы электромагнитом и её освобождение по команде с пульта.",
           norm: "Электромагнит надёжно закреплён, сфера устойчиво фиксируется и освобождается только по команде;\nсамопроизвольное освобождение отсутствует.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 7,
@@ -640,7 +682,8 @@
           what: "Работа двигателя, редуктора, барабана, тросов и роликов.",
           how: "Пробный запуск без нагрузки, прослушивание работы механизма и визуальный осмотр тросов.",
           norm: "Подъём плавный, посторонние шумы отсутствуют, тросы целые.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 8,
@@ -648,7 +691,8 @@
           what: "Работа кнопок и световой индикации.",
           how: "Поочерёдное нажатие кнопок и проверка реакции оборудования.",
           norm: "Все кнопки исправны, оборудование правильно реагирует на команды, индикация работает.",
-          active: true
+          active: true,
+          importance: "Средняя"
         },
         {
           id: 9,
@@ -656,7 +700,8 @@
           what: "Автоматы, кабели, соединения, заземление, отсутствие признаков перегрева и запаха гари.",
           how: "Визуально осмотреть доступные элементы без вскрытия оборудования под напряжением. Проверить отсутствие запаха гари и следов перегрева. Температуру доступных поверхностей проверить бесконтактным термометром, не прикасаясь к токоведущим частям.",
           norm: "Изоляция целая, запах гари и следы перегрева отсутствуют, температура не превышает допустимые значения изготовителя, соединения надёжны.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 10,
@@ -664,7 +709,8 @@
           what: "Маты, мягкие накладки и их крепления.",
           how: "Визуальный осмотр и проверка фиксации вручную.",
           norm: "Разрывы и смещения отсутствуют, крепление надёжное.",
-          active: true
+          active: true,
+          importance: "Средняя"
         },
         {
           id: 11,
@@ -672,7 +718,8 @@
           what: "Рама, петли, замок и фиксатор.",
           how: "Открытие и закрытие калитки вручную, проверка фиксации.",
           norm: "Калитка открывается свободно, люфт отсутствует, замок фиксирует надёжно.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 12,
@@ -680,7 +727,8 @@
           what: "Ограждение всей опасной зоны, калитки, пространство движения сферы и прилегающая территория.",
           how: "Осмотреть ограждение по всему периметру. Убедиться, что калитки закрыты, а в зоне движения сферы отсутствуют люди, посторонние предметы и препятствия.",
           norm: "Ограждение целое и устойчивое, доступ в опасную зону исключён, зона движения сферы свободна от людей, предметов и препятствий.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 13,
@@ -688,7 +736,8 @@
           what: "Работа аттракциона в холостом режиме и аварийная остановка.",
           how: "Выполнить подъём и опускание без пользователей с проверкой аварийной остановки.",
           norm: "Подъём и опускание плавные, рывки и посторонние шумы отсутствуют, аварийная остановка исправна.",
-          active: true
+          active: true,
+          importance: "Высокая"
         },
         {
           id: 14,
@@ -696,7 +745,8 @@
           what: "Наличие правил и читаемость информации.",
           how: "Проверить наличие правил и читаемость информации.",
           norm: "Правила размещены, информация полная и читаемая.",
-          active: true
+          active: true,
+          importance: "Низкая"
         }
       ];
 
@@ -713,12 +763,23 @@
       const inputWhat = document.getElementById('inputWhat');
       const inputHow = document.getElementById('inputHow');
       const inputNorm = document.getElementById('inputNorm');
+      const inputImportance = document.getElementById('inputImportance');
       const inputActive = document.getElementById('inputActive');
+
+      function getImportanceBadgeClass(importance) {
+        switch (importance) {
+          case 'Высокая': return 'badge-high';
+          case 'Средняя': return 'badge-medium';
+          case 'Низкая': return 'badge-low';
+          default: return 'badge-medium';
+        }
+      }
 
       function renderTable() {
         tableBody.innerHTML = '';
         checkItems.forEach((item, index) => {
           const tr = document.createElement('tr');
+          const badgeClass = getImportanceBadgeClass(item.importance);
           tr.innerHTML = `
             <td><strong>${item.id}</strong></td>
             <td><strong>${escapeHtml(item.name)}</strong></td>
@@ -727,6 +788,9 @@
             <td>${escapeHtml(item.norm).replace(/\n/g, '<br>')}</td>
             <td class="checkbox-cell">
               <input type="checkbox" class="custom-checkbox" ${item.active ? 'checked' : ''} onclick="return false;" tabindex="-1" />
+            </td>
+            <td>
+              <span class="badge-importance ${badgeClass}">${escapeHtml(item.importance || 'Средняя')}</span>
             </td>
             <td>
               <div class="actions-cell">
@@ -757,6 +821,7 @@
         inputWhat.value = "";
         inputHow.value = "";
         inputNorm.value = "";
+        inputImportance.value = "Средняя";
         inputActive.checked = true;
         modalOverlay.classList.add('active');
       });
@@ -782,6 +847,7 @@
         inputWhat.value = item.what;
         inputHow.value = item.how;
         inputNorm.value = item.norm;
+        inputImportance.value = item.importance || "Средняя";
         inputActive.checked = item.active;
         modalOverlay.classList.add('active');
       };
@@ -796,6 +862,7 @@
           what: inputWhat.value.trim(),
           how: inputHow.value.trim(),
           norm: inputNorm.value.trim(),
+          importance: inputImportance.value,
           active: inputActive.checked
         };
 

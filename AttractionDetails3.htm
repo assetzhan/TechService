@@ -377,7 +377,6 @@
       }
       .sidebar.open { transform: translateX(0); }
 
-      /* Мобильная верстка для Topbar */
       .topbar {
         flex-direction: column;
         align-items: stretch;
@@ -410,7 +409,7 @@
   <div class="modal-overlay" id="itemModalOverlay">
     <div class="modal">
       <h3 class="modal-title" id="modalTitle">Добавить проверяемый элемент</h3>
-      <form id="itemForm" style="display: contents;">
+      <form id="itemForm" style="display: flex; flex-direction: column; gap: 16px;">
         <input type="hidden" id="editIndex" value="-1" />
         
         <div class="form-group">
@@ -529,16 +528,13 @@
       <main class="main">
         <!-- Верхняя панель -->
         <div class="topbar">
-          <!-- 1-я строка на мобильных: Кнопка меню слева, Кнопка Назад справа -->
           <div class="topbar-controls">
             <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
             <a href="https://assetzhan.github.io/TechService/Attractions.htm" class="btn btn-back">← Назад</a>
           </div>
           
-          <!-- 2-я строка на мобильных: Заголовок -->
           <h1 class="topbar-title">Реестр проверки: Башня</h1>
           
-          <!-- 3-я строка на мобильных: Добавить элемент -->
           <div class="btn-add-wrapper">
             <button class="btn btn-primary" id="openAddModalBtn">+ Добавить элемент</button>
           </div>
@@ -573,7 +569,6 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Сайдбар и оверлей
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebarOverlay');
       const menuToggle = document.getElementById('menuToggle');
@@ -584,7 +579,6 @@
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (overlay) overlay.addEventListener('click', closeSidebar);
 
-      // 2. Список проверяемых элементов для «Башня»
       let checkItems = [
         {
           id: 1,
@@ -715,29 +709,6 @@
       const inputNorm = document.getElementById('inputNorm');
       const inputActive = document.getElementById('inputActive');
 
-      function renderTable() {
-        tableBody.innerHTML = '';
-        checkItems.forEach((item, index) => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong>${item.id}</strong></td>
-            <td><strong>${escapeHtml(item.name)}</strong></td>
-            <td>${escapeHtml(item.what).replace(/\n/g, '<br>')}</td>
-            <td>${escapeHtml(item.how).replace(/\n/g, '<br>')}</td>
-            <td>${escapeHtml(item.norm).replace(/\n/g, '<br>')}</td>
-            <td class="checkbox-cell">
-              <input type="checkbox" class="custom-checkbox" ${item.active ? 'checked' : ''} onclick="return false;" tabindex="-1" />
-            </td>
-            <td>
-              <div class="actions-cell">
-                <button class="btn-icon" onclick="editItem(${index})" title="Редактировать">✏️</button>
-              </div>
-            </td>
-          `;
-          tableBody.appendChild(tr);
-        });
-      }
-
       function escapeHtml(text) {
         if (!text) return '';
         return text
@@ -748,7 +719,60 @@
           .replace(/'/g, "&#039;");
       }
 
-      // Открытие модального окна для создания
+      function renderTable() {
+        tableBody.innerHTML = '';
+        checkItems.forEach((item, index) => {
+          const tr = document.createElement('tr');
+          
+          const tdId = document.createElement('td');
+          tdId.innerHTML = `<strong>${item.id}</strong>`;
+          
+          const tdName = document.createElement('td');
+          tdName.innerHTML = `<strong>${escapeHtml(item.name)}</strong>`;
+          
+          const tdWhat = document.createElement('td');
+          tdWhat.innerHTML = escapeHtml(item.what).replace(/\n/g, '<br>');
+          
+          const tdHow = document.createElement('td');
+          tdHow.innerHTML = escapeHtml(item.how).replace(/\n/g, '<br>');
+          
+          const tdNorm = document.createElement('td');
+          tdNorm.innerHTML = escapeHtml(item.norm).replace(/\n/g, '<br>');
+          
+          const tdActive = document.createElement('td');
+          tdActive.className = 'checkbox-cell';
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.className = 'custom-checkbox';
+          checkbox.checked = item.active;
+          checkbox.disabled = true;
+          tdActive.appendChild(checkbox);
+          
+          const tdActions = document.createElement('td');
+          const actionsDiv = document.createElement('div');
+          actionsDiv.className = 'actions-cell';
+          
+          const editBtn = document.createElement('button');
+          editBtn.className = 'btn-icon';
+          editBtn.title = 'Редактировать';
+          editBtn.textContent = '✏️';
+          editBtn.addEventListener('click', () => editItem(index));
+          
+          actionsDiv.appendChild(editBtn);
+          tdActions.appendChild(actionsDiv);
+
+          tr.appendChild(tdId);
+          tr.appendChild(tdName);
+          tr.appendChild(tdWhat);
+          tr.appendChild(tdHow);
+          tr.appendChild(tdNorm);
+          tr.appendChild(tdActive);
+          tr.appendChild(tdActions);
+
+          tableBody.appendChild(tr);
+        });
+      }
+
       openAddModalBtn.addEventListener('click', () => {
         modalTitle.textContent = "Добавить проверяемый элемент";
         editIndexInput.value = "-1";
@@ -761,7 +785,6 @@
         modalOverlay.classList.add('active');
       });
 
-      // Закрытие модального окна
       closeModalBtn.addEventListener('click', () => {
         modalOverlay.classList.remove('active');
       });
@@ -772,8 +795,7 @@
         }
       });
 
-      // Редактирование элемента
-      window.editItem = function(index) {
+      function editItem(index) {
         const item = checkItems[index];
         modalTitle.textContent = "Редактировать проверяемый элемент";
         editIndexInput.value = index;
@@ -784,9 +806,8 @@
         inputNorm.value = item.norm;
         inputActive.checked = item.active;
         modalOverlay.classList.add('active');
-      };
+      }
 
-      // Сохранение формы
       itemForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const index = parseInt(editIndexInput.value, 10);
@@ -809,7 +830,6 @@
         renderTable();
       });
 
-      // Первичный рендер
       renderTable();
     });
   </script>

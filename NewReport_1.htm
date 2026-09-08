@@ -932,10 +932,10 @@
 
       const metricStatus = document.getElementById('metricStatus');
       if (defectCount > 0) {
-        metricStatus.textContent = "Требует внимания";
+        metricStatus.textContent = "Запрещен";
         metricStatus.style.color = "var(--danger)";
       } else {
-        metricStatus.textContent = "Норма";
+        metricStatus.textContent = "Разрешен";
         metricStatus.style.color = "var(--success)";
       }
     }

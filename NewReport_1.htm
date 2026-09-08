@@ -1590,10 +1590,10 @@
 
       const metricStatus = document.getElementById('metricStatus');
       if (defectCount > 0) {
-        metricStatus.textContent = 'Требуется ремонт';
+        metricStatus.textContent = 'Запрещен';
         metricStatus.style.color = 'var(--danger)';
       } else {
-        metricStatus.textContent = 'Разрешено';
+        metricStatus.textContent = 'Разрещен';
         metricStatus.style.color = 'var(--success)';
       }
     }

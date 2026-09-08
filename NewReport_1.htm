@@ -2,32 +2,37 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Новый отчет (Мастер) — TechService</title>
   <style>
     :root {
       --bg: #0f172a;
-      --panel: #111827;
-      --card: #ffffff;
+      --panel: #ffffff;
       --muted: #64748b;
       --text: #0f172a;
-      --line: #e5e7eb;
+      --line: #e2e8f0;
       --primary: #2563eb;
-      --primary-2: #1d4ed8;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
       --success: #16a34a;
-      --warning: #f59e0b;
+      --success-bg: #dcfce7;
+      --warning: #d97706;
       --danger: #dc2626;
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --danger-bg: #fee2e2;
+      --danger-hover: #b91c1c;
+      --info: #0891b2;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
       --radius: 18px;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html { overflow-y: scroll; }
+
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 28%),
-        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      background: #f1f5f9;
       color: var(--text);
     }
 
@@ -37,7 +42,19 @@
       grid-template-columns: 280px 1fr;
     }
 
-    /* Sidebar */
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 999;
+    }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+    /* Sidebar - Точно из ChecklistInspection.htm */
     .sidebar {
       background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
       color: #fff;
@@ -45,6 +62,11 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
+      transition: transform 0.3s ease;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
     }
 
     .brand {
@@ -54,38 +76,97 @@
       font-weight: 700;
       font-size: 1.1rem;
     }
-
     .brand-badge {
-      width: 42px;
-      height: 42px;
+      width: 42px; height: 42px;
       border-radius: 14px;
-      display: grid;
-      place-items: center;
+      display: grid; place-items: center;
       background: linear-gradient(135deg, #2563eb, #06b6d4);
-      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
       font-size: 1.1rem;
     }
 
+    .profile { display: flex; align-items: center; gap: 12px; }
     .profile small { color: rgba(255,255,255,0.65); display: block; margin-top: 2px; }
 
-    .nav { display: grid; gap: 10px; }
+    .nav { display: grid; gap: 6px; }
     .nav a {
       text-decoration: none;
       color: rgba(255,255,255,0.78);
-      padding: 12px 14px;
-      border-radius: 14px;
+      padding: 10px 14px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       transition: 0.2s ease;
+      font-size: 14px;
     }
-    .nav a:hover, .nav a.active { background: rgba(255,255,255,0.1); color: #fff; }
-    .nav .count { min-width: 28px; padding: 4px 8px; border-radius: 999px; background: rgba(37, 99, 235, 0.2); text-align: center; font-size: 12px; }
+    .nav a:hover, .nav a.active {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .nav .count {
+      min-width: 26px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.3);
+      text-align: center;
+      font-size: 12px;
+    }
 
-    /* Main Container */
-    .main { padding: 28px; display: grid; gap: 20px; }
+    .sidebar-footer { margin-top: auto; font-size: 14px; }
 
-    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    /* Main Area */
+    .main-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .main {
+      width: 100%;
+      max-width: 1360px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(241, 245, 249, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 12px 0;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .topbar-title {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      height: 44px; width: 44px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      align-items: center; justify-content: center;
+    }
 
     .btn {
       border: 0;
@@ -94,15 +175,22 @@
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s ease;
+      white-space: nowrap;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      font-size: 14px;
     }
     .btn-ghost { background: #fff; color: var(--text); border: 1px solid var(--line); }
-    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24); }
+    .btn-ghost:hover { background: var(--primary-light); color: var(--primary); }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: var(--danger-hover); }
 
-    /* Wizard Tracker */
+    /* Wizard Steps */
     .wizard-steps {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -126,309 +214,783 @@
       font-size: 14px;
     }
 
-    .step-item.active { background: rgba(37, 99, 235, 0.1); color: var(--primary-2); }
-    .step-item.completed { background: rgba(22, 163, 74, 0.1); color: var(--success); }
+    .step-item.active { background: var(--primary-light); color: var(--primary); }
+    .step-item.completed { background: var(--success-bg); color: var(--success); }
 
     .step-num {
-      width: 28px;
-      height: 28px;
+      width: 28px; height: 28px;
       border-radius: 50%;
       background: var(--line);
-      display: grid;
-      place-items: center;
+      display: grid; place-items: center;
       font-size: 13px;
     }
     .step-item.active .step-num { background: var(--primary); color: #fff; }
     .step-item.completed .step-num { background: var(--success); color: #fff; }
 
-    /* Form Body */
-    .panel {
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(229,231,235,0.9);
+    /* Form Layouts & Controls */
+    .panel-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
       padding: 24px;
+      box-shadow: var(--shadow);
       display: grid;
       gap: 20px;
     }
 
-    .form-group { display: grid; gap: 8px; }
-    .form-group label { font-size: 14px; font-weight: 600; color: #334155; }
+    .grid-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .form-group { display: grid; gap: 6px; }
+    .form-group label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
     .form-control {
       width: 100%;
-      padding: 12px 14px;
+      padding: 10px 14px;
       border-radius: 12px;
       border: 1px solid var(--line);
-      outline: none;
       font-size: 14px;
+      background: #ffffff;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus { border-color: var(--primary); }
+
+    select.form-control {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2064748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    /* Checklist Cards (Step 2 - from ChecklistInspection.htm) */
+    .check-list-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    .check-card {
+      background: #ffffff;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    .num-badge {
+      background: var(--primary-light);
+      color: var(--primary);
+      width: 26px; height: 26px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+
+    .card-info {
+      font-size: 13px;
+      color: var(--muted);
+      display: grid;
+      gap: 6px;
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+    }
+    .card-info strong { color: var(--text); font-weight: 600; }
+
+    .touch-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .radio-label { position: relative; cursor: pointer; display: block; }
+    .radio-label input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .radio-box {
+      display: flex; align-items: center; justify-content: center;
+      padding: 12px; border-radius: 12px; border: 2px solid var(--line);
+      font-weight: 600; font-size: 13px; transition: 0.2s ease;
+      background: #fff; color: var(--muted);
+    }
+    .radio-label input:checked + .radio-box.yes-box {
+      background: var(--success-bg); border-color: var(--success); color: var(--success);
+    }
+    .radio-label input:checked + .radio-box.no-box {
+      background: var(--danger-bg); border-color: var(--danger); color: var(--danger);
+    }
+
+    /* Report Detail Styles (Step 3 Preview) */
+    .report-header {
       background: #fff;
-      transition: 0.2s ease;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: grid; gap: 16px;
     }
-    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-    /* Checklist Table inside Wizard */
-    .mini-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .mini-table th, .mini-table td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; }
-    .mini-table th { background: #f8fafc; color: var(--muted); font-size: 12px; }
-
-    .radio-group { display: flex; gap: 16px; }
-    .radio-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
-
-    /* File Dropzone */
-    .dropzone {
-      border: 2px dashed var(--primary);
-      background: rgba(37, 99, 235, 0.03);
-      padding: 30px;
-      border-radius: 16px;
-      text-align: center;
-      cursor: pointer;
+    .report-title { margin: 0 0 6px; font-size: 1.3rem; font-weight: 700; }
+    .report-meta-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px;
     }
+    .meta-item { display: grid; gap: 4px; }
+    .meta-label { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .meta-val { font-weight: 600; }
+
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .metric-card {
+      background: #fff; border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+    }
+    .metric-card .num { font-size: 1.8rem; font-weight: 700; margin-top: 6px; }
+
+    .table-responsive { width: 100%; overflow-x: auto; }
+    .checklist-table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
+    .checklist-table th, .checklist-table td {
+      padding: 12px 8px; text-align: left; vertical-align: middle;
+      border-bottom: 1px solid var(--line); line-height: 1.4;
+    }
+    .checklist-table th { background: #f8fafc; color: var(--muted); font-weight: 700; font-size: 12px; text-transform: uppercase; }
+    .checklist-table tr:hover { background: var(--primary-light); }
+
+    .col-num { width: 35px; text-align: center; font-weight: 700; color: var(--muted); }
+    .col-elem { font-weight: 600; word-wrap: break-word; }
+    .col-importance { width: 85px; text-align: center; font-weight: 600; }
+    .col-ans { width: 55px; text-align: center; }
+    .col-notes { width: 320px; max-width: 50ch; color: var(--muted); word-wrap: break-word; white-space: normal; }
+
+    .importance-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; text-align: center; }
+    .importance-badge.high { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
+
+    .elem-wrapper { display: inline-flex; align-items: center; gap: 6px; position: relative; }
+    .info-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; border-radius: 50%; background: #e2e8f0;
+      color: var(--primary); font-size: 11px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+    }
+    .info-badge:hover, .info-badge:active { background: var(--primary); color: #fff; }
+
+    .info-popover {
+      position: absolute; left: 100%; top: 50%; transform: translateY(-50%) translateX(10px);
+      width: 340px; background: #fff; border: 1px solid var(--line);
+      border-radius: 14px; padding: 16px; box-shadow: var(--shadow); z-index: 999;
+      opacity: 0; visibility: hidden; transition: 0.2s ease; font-size: 13px; font-weight: normal;
+    }
+    .info-badge:hover + .info-popover, .info-popover.active { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(14px); }
+    .popover-item { margin-bottom: 8px; }
+    .popover-item:last-child { margin-bottom: 0; }
+    .popover-label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; display: block; }
+    .popover-val { color: #334155; font-size: 12.5px; }
+
+    .status-check {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border-radius: 6px; font-weight: 700; font-size: 13px; margin: 0 auto;
+    }
+    .status-check.yes { background: rgba(22, 163, 74, 0.15); color: var(--success); border: 1px solid var(--success); }
+    .status-check.no { background: rgba(220, 38, 38, 0.15); color: var(--danger); border: 1px solid var(--danger); }
 
     .wizard-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 12px;
-      border-top: 1px solid var(--line);
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 16px; border-top: 1px solid var(--line); margin-top: 10px;
     }
 
     .wizard-step-content { display: none; }
     .wizard-step-content.active { display: grid; gap: 20px; }
 
+    .print-signatures { display: none; }
+
+    @media print {
+      .info-popover, .info-badge, .sidebar, .topbar, .wizard-steps, .wizard-actions { display: none !important; }
+      .app { display: block; }
+      .main { padding: 0; }
+      .print-signatures {
+        display: grid !important; grid-template-columns: 1fr 1fr; gap: 40px;
+        margin-top: 40px; padding-top: 20px; border-top: 2px solid var(--line);
+      }
+      .signature-item { display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+      .signature-line { border-bottom: 1px solid #000; width: 100%; height: 20px; }
+    }
+
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
+      .sidebar {
+        position: fixed; left: 0; top: 0; z-index: 1000; height: 100vh; width: 280px;
+        transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .menu-toggle { display: flex; }
+      .main { padding: 16px; }
       .wizard-steps { grid-template-columns: 1fr; }
-      .grid-2 { grid-template-columns: 1fr; }
+      .check-list-grid { grid-template-columns: 1fr; }
+      .info-popover {
+        position: fixed; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%);
+        width: calc(100vw - 32px) !important; max-width: 340px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Overlay для мобильного меню -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   <div class="app">
-    <aside class="sidebar">
+    <!-- Боковая панель из ChecklistInspection.htm -->
+    <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-badge">T</div>
         <div>TechService</div>
       </div>
+
       <div class="profile">
         <div>
           <strong>Евгений В.</strong>
           <small>ИТ директор</small>
         </div>
       </div>
+
       <nav class="nav">
-        <a class="active" href="https://assetzhan.github.io/TechService/Reports.htm">
-          <span>Отчеты по парку</span>
-          <span class="count">128</span>
-        </a>
+        <a href="https://assetzhan.github.io/TechService/Monitoring.htm"><span>Мониторинг</span><span class="count">3</span></a>
+        <a class="active" href="https://assetzhan.github.io/TechService/Reports.htm"><span>Отчеты по парку</span><span class="count">128</span></a>
         <a href="https://assetzhan.github.io/TechService/Tasks.htm"><span>Задачи</span><span class="count">24</span></a>
         <a href="https://assetzhan.github.io/TechService/Incidents.htm"><span>Инциденты</span><span class="count">51</span></a>
+        <a href="https://assetzhan.github.io/TechService/Locations.htm"><span>Локации</span><span class="count">10</span></a>
+        <a href="https://assetzhan.github.io/TechService/Users.htm"><span>Пользователи</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Topics.htm"><span>Темы</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Attractions.htm"><span>Аттракционы</span><span class="count">10</span></a>
+        <a href="https://assetzhan.github.io/TechService/AttractionsList.htm"><span>Список аттракционов</span><span class="count">10</span></a>
+        <a href="https://assetzhan.github.io/TechService/Assignees.htm"><span>Ответственные</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Observers.htm"><span>Наблюдатели</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/RootCauses.htm"><span>Первопричины</span><span class="count">35</span></a>
       </nav>
+      
+      <div class="sidebar-footer">
+        <nav class="nav">
+          <a href="https://support.mykids.kz/"><span>Заявка в ИТ</span></a>
+        </nav>
+      </div>
     </aside>
 
-    <main class="main">
-      <div class="topbar">
-        <a href="https://assetzhan.github.io/TechService/Reports.htm" class="btn btn-ghost">← Отмена</a>
-        <h2 style="margin:0; font-size: 1.2rem;">Создание отчета инспекции (Вариант 1: Пошаговый)</h2>
-      </div>
+    <!-- Основной контент -->
+    <div class="main-wrapper">
+      <main class="main">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button type="button" class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
+            <a href="https://assetzhan.github.io/TechService/Reports.htm" class="btn btn-ghost">← Отмена</a>
+            <h1 class="topbar-title" id="pageTitle">Создание отчета инспекции</h1>
+          </div>
+          <div id="topbarActions"></div>
+        </header>
 
-      <!-- Пошаговый Индикатор -->
-      <section class="wizard-steps">
-        <div class="step-item active" id="stepIndicator1">
-          <span class="step-num">1</span>
-          <span>Основная информация</span>
-        </div>
-        <div class="step-item" id="stepIndicator2">
-          <span class="step-num">2</span>
-          <span>Чек-лист инспекции</span>
-        </div>
-        <div class="step-item" id="stepIndicator3">
-          <span class="step-num">3</span>
-          <span>Файлы и Заключение</span>
-        </div>
-      </section>
+        <!-- Пошаговый Индикатор -->
+        <section class="wizard-steps">
+          <div class="step-item active" id="stepIndicator1">
+            <span class="step-num">1</span>
+            <span>Основная информация</span>
+          </div>
+          <div class="step-item" id="stepIndicator2">
+            <span class="step-num">2</span>
+            <span>Чек-лист инспекции</span>
+          </div>
+          <div class="step-item" id="stepIndicator3">
+            <span class="step-num">3</span>
+            <span>Предпроверка отчета</span>
+          </div>
+        </section>
 
-      <!-- Панель формы -->
-      <section class="panel">
+        <!-- Форма мастера -->
         <form id="reportWizardForm" onsubmit="return false;">
           
-          <!-- ШАГ 1 -->
+          <!-- ШАГ 1: Основная информация -->
           <div class="wizard-step-content active" id="step1">
-            <h3 style="margin: 0;">Шаг 1: Параметры объекта и инспекции</h3>
-            
-            <div class="grid-2">
-              <div class="form-group">
-                <label>Парк / Локация *</label>
-                <select class="form-control" required>
-                  <option value="">Выберите локацию...</option>
-                  <option selected>Алматы Атакент</option>
-                  <option>Астана Хан Шатыр</option>
-                  <option>Шымкент Royal Plaza</option>
-                </select>
-              </div>
+            <section class="panel-card">
+              <h3 style="margin:0;">Параметры объекта и инспекции</h3>
+              <div class="grid-form">
+                <div class="form-group">
+                  <label>Парк / Локация *</label>
+                  <select class="form-control" id="inpLocation" required>
+                    <option value="Алматы Атакент" selected>Алматы Атакент</option>
+                    <option value="Астана Хан Шатыр">Астана Хан Шатыр</option>
+                    <option value="Шымкент Royal Plaza">Шымкент Royal Plaza</option>
+                  </select>
+                </div>
 
-              <div class="form-group">
-                <label>Аттракцион / Объект *</label>
-                <select class="form-control" required>
-                  <option value="">Выберите оборудование...</option>
-                  <option selected>Батутная арена (Батуты)</option>
-                  <option>Колесо обозрения</option>
-                  <option>Автодром</option>
-                </select>
-              </div>
-            </div>
+                <div class="form-group">
+                  <label>Аттракцион / Объект *</label>
+                  <select class="form-control" id="inpAttraction" required onchange="renderChecklistCards();">
+                    <!-- Заполняется динамически из чеклиста -->
+                  </select>
+                </div>
 
-            <div class="grid-2">
-              <div class="form-group">
-                <label>Дата и время осмотра *</label>
-                <input type="datetime-local" class="form-control" value="2026-08-25T08:30" required />
-              </div>
+                <div class="form-group">
+                  <label>Дата и время осмотра *</label>
+                  <input type="text" class="form-control" id="inpDateTime" required />
+                </div>
 
-              <div class="form-group">
-                <label>Проводящий инспекцию *</label>
-                <input type="text" class="form-control" value="Аскаров Б." placeholder="ФИО сотрудника" required />
+                <div class="form-group">
+                  <label>Проводящий инспекцию *</label>
+                  <input type="text" class="form-control" id="inpInspector" value="Аскаров Б." placeholder="ФИО сотрудника" required />
+                </div>
               </div>
-            </div>
+            </section>
           </div>
 
-          <!-- ШАГ 2 -->
+          <!-- ШАГ 2: Чек-лист инспекции (Стиль ChecklistInspection.htm) -->
           <div class="wizard-step-content" id="step2">
-            <h3 style="margin: 0;">Шаг 2: Экспресс-проверка пунктов (Батуты)</h3>
-            
-            <table class="mini-table">
-              <thead>
-                <tr>
-                  <th>Проверяемый элемент</th>
-                  <th>Признаки нормы</th>
-                  <th style="width: 140px; text-align: center;">Соответствует</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Батутные полотна</strong></td>
-                  <td>Без порезов и разрывов, полотно натянуто равномерно.</td>
-                  <td>
-                    <div class="radio-group" style="justify-content: center;">
-                      <label class="radio-label"><input type="radio" name="p1" checked /> Да</label>
-                      <label class="radio-label"><input type="radio" name="p1" /> Нет</label>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Пружины и крепления</strong></td>
-                  <td>Все пружины на месте, без коррозии, скрип отсутствует.</td>
-                  <td>
-                    <div class="radio-group" style="justify-content: center;">
-                      <label class="radio-label"><input type="radio" name="p2" checked /> Да</label>
-                      <label class="radio-label"><input type="radio" name="p2" /> Нет</label>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Несущая рама</strong></td>
-                  <td>Сварные соединения затянуты, устойчивость полная.</td>
-                  <td>
-                    <div class="radio-group" style="justify-content: center;">
-                      <label class="radio-label"><input type="radio" name="p3" checked /> Да</label>
-                      <label class="radio-label"><input type="radio" name="p3" /> Нет</label>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Защитные маты</strong></td>
-                  <td>Перекрывают жесткие элементы, не смещаются.</td>
-                  <td>
-                    <div class="radio-group" style="justify-content: center;">
-                      <label class="radio-label"><input type="radio" name="p4" checked /> Да</label>
-                      <label class="radio-label"><input type="radio" name="p4" /> Нет</label>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <section class="check-list-grid" id="checklistCardsContainer">
+              <!-- Карточки пунктов инспекции генерируются скриптом -->
+            </section>
           </div>
 
-          <!-- ШАГ 3 -->
+          <!-- ШАГ 3: Предпроверка отчета (Формат ReportDetail (3).htm) -->
           <div class="wizard-step-content" id="step3">
-            <h3 style="margin: 0;">Шаг 3: Прикрепление фото/акта и отправка</h3>
+            
+            <!-- Заголовок отчета -->
+            <section class="report-header">
+              <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap;">
+                <div>
+                  <span style="color: var(--muted); font-size: 13px; font-weight: 600;" id="previewReportNum">#CHK-2026-0825 · Аттракцион: Батуты</span>
+                  <h1 class="report-title">Акт технической проверки и безопасности</h1>
+                </div>
+              </div>
 
-            <div class="form-group">
-              <label>Загрузка скана или фото акта осмотра</label>
-              <div class="dropzone" onclick="document.getElementById('fileInput').click()">
-                <div style="font-size: 2rem; margin-bottom: 8px;">📄</div>
-                <strong>Перетащите файл сюда или нажмите для выбора</strong>
-                <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">Поддерживаются PDF, JPG, PNG (до 15 МБ)</div>
-                <input type="file" id="fileInput" style="display: none;" />
+              <div class="report-meta-grid">
+                <div class="meta-item">
+                  <span class="meta-label">Дата и время осмотра</span>
+                  <span class="meta-val" id="prevMetaDateTime">-</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Инспектор / Специалист</span>
+                  <span class="meta-val" id="prevMetaInspector">-</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Локация</span>
+                  <span class="meta-val" id="prevMetaLocation">-</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Аттракцион</span>
+                  <span class="meta-val" id="prevMetaAttraction">-</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Метрики -->
+            <section class="metrics-grid">
+              <div class="metric-card">
+                <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Ответ «Норма»</span>
+                <div class="num" style="color: var(--success);" id="metricNorma">0</div>
+              </div>
+              <div class="metric-card">
+                <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Ответ «Дефект»</span>
+                <div class="num" style="color: var(--danger);" id="metricDefect">0</div>
+              </div>
+              <div class="metric-card">
+                <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Всего примечаний</span>
+                <div class="num" style="color: var(--info);" id="metricNotes">0</div>
+              </div>
+              <div class="metric-card">
+                <span style="color: var(--muted); font-size: 13px; font-weight: 600;">Рекомендация</span>
+                <div class="num" id="metricStatus">-</div>
+              </div>
+            </section>
+
+            <!-- Таблица результатов -->
+            <section class="panel-card" style="padding:0; overflow:hidden;">
+              <div style="padding: 16px 20px; border-bottom: 1px solid var(--line); display:flex; justify-content:space-between; align-items:center;">
+                <strong style="font-size: 1.1rem;">Карта технической проверки узлов и конструкций</strong>
+                <span style="font-size: 12px; color: var(--muted);">Основание: Ежедневный ТО</span>
+              </div>
+
+              <div class="table-responsive">
+                <table class="checklist-table">
+                  <thead>
+                    <tr>
+                      <th class="col-num">№</th>
+                      <th class="col-elem">Проверяемый элемент</th>
+                      <th class="col-importance">Важность</th>
+                      <th class="col-ans">Норма</th>
+                      <th class="col-ans">Дефект</th>
+                      <th class="col-notes">Примечание</th>
+                    </tr>
+                  </thead>
+                  <tbody id="previewTableBody">
+                    <!-- Заполняется динамически -->
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- Блок подписей для печати -->
+            <div class="print-signatures">
+              <div class="signature-item">
+                <span style="font-weight:700;">Инспектор / Специалист:</span>
+                <span id="printInspectorName">ФИО: </span>
+                <div class="signature-line"></div>
+                <small style="color: var(--muted);">Подпись / Дата</small>
+              </div>
+              <div class="signature-item">
+                <span style="font-weight:700;">Ответственный за проверку:</span>
+                <span>ФИО: ______________________</span>
+                <div class="signature-line"></div>
+                <small style="color: var(--muted);">Подпись / Дата</small>
               </div>
             </div>
 
-            <div class="form-group">
-              <label>Итоговое примечание / Заключение</label>
-              <textarea class="form-control" rows="3" placeholder="Введите дополнительные замечания или комментарии к осмотру...">Оборудование прошло полную проверку. Замечаний и критических дефектов не выявлено. Допущено к эксплуатации.</textarea>
+            <!-- Итоговые действия -->
+            <div style="display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; margin-top: 10px;">
+              <button type="button" class="btn btn-danger" style="padding: 14px 24px;" onclick="finishReport('stop')">
+                Отчет проверен (остановка аттракциона)
+              </button>
+              <button type="button" class="btn btn-primary" style="padding: 14px 24px;" onclick="finishReport('start')">
+                Отчет проверен (запуск аттракциона)
+              </button>
             </div>
           </div>
 
-          <!-- Кнопки управления шагами -->
+          <!-- Навигация по Шагам -->
           <div class="wizard-actions">
             <button type="button" class="btn btn-ghost" id="btnPrev" style="visibility: hidden;">← Назад</button>
             <button type="button" class="btn btn-primary" id="btnNext">Далее →</button>
           </div>
 
         </form>
-      </section>
-    </main>
+      </main>
+    </div>
   </div>
 
   <script>
+    // Данные аттракционов и чек-листов из Excel-файла
+    const checklistData = {
+      "Батуты": [
+        {"num": 1, "elem": "Батутные полотна, швы, крепёжные петли", "what": "Полотно, швы, крепёжные петли.", "how": "Осмотреть всю поверхность, натяжение, отсутствие провисания.", "norma": "Порезы/разрывы отсутствуют, натянуто равномерно."},
+        {"num": 2, "elem": "Пружины и их крепление к раме", "what": "Пружины, крюки, проушины и крепление к раме.", "how": "Проверить наличие всех пружин, дать пробную нагрузку.", "norma": "Пружины на месте, без деформации/коррозии."},
+        {"num": 3, "elem": "Несущая рама и соединения", "what": "Балки, сварные и болтовые соединения.", "how": "Осмотр стоек, балок, проверка на люфт.", "norma": "Деформации отсутствуют, соединения затянуты."},
+        {"num": 4, "elem": "Защитные маты над рамой", "what": "Защитные маты, плотность прилегания.", "how": "Проверить перекрытие жёстких элементов.", "norma": "Металл полностью закрыт, маты не смещаются."},
+        {"num": 5, "elem": "Ограждающие сетки", "what": "Сетки, швы, узлы крепления.", "how": "Осмотреть швы, узлы крепления, натяжение.", "norma": "Разрывов нет, сетка закреплена по периметру."},
+        {"num": 6, "elem": "Пробный запуск / Проверка систем", "what": "Работа механизмов под нагрузкой.", "how": "Проверить работу и звуки систем под нагрузкой.", "norma": "Необычные шумы отсутствуют, работа штатная."}
+      ],
+      "Картинг": [
+        {"num": 1, "elem": "Корпус картинга", "what": "Корпус, пластиковые и композитные элементы.", "how": "Визуально осмотреть корпус по всей поверхности; проверить целостность пластиковых и композитных элементов; убедиться в отсутствии трещин, сколов и деформаций.", "norma": "Корпус целый; отсутствуют трещины и деформации; нет острых или выступающих частей."},
+        {"num": 2, "elem": "Сиденье и посадочное место", "what": "Сиденье, крепление к корпусу.", "how": "Осмотреть сиденье и спинку; проверить крепление сиденья к корпусу; вручную проверить сиденье на люфт и шатание.", "norma": "Сиденье жёстко закреплено; поверхность целая; люфт отсутствует."},
+        {"num": 3, "elem": "Ремни безопасности и шлем", "what": "Ремни, замок, швы, точки крепления, застежка шлема.", "how": "Осмотреть ремни по всей длине; проверить швы и точки крепления; проверить работу замка; осмотреть шлем.", "norma": "Ремни целые; замок работает чётко; ремни надёжно фиксируют участника; шлем целый; застёжка исправна."},
+        {"num": 4, "elem": "Защитные дуги и бамперы картинга", "what": "Дуги и бамперы, крепления к корпусу.", "how": "Осмотреть дуги и бамперы; проверить крепления к корпусу; вручную проверить отсутствие люфта.", "norma": "Элементы закреплены жёстко; отсутствуют трещины и люфт."},
+        {"num": 5, "elem": "Привод и ходовая часть", "what": "Плавность хода, работа механизмов.", "how": "Визуально осмотреть элементы привода и ходовой части; проехать пробный круг по трассе.", "norma": "Движение плавное; картинг уверенно движется по трассе; отсутствуют посторонние шумы."},
+        {"num": 6, "elem": "Рулевое управление, педаль газа и тормоз", "what": "Свободное вращение руля и ход педалей.", "how": "На неподвижном картинге повернуть руль в обе стороны; несколько раз нажать и отпустить педали.", "norma": "Руль вращается свободно; педали перемещаются свободно и возвращаются в исходное положение."},
+        {"num": 7, "elem": "Аккумуляторный блок", "what": "Корпус аккумулятора, разъёмы, кабели, признаки перегрева.", "how": "Визуально осмотреть корпус; проверить отсутствие вмятин и следов перегрева; проверить плотность фиксации штекеров.", "norma": "Корпус целый; гнёзда не расшатаны; штекеры подключаются плотно; признаки перегрева отсутствуют."},
+        {"num": 8, "elem": "Трасса картинга", "what": "Борта, покрытие трассы.", "how": "Осмотреть борта; проверить крепление; убедиться в наличии мягкой защиты; осмотреть покрытие трассы.", "norma": "Борта целые; защита установлена; покрытие ровное; трасса чистая и сухая."},
+        {"num": 9, "elem": "Ограждение и калитка доступа", "what": "Секции и крепления ограждения; рама, петли, замок.", "how": "Осмотреть секции ограждения и крепления. Открыть и закрыть калитку вручную.", "norma": "Ограждение устойчиво. Калитка открывается свободно, фиксатор удерживает её в закрытом положении."},
+        {"num": 10, "elem": "Информационные элементы", "what": "Наличие правил и читаемость информации.", "how": "Проверить наличие правил и читаемость информации.", "norma": "Информация размещена и читаема."}
+      ],
+      "Веревочный парк": [
+        {"num": 1, "elem": "Несущая конструкция", "what": "Колонны, балки, раскосы, сварные и болтовые соединения.", "how": "Осмотреть все доступные участки; проверить комплектность крепежа.", "norma": "Трещины, деформации, опасная коррозия и раскачивание отсутствуют."},
+        {"num": 2, "elem": "Промежуточные платформы", "what": "Настил, опоры, ограждения, зазоры и крепления платформ.", "how": "Осмотреть поверхность и нижнюю доступную часть; проверить устойчивость.", "norma": "Поверхность ровная и нескользкая; повреждения и опасные зазоры отсутствуют."},
+        {"num": 3, "elem": "Лестницы и подходы", "what": "Ступени, поручни, крепления, входная и выходная площадки.", "how": "Осмотреть; проверить устойчивость, чистоту, отсутствие скользких участков.", "norma": "Ступени и поручни целые и закреплены; проходы свободны."},
+        {"num": 4, "elem": "Канаты, тросы и сетки", "what": "Канаты, стальные тросы, защитная оболочка, сетки.", "how": "Осмотреть по всей доступной длине без снятия нагрузки.", "norma": "Разрывы, надрывы, распушение, заломы и опасная коррозия отсутствуют."},
+        {"num": 5, "elem": "Непрерывная страховочная система", "what": "Страховочный фал/линия, направляющая, ролики, каретки.", "how": "Осмотреть по всей доступной трассе; провести штатную функциональную проверку.", "norma": "Износ и повреждения отсутствуют; каретка проходит маршрут плавно."}
+      ],
+      "Башни равновесия": [
+        {"num": 1, "elem": "Несущая конструкция и анкеры", "what": "Каркас, рамы, сварные и болтовые соединения, опоры.", "how": "Осмотреть каркас, рамы, сварные и болтовые соединения.", "norma": "Трещины, деформации, ослабление соединений отсутствуют."},
+        {"num": 2, "elem": "Столбы и защитное покрытие", "what": "Столбы, крепление к полу и мягкую защиту.", "how": "Осмотреть каждый столб по всей доступной высоте; проверить отсутствие шатания.", "norma": "Столбы закреплены жёстко; покрытие целое и зафиксировано."},
+        {"num": 3, "elem": "Страховочная катушка", "what": "Корпус и крепление катушки, стропа, работа при резкой нагрузке.", "how": "Осмотреть корпус и крепление; вытянуть стропу на 1–2 метра и отпустить.", "norma": "Стропа втягивается плавно; при нагрузке обеспечивает плавный контролируемый спуск."},
+        {"num": 4, "elem": "Стропы, карабины", "what": "Стропы по всей длине и работа автоматических замков.", "how": "Осмотреть стропы по всей длине; проверить работу автоматических замков.", "norma": "Отсутствуют порезы, надрывы, износ; карабин закрывается автоматически."}
+      ],
+      "Башня": [
+        {"num": 1, "elem": "Опорная колонна и металлоконструкции", "what": "Колонна, ребра жесткости, соединения.", "how": "Визуальный осмотр каркаса и сопряжений.", "norma": "Отсутствие трещин, коррозии и деформаций."},
+        {"num": 2, "elem": "Трос и подъемный механизм", "what": "Стальной трос, лебедка, блоки.", "how": "Осмотр троса на износ, проверка работы лебедки.", "norma": "Трос без заломов и обрывов жил, ход плавный."}
+      ],
+      "Башня-кран": [
+        {"num": 1, "elem": "Стрела и поворотно-наклонный механизм", "what": "Стрела, опорный подшипник, приводы.", "how": "Осмотр узлов и проверка работы без нагрузки.", "norma": "Заедания и люфты отсутствуют, фиксация надежная."}
+      ],
+      "Большая волна": [
+        {"num": 1, "elem": "Привод движения и направляющие", "what": "Мотор-редуктор, ролики, рельсы.", "how": "Проверка состояния направляющих и отсутствия шума.", "norma": "Рельсы чистые, движение без рывков."}
+      ],
+      "Вело-драйв 360": [
+        {"num": 1, "elem": "Каретка, педальный привод и противовес", "what": "Рама велосипеда, цепь, противовес.", "how": "Проверка натяжения цепи, фиксации противоеса.", "norma": "Цепь натянута, фиксация надежная, тормоз исправен."}
+      ],
+      "Волновая горка": [
+        {"num": 1, "elem": "Склоны, стыки и стартовая площадка", "what": "Слайдинг-панели, стыки, поручни.", "how": "Осмотр поверхности катания на отсутствие задиров.", "norma": "Стыки гладкие, повреждения отсутствуют."}
+      ],
+      "Воронка": [
+        {"num": 1, "elem": "Приемная чаша и выкатная зона", "what": "Панели чаши, гасители скорости.", "how": "Проверка целостности пластика и крепежей.", "norma": "Поверхность гладкая, зазоры в норме."}
+      ],
+      "Гонки": [
+        {"num": 1, "elem": "Трасса и электронная система хронометража", "what": "Сенсоры, стартовые ворота, борта.", "how": "Тестирование срабатывания датчиков.", "norma": "Датчики фиксируют проезд, борта зафиксированы."}
+      ],
+      "Горка 90 градусов": [
+        {"num": 1, "elem": "Вертикальный спуск и стартовый замок", "what": "Захват, сцепление, покрытие горки.", "how": "Проверка работы стартового замка и гладкости спуска.", "norma": "Замок срабатывает четко, повреждения отсутствуют."}
+      ],
+      "Капсула": [
+        {"num": 1, "elem": "Герметизация, замок двери и иллюминаторы", "what": "Дверной замок, уплотнители, стекло.", "how": "Проверка закрытия двери и работы кнопки аварийного открытия.", "norma": "Замок фиксирует надежно, аварийная кнопка исправна."}
+      ],
+      "Катапульта": [
+        {"num": 1, "elem": "Эластичные тяги и пусковой механизм", "what": "Жгуты, замки сброса, кресло.", "how": "Осмотр жгутов на отсутствие надрывов и микротрещин.", "norma": "Жгуты без повреждений, замок сброса работает штатно."}
+      ]
+    };
+
     let currentStep = 1;
     const totalSteps = 3;
 
-    const btnNext = document.getElementById('btnNext');
-    const btnPrev = document.getElementById('btnPrev');
+    document.addEventListener('DOMContentLoaded', () => {
+      initApp();
+    });
 
-    function updateWizard() {
-      // Переключение видимости контента
+    function initApp() {
+      // 1. Заполнение списка аттракционов
+      const selectAttr = document.getElementById('inpAttraction');
+      selectAttr.innerHTML = '';
+      Object.keys(checklistData).forEach(attr => {
+        const opt = document.createElement('option');
+        opt.value = attr;
+        opt.textContent = attr;
+        selectAttr.appendChild(opt);
+      });
+
+      // Установка системного времени
+      const now = new Date();
+      const dtStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      document.getElementById('inpDateTime').value = "2026-08-25, 08:30";
+
+      // Отрисовка Шага 2
+      renderChecklistCards();
+
+      // Управление навигацией меню (Sidebar)
+      setupSidebarNav();
+
+      // Управление шагами
+      document.getElementById('btnNext').addEventListener('click', nextStep);
+      document.getElementById('btnPrev').addEventListener('click', prevStep);
+    }
+
+    function renderChecklistCards() {
+      const attr = document.getElementById('inpAttraction').value;
+      const items = checklistData[attr] || [];
+      const container = document.getElementById('checklistCardsContainer');
+      container.innerHTML = '';
+
+      items.forEach((item) => {
+        const card = document.createElement('div');
+        card.className = 'check-card';
+        card.innerHTML = `
+          <div class="card-title">
+            <span class="num-badge">${item.num}</span>
+            <span>${item.elem}</span>
+          </div>
+          <div class="card-info">
+            <div><strong>Как проверить:</strong> ${item.how}</div>
+            <div><strong>Норма:</strong> ${item.norma}</div>
+          </div>
+          <div class="touch-actions">
+            <label class="radio-label">
+              <input type="radio" name="item_${item.num}" value="yes" checked>
+              <div class="radio-box yes-box">Норма</div>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="item_${item.num}" value="no">
+              <div class="radio-box no-box">Дефект</div>
+            </label>
+          </div>
+          <input type="text" class="form-control inp-note" id="note_${item.num}" placeholder="Примечание или описание дефекта..." />
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updateWizardUI() {
       for (let i = 1; i <= totalSteps; i++) {
         document.getElementById(`step${i}`).classList.toggle('active', i === currentStep);
-        
         const indicator = document.getElementById(`stepIndicator${i}`);
         indicator.classList.toggle('active', i === currentStep);
         indicator.classList.toggle('completed', i < currentStep);
       }
 
-      // Управление кнопками
+      const btnNext = document.getElementById('btnNext');
+      const btnPrev = document.getElementById('btnPrev');
+      const topbarActions = document.getElementById('topbarActions');
+
       btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
-      
-      if (currentStep === totalSteps) {
-        btnNext.textContent = '✓ Сохранить и опубликовать';
-        btnNext.classList.remove('btn-primary');
-        btnNext.style.background = 'var(--success)';
-        btnNext.style.color = '#fff';
+
+      if (currentStep === 3) {
+        btnNext.style.display = 'none';
+        topbarActions.innerHTML = `<button type="button" class="btn btn-ghost" onclick="window.print()">🖨️ Печать чек-листа</button>`;
+        renderPreviewReport();
       } else {
+        btnNext.style.display = 'inline-flex';
         btnNext.textContent = 'Далее →';
-        btnNext.style.background = 'linear-gradient(135deg, var(--primary), var(--primary-2))';
+        topbarActions.innerHTML = '';
       }
     }
 
-    btnNext.addEventListener('click', () => {
+    function nextStep() {
       if (currentStep < totalSteps) {
         currentStep++;
-        updateWizard();
-      } else {
-        alert('Отчет успешно создан и добавлен в реестр!');
-        window.location.href = "https://assetzhan.github.io/TechService/Reports.htm";
+        updateWizardUI();
       }
-    });
+    }
 
-    btnPrev.addEventListener('click', () => {
+    function prevStep() {
       if (currentStep > 1) {
         currentStep--;
-        updateWizard();
+        updateWizardUI();
       }
+    }
+
+    function renderPreviewReport() {
+      const attr = document.getElementById('inpAttraction').value;
+      const loc = document.getElementById('inpLocation').value;
+      const dt = document.getElementById('inpDateTime').value;
+      const inspector = document.getElementById('inpInspector').value;
+      const items = checklistData[attr] || [];
+
+      document.getElementById('prevMetaDateTime').textContent = dt;
+      document.getElementById('prevMetaInspector').textContent = `${inspector} (Тех. отдел)`;
+      document.getElementById('prevMetaLocation').textContent = loc;
+      document.getElementById('prevMetaAttraction').textContent = attr;
+      document.getElementById('previewReportNum').textContent = `#CHK-2026-0825 · Аттракцион: ${attr}`;
+      document.getElementById('printInspectorName').textContent = `ФИО: ${inspector}`;
+
+      let normaCount = 0;
+      let defectCount = 0;
+      let notesCount = 0;
+
+      const tbody = document.getElementById('previewTableBody');
+      tbody.innerHTML = '';
+
+      items.forEach((item) => {
+        const isYes = document.querySelector(`input[name="item_${item.num}"][value="yes"]`).checked;
+        const noteVal = document.getElementById(`note_${item.num}`).value.trim();
+
+        if (isYes) normaCount++; else defectCount++;
+        if (noteVal) notesCount++;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="col-num">${item.num}</td>
+          <td class="col-elem">
+            <div class="elem-wrapper">
+              <span>${item.elem}</span>
+              <span class="info-badge" onclick="togglePopover(event, this)">?</span>
+              <div class="info-popover">
+                <div class="popover-item">
+                  <span class="popover-label">Что проверяется:</span>
+                  <div class="popover-val">${item.what || item.elem}</div>
+                </div>
+                <div class="popover-item">
+                  <span class="popover-label">Как проверяется:</span>
+                  <div class="popover-val">${item.how}</div>
+                </div>
+                <div class="popover-item">
+                  <span class="popover-label">Признаки нормы:</span>
+                  <div class="popover-val">${item.norma}</div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="col-importance"><span class="importance-badge high">Высокая</span></td>
+          <td class="col-ans">${isYes ? '<span class="status-check yes">✓</span>' : ''}</td>
+          <td class="col-ans">${!isYes ? '<span class="status-check no">✕</span>' : ''}</td>
+          <td class="col-notes">${noteVal}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('metricNorma').textContent = normaCount;
+      document.getElementById('metricDefect').textContent = defectCount;
+      document.getElementById('metricNotes').textContent = notesCount;
+
+      const metricStatus = document.getElementById('metricStatus');
+      if (defectCount > 0) {
+        metricStatus.textContent = "Запрещен";
+        metricStatus.style.color = "var(--danger)";
+      } else {
+        metricStatus.textContent = "Разрешен";
+        metricStatus.style.color = "var(--success)";
+      }
+    }
+
+    function togglePopover(e, badge) {
+      e.stopPropagation();
+      const popover = badge.nextElementSibling;
+      const isActive = popover.classList.contains('active');
+      document.querySelectorAll('.info-popover').forEach(p => p.classList.remove('active'));
+      if (!isActive) popover.classList.add('active');
+    }
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.info-popover').forEach(p => p.classList.remove('active'));
     });
+
+    function finishReport(action) {
+      if (action === 'start') {
+        alert('Отчет успешно сохранен и подтвержден! Аттракцион допущен к эксплуатации.');
+      } else {
+        alert('Отчет сохранен с фиксацией дефектов. Работа аттракциона приостановлена!');
+      }
+      window.location.href = "https://assetzhan.github.io/TechService/Reports.htm";
+    }
+
+    function setupSidebarNav() {
+      const menuToggle = document.getElementById('menuToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+      if (menuToggle) menuToggle.addEventListener('click', () => {
+        sidebar.classList.add('open');
+        sidebarOverlay.classList.add('active');
+      });
+
+      if (sidebarOverlay) sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('active');
+      });
+
+      const routes = {
+        "Мониторинг": "https://assetzhan.github.io/TechService/Monitoring.htm",
+        "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
+        "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
+        "Инциденты": "https://assetzhan.github.io/TechService/Incidents.htm",
+        "Локации": "https://assetzhan.github.io/TechService/Locations.htm",
+        "Пользователи": "https://assetzhan.github.io/TechService/Users.htm",
+        "Темы": "https://assetzhan.github.io/TechService/Topics.htm",
+        "Аттракционы": "https://assetzhan.github.io/TechService/Attractions.htm",
+        "Список аттракционов": "https://assetzhan.github.io/TechService/AttractionsList.htm",
+        "Ответственные": "https://assetzhan.github.io/TechService/Assignees.htm",
+        "Наблюдатели": "https://assetzhan.github.io/TechService/Observers.htm",
+        "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
+        "Заявка в ИТ": "https://support.mykids.kz/"
+      };
+
+      document.querySelectorAll('aside .nav a').forEach(element => {
+        element.addEventListener('click', (e) => {
+          const text = element.textContent.trim().split('\n')[0].trim();
+          if (routes[text]) {
+            e.preventDefault();
+            window.location.href = routes[text];
+          }
+        });
+      });
+    }
   </script>
 </body>
 </html>

@@ -1,155 +1,697 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Чек-лист инспекции</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Новый отчет (Мастер) — TechService</title>
   <style>
     :root {
-      --primary-color: #2563eb;
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border-color: #e2e8f0;
+      --bg: #0f172a;
+      --panel: #ffffff;
+      --muted: #64748b;
+      --text: #0f172a;
+      --line: #e2e8f0;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --danger-hover: #b91c1c;
+      --info: #0891b2;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --radius: 18px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html { overflow-y: scroll; }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      padding: 20px;
-      line-height: 1.5;
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f1f5f9;
+      color: var(--text);
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
     }
 
-    h1 {
-      margin-bottom: 20px;
-      font-size: 24px;
-      color: var(--text-main);
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 999;
     }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
 
-    .select-group {
-      margin-bottom: 24px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      background-color: var(--card-bg);
-      font-size: 16px;
-      color: var(--text-main);
-      outline: none;
-    }
-
-    select:focus {
-      border-color: var(--primary-color);
-    }
-
-    .item-card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-
-    .item-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .item-number {
-      background-color: var(--primary-color);
+    /* Sidebar */
+    .sidebar {
+      background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
       color: #fff;
-      font-weight: bold;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      transition: transform 0.3s ease;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .brand {
       display: flex;
       align-items: center;
-      justify-content: center;
-      margin-right: 12px;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .brand-badge {
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+      font-size: 1.1rem;
+    }
+
+    .profile { display: flex; align-items: center; gap: 12px; }
+    .profile small { color: rgba(255,255,255,0.65); display: block; margin-top: 2px; }
+
+    .nav { display: grid; gap: 6px; }
+    .nav a {
+      text-decoration: none;
+      color: rgba(255,255,255,0.78);
+      padding: 10px 14px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: 0.2s ease;
       font-size: 14px;
+    }
+    .nav a:hover, .nav a.active {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .nav .count {
+      min-width: 26px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.3);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .sidebar-footer { margin-top: auto; font-size: 14px; }
+
+    /* Main Area */
+    .main-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .main {
+      width: 100%;
+      max-width: 1360px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(241, 245, 249, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 12px 0;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-title {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      height: 44px; width: 44px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      align-items: center; justify-content: center;
       flex-shrink: 0;
     }
 
-    .item-title {
-      font-size: 18px;
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 20px;
       font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      min-height: 46px;
+    }
+    .btn-ghost { background: #fff; color: var(--text); border: 1px solid var(--line); }
+    .btn-ghost:hover { background: var(--primary-light); color: var(--primary); }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    /* Wizard Steps */
+    .wizard-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      background: #fff;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
     }
 
-    .info-block {
-      margin-bottom: 10px;
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      color: var(--muted);
+      font-weight: 600;
       font-size: 14px;
     }
 
-    .info-label {
-      font-weight: 600;
-      color: var(--text-muted);
-      display: block;
-      margin-bottom: 2px;
+    .step-item.active { background: var(--primary-light); color: var(--primary); }
+    .step-item.completed { background: var(--success-bg); color: var(--success); }
+
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--line);
+      display: grid; place-items: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .step-item.active .step-num { background: var(--primary); color: #fff; }
+    .step-item.completed .step-num { background: var(--success); color: #fff; }
+
+    /* Panel & Form Layouts */
+    .panel-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 20px;
     }
 
-    .info-content {
-      color: var(--text-main);
-    }
-
-    .status-group {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px dashed var(--border-color);
-      display: flex;
+    .grid-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 16px;
     }
 
-    .status-option {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
+    .form-group { display: grid; gap: 6px; }
+    .form-group label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
       font-size: 14px;
+      background: #ffffff;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus { border-color: var(--primary); }
+    .form-control[readonly] {
+      background: #f1f5f9;
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    select.form-control {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2064748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    /* Checklist Cards (Step 2) */
+    .check-list-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .check-card {
+      background: #ffffff;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    .num-badge {
+      background: var(--primary-light);
+      color: var(--primary);
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+
+    .card-info {
+      font-size: 13px;
+      color: var(--muted);
+      display: grid;
+      gap: 6px;
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+    }
+    .card-info strong { color: var(--text); font-weight: 600; }
+
+    .touch-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .radio-label { position: relative; cursor: pointer; display: block; }
+    .radio-label input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .radio-box {
+      display: flex; align-items: center; justify-content: center;
+      padding: 14px 10px; border-radius: 12px; border: 2px solid var(--line);
+      font-weight: 700; font-size: 14px; transition: 0.2s ease;
+      background: #fff; color: var(--muted);
+      touch-action: manipulation;
+    }
+    .radio-label input:checked + .radio-box.yes-box {
+      background: var(--success-bg); border-color: var(--success); color: var(--success);
+    }
+    .radio-label input:checked + .radio-box.no-box {
+      background: var(--danger-bg); border-color: var(--danger); color: var(--danger);
+    }
+
+    /* Report Detail Styles (Step 3 Preview) */
+    .report-header {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: grid; gap: 16px;
+    }
+    .report-title { margin: 0 0 6px; font-size: 1.3rem; font-weight: 700; }
+    .report-meta-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px;
+    }
+    .meta-item { display: grid; gap: 4px; }
+    .meta-label { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .meta-val { font-weight: 600; }
+
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+    .metric-card {
+      background: #fff; border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
+    }
+    .metric-card .num { font-size: 1.6rem; font-weight: 700; margin-top: 4px; }
+
+    .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .checklist-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; }
+    .checklist-table th, .checklist-table td {
+      padding: 12px 10px; text-align: left; vertical-align: middle;
+      border-bottom: 1px solid var(--line); line-height: 1.4;
+    }
+    .checklist-table th { background: #f8fafc; color: var(--muted); font-weight: 700; font-size: 12px; text-transform: uppercase; }
+    .checklist-table tr:hover { background: var(--primary-light); }
+
+    .col-num { width: 35px; text-align: center; font-weight: 700; color: var(--muted); }
+    .col-elem { font-weight: 600; }
+    .col-importance { width: 90px; text-align: center; font-weight: 600; }
+    .col-ans { width: 60px; text-align: center; }
+    .col-notes { min-width: 180px; color: var(--muted); word-wrap: break-word; white-space: normal; }
+
+    .importance-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; text-align: center; }
+    .importance-badge.high { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
+
+    .elem-wrapper { display: inline-flex; align-items: center; gap: 6px; position: relative; }
+    .info-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 50%; background: #e2e8f0;
+      color: var(--primary); font-size: 12px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+    }
+    .info-badge:hover, .info-badge:active { background: var(--primary); color: #fff; }
+
+    .info-popover {
+      position: absolute; left: 100%; top: 50%; transform: translateY(-50%) translateX(10px);
+      width: 300px; background: #fff; border: 1px solid var(--line);
+      border-radius: 14px; padding: 14px; box-shadow: var(--shadow); z-index: 999;
+      opacity: 0; visibility: hidden; transition: 0.2s ease; font-size: 13px; font-weight: normal;
+    }
+    .info-badge:hover + .info-popover, .info-popover.active { opacity: 1; visibility: visible; }
+
+    .popover-item { margin-bottom: 8px; }
+    .popover-item:last-child { margin-bottom: 0; }
+    .popover-label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; display: block; }
+    .popover-val { color: #334155; font-size: 12.5px; }
+
+    .status-check {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border-radius: 6px; font-weight: 700; font-size: 13px; margin: 0 auto;
+    }
+    .status-check.yes { background: rgba(22, 163, 74, 0.15); color: var(--success); border: 1px solid var(--success); }
+    .status-check.no { background: rgba(220, 38, 38, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+
+    /* Actions Footer */
+    .wizard-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      margin-top: 10px;
+    }
+
+    .wizard-step-content { display: none; }
+    .wizard-step-content.active { display: grid; gap: 20px; }
+
+    /* Mobile Adaptations */
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed; left: 0; top: 0; z-index: 1000; height: 100vh; width: 280px;
+        transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .menu-toggle { display: flex; }
+      .main { padding: 16px 12px; gap: 16px; }
+
+      .wizard-steps {
+        grid-template-columns: 1fr 1fr 1fr;
+        padding: 8px;
+        gap: 6px;
+      }
+      .step-item {
+        padding: 8px 6px;
+        font-size: 11px;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .step-num { width: 22px; height: 22px; font-size: 11px; }
+
+      .topbar-title { font-size: 1.1rem; }
+      .panel-card, .check-card, .report-header { padding: 16px; }
+
+      .check-list-grid { grid-template-columns: 1fr; }
+
+      .info-popover {
+        position: fixed; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important;
+        width: calc(100vw - 32px) !important; max-width: 320px;
+      }
+
+      .wizard-actions {
+        position: sticky;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 12px 16px;
+        margin: 10px -12px -16px -12px;
+        border-top: 1px solid var(--line);
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+        z-index: 90;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 12px 14px;
+        font-size: 13.5px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Overlay для мобильного меню -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<div class="container">
-  <h1>Чек-лист инспекции аттракциона</h1>
+  <div class="app">
+    <!-- Боковая панель -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-badge">T</div>
+        <div>TechService</div>
+      </div>
 
-  <div class="select-group">
-    <label for="attractionSelect">Выберите аттракцион:</label>
-    <select id="attractionSelect" onchange="renderChecklist()">
-      <option value="">-- Выберите из списка --</option>
-    </select>
+      <div class="profile">
+        <div>
+          <strong>Евгений В.</strong>
+          <small>ИТ директор</small>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="https://assetzhan.github.io/TechService/Monitoring.htm"><span>Мониторинг</span><span class="count">3</span></a>
+        <a class="active" href="https://assetzhan.github.io/TechService/Reports.htm"><span>Отчеты по парку</span><span class="count">128</span></a>
+        <a href="https://assetzhan.github.io/TechService/Tasks.htm"><span>Задачи</span><span class="count">24</span></a>
+        <a href="https://assetzhan.github.io/TechService/Incidents.htm"><span>Инциденты</span><span class="count">51</span></a>
+        <a href="https://assetzhan.github.io/TechService/Locations.htm"><span>Локации</span><span class="count">10</span></a>
+        <a href="https://assetzhan.github.io/TechService/Users.htm"><span>Пользователи</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Topics.htm"><span>Темы</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Attractions.htm"><span>Аттракционы</span><span class="count">10</span></a>
+        <a href="https://assetzhan.github.io/TechService/AttractionsList.htm"><span>Список аттракционов</span><span class="count">10</span></a>
+        <a href="https://assetzhan.github.io/TechService/Assignees.htm"><span>Ответственные</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Observers.htm"><span>Наблюдатели</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/RootCauses.htm"><span>Первопричины</span><span class="count">35</span></a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <nav class="nav">
+          <a href="https://support.mykids.kz/"><span>Заявка в ИТ</span></a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Основной контент -->
+    <div class="main-wrapper">
+      <main class="main">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button type="button" class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
+            <a href="https://assetzhan.github.io/TechService/Reports.htm" class="btn btn-ghost" style="padding: 8px 12px; min-height: 38px;">← Отмена</a>
+            <h1 class="topbar-title" id="pageTitle">Создание отчета</h1>
+          </div>
+        </header>
+
+        <!-- Пошаговый Индикатор -->
+        <section class="wizard-steps">
+          <div class="step-item active" id="stepIndicator1">
+            <span class="step-num">1</span>
+            <span>Информация</span>
+          </div>
+          <div class="step-item" id="stepIndicator2">
+            <span class="step-num">2</span>
+            <span>Чек-лист</span>
+          </div>
+          <div class="step-item" id="stepIndicator3">
+            <span class="step-num">3</span>
+            <span>Проверка</span>
+          </div>
+        </section>
+
+        <!-- Форма мастера -->
+        <form id="reportWizardForm" onsubmit="return false;">
+          
+          <!-- ШАГ 1: Основная информация -->
+          <div class="wizard-step-content active" id="step1">
+            <section class="panel-card">
+              <h3 style="margin:0; font-size: 1.1rem;">Параметры объекта и инспекции</h3>
+              <div class="grid-form">
+                <div class="form-group">
+                  <label>Парк / Локация *</label>
+                  <select class="form-control" id="inpLocation" required>
+                    <option value="Алматы Атакент" selected>Алматы Атакент</option>
+                    <option value="Астана Хан Шатыр">Астана Хан Шатыр</option>
+                    <option value="Шымкент Royal Plaza">Шымкент Royal Plaza</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Аттракцион / Объект *</label>
+                  <select class="form-control" id="inpAttraction" required onchange="renderChecklistCards();">
+                    <!-- Заполняется динамически -->
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Дата и время осмотра *</label>
+                  <input type="text" class="form-control" id="inpDateTime" readonly />
+                </div>
+
+                <div class="form-group">
+                  <label>Проводящий инспекцию *</label>
+                  <input type="text" class="form-control" id="inpInspector" value="Аскаров Б." placeholder="ФИО сотрудника" required />
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- ШАГ 2: Чек-лист инспекции -->
+          <div class="wizard-step-content" id="step2">
+            <section class="check-list-grid" id="checklistCardsContainer">
+              <!-- Карточки пунктов инспекции -->
+            </section>
+          </div>
+
+          <!-- ШАГ 3: Предпроверка отчета -->
+          <div class="wizard-step-content" id="step3">
+            
+            <!-- Заголовок отчета -->
+            <section class="report-header">
+              <div>
+                <span style="color: var(--muted); font-size: 12px; font-weight: 600;" id="previewReportNum">#CHK-2026-0825 · Аттракцион: Батуты</span>
+                <h1 class="report-title" style="margin-top: 4px;">Акт технической проверки и безопасности</h1>
+              </div>
+
+              <div class="report-meta-grid">
+                <div class="meta-item">
+                  <span class="meta-label">Дата и время осмотра</span>
+                  <span class="meta-val" id="prevMetaDateTime">-</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Инспектор / Специалист</span>
+                  <span class="meta-val" id="prevMetaInspector">-</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Локация</span>
+                  <span class="meta-val" id="prevMetaLocation">-</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Аттракцион</span>
+                  <span class="meta-val" id="prevMetaAttraction">-</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Метрики -->
+            <section class="metrics-grid">
+              <div class="metric-card">
+                <span style="color: var(--muted); font-size: 12px; font-weight: 600;">Ответ «Норма»</span>
+                <div class="num" style="color: var(--success);" id="metricNorma">0</div>
+              </div>
+              <div class="metric-card">
+                <span style="color: var(--muted); font-size: 12px; font-weight: 600;">Ответ «Дефект»</span>
+                <div class="num" style="color: var(--danger);" id="metricDefect">0</div>
+              </div>
+              <div class="metric-card">
+                <span style="color: var(--muted); font-size: 12px; font-weight: 600;">Всего примечаний</span>
+                <div class="num" style="color: var(--info);" id="metricNotes">0</div>
+              </div>
+              <div class="metric-card">
+                <span style="color: var(--muted); font-size: 12px; font-weight: 600;">Рекомендация к эксплутации</span>
+                <div class="num" id="metricStatus">-</div>
+              </div>
+            </section>
+
+            <!-- Таблица результатов -->
+            <section class="panel-card" style="padding:0; overflow:hidden;">
+              <div style="padding: 14px 16px; border-bottom: 1px solid var(--line); display:flex; justify-content:space-between; align-items:center;">
+                <strong style="font-size: 1rem;">Карта проверки узлов</strong>
+                <span style="font-size: 11px; color: var(--muted);">Ежедневный ТО</span>
+              </div>
+
+              <div class="table-responsive">
+                <table class="checklist-table">
+                  <thead>
+                    <tr>
+                      <th class="col-num">№</th>
+                      <th class="col-elem">Элемент</th>
+                      <th class="col-importance">Важность</th>
+                      <th class="col-ans">Норма</th>
+                      <th class="col-ans">Дефект</th>
+                      <th class="col-notes">Примечание</th>
+                    </tr>
+                  </thead>
+                  <tbody id="previewTableBody">
+                    <!-- Заполняется динамически -->
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
+          <!-- Навигация по Шагам -->
+          <div class="wizard-actions">
+            <button type="button" class="btn btn-ghost" id="btnPrev" style="visibility: hidden;">← Назад</button>
+            <button type="button" class="btn btn-primary" id="btnNext">Далее →</button>
+          </div>
+
+        </form>
+      </main>
+    </div>
   </div>
 
-  <div id="checklistContainer"></div>
-</div>
-
-<script>
-const checklistData = {
+  <script>
+    // Данные аттракционов и чек-листов
+    const checklistData = {
   "Веревочный парк": [
     {
       "num": 1,
@@ -877,69 +1419,246 @@ const checklistData = {
   ]
 };
 
-// Инициализация списка выпадающего меню
-function initSelect() {
-  const select = document.getElementById('attractionSelect');
-  Object.keys(checklistData).forEach(attraction => {
-    const option = document.createElement('option');
-    option.value = attraction;
-    option.textContent = attraction;
-    select.appendChild(option);
-  });
-}
+    let currentStep = 1;
+    const totalSteps = 3;
 
-// Отрисовка списка элементов чек-листа
-function renderChecklist() {
-  const select = document.getElementById('attractionSelect');
-  const container = document.getElementById('checklistContainer');
-  const selectedAttraction = select.value;
+    document.addEventListener('DOMContentLoaded', () => {
+      initApp();
+    });
 
-  container.innerHTML = '';
+    function initApp() {
+      // 1. Заполнение списка аттракционов
+      const selectAttr = document.getElementById('inpAttraction');
+      selectAttr.innerHTML = '';
+      Object.keys(checklistData).forEach(attr => {
+        const opt = document.createElement('option');
+        opt.value = attr;
+        opt.textContent = attr;
+        selectAttr.appendChild(opt);
+      });
 
-  if (!selectedAttraction || !checklistData[selectedAttraction]) {
-    return;
-  }
+      // 2. Автоматическая установка системной даты и времени (заблокировано)
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      
+      document.getElementById('inpDateTime').value = `${day}.${month}.${year}, ${hours}:${minutes}`;
 
-  const items = checklistData[selectedAttraction];
+      // 3. Отрисовка Шага 2
+      renderChecklistCards();
 
-  items.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'item-card';
+      // 4. Меню и навигация
+      setupSidebarNav();
 
-    card.innerHTML = `
-      <div class="item-header">
-        <div class="item-number">${item.num}</div>
-        <div class="item-title">${item.elem}</div>
-      </div>
-      <div class="info-block">
-        <span class="info-label">Что проверяется:</span>
-        <span class="info-content">${item.what}</span>
-      </div>
-      <div class="info-block">
-        <span class="info-label">Как проверяется:</span>
-        <span class="info-content">${item.how}</span>
-      </div>
-      <div class="info-block">
-        <span class="info-label">Признаки нормы:</span>
-        <span class="info-content">${item.norma}</span>
-      </div>
-      <div class="status-group">
-        <label class="status-option">
-          <input type="radio" name="status_${item.num}" value="norm" checked> Соответствует
-        </label>
-        <label class="status-option">
-          <input type="radio" name="status_${item.num}" value="violation"> Нарушение
-        </label>
-      </div>
-    `;
+      // 5. Обработчики кнопок
+      document.getElementById('btnNext').addEventListener('click', handleNextClick);
+      document.getElementById('btnPrev').addEventListener('click', prevStep);
+    }
 
-    container.appendChild(card);
-  });
-}
+    function renderChecklistCards() {
+      const attr = document.getElementById('inpAttraction').value;
+      const items = checklistData[attr] || [];
+      const container = document.getElementById('checklistCardsContainer');
+      container.innerHTML = '';
 
-// Вызов инициализации при загрузке страницы
-document.addEventListener('DOMContentLoaded', initSelect);
-</script>
+      items.forEach((item) => {
+        const card = document.createElement('div');
+        card.className = 'check-card';
+        card.innerHTML = `
+          <div class="card-title">
+            <span class="num-badge">${item.num}</span>
+            <span>${item.elem}</span>
+          </div>
+          <div class="card-info">
+            <div><strong>Как проверить:</strong> ${item.how}</div>
+            <div><strong>Норма:</strong> ${item.norma}</div>
+          </div>
+          <div class="touch-actions">
+            <label class="radio-label">
+              <input type="radio" name="item_${item.num}" value="yes" checked>
+              <div class="radio-box yes-box">Норма</div>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="item_${item.num}" value="no">
+              <div class="radio-box no-box">Дефект</div>
+            </label>
+          </div>
+          <input type="text" class="form-control inp-note" id="note_${item.num}" placeholder="Примечание или дефект..." />
+        `;
+        container.appendChild(card);
+      });
+    }
 
+    function updateWizardUI() {
+      for (let i = 1; i <= totalSteps; i++) {
+        document.getElementById(`step${i}`).classList.toggle('active', i === currentStep);
+        const indicator = document.getElementById(`stepIndicator${i}`);
+        indicator.classList.toggle('active', i === currentStep);
+        indicator.classList.toggle('completed', i < currentStep);
+      }
+
+      const btnNext = document.getElementById('btnNext');
+      const btnPrev = document.getElementById('btnPrev');
+
+      btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+
+      if (currentStep === 3) {
+        btnNext.textContent = 'Отправить отчет';
+        renderPreviewReport();
+      } else {
+        btnNext.textContent = 'Далее →';
+      }
+    }
+
+    function handleNextClick() {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateWizardUI();
+      } else if (currentStep === totalSteps) {
+        sendReport();
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateWizardUI();
+      }
+    }
+
+    function renderPreviewReport() {
+      const attr = document.getElementById('inpAttraction').value;
+      const loc = document.getElementById('inpLocation').value;
+      const dt = document.getElementById('inpDateTime').value;
+      const inspector = document.getElementById('inpInspector').value;
+      const items = checklistData[attr] || [];
+
+      document.getElementById('prevMetaDateTime').textContent = dt;
+      document.getElementById('prevMetaInspector').textContent = `${inspector} (Тех. отдел)`;
+      document.getElementById('prevMetaLocation').textContent = loc;
+      document.getElementById('prevMetaAttraction').textContent = attr;
+      document.getElementById('previewReportNum').textContent = `#CHK-2026 · Аттракцион: ${attr}`;
+
+      let normaCount = 0;
+      let defectCount = 0;
+      let notesCount = 0;
+
+      const tbody = document.getElementById('previewTableBody');
+      tbody.innerHTML = '';
+
+      items.forEach((item) => {
+        const isYes = document.querySelector(`input[name="item_${item.num}"][value="yes"]`).checked;
+        const noteVal = document.getElementById(`note_${item.num}`).value.trim();
+
+        if (isYes) normaCount++; else defectCount++;
+        if (noteVal) notesCount++;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="col-num">${item.num}</td>
+          <td class="col-elem">
+            <div class="elem-wrapper">
+              <span>${item.elem}</span>
+              <span class="info-badge" onclick="togglePopover(event, this)">?</span>
+              <div class="info-popover">
+                <div class="popover-item">
+                  <span class="popover-label">Что проверяется:</span>
+                  <div class="popover-val">${item.what || item.elem}</div>
+                </div>
+                <div class="popover-item">
+                  <span class="popover-label">Как проверяется:</span>
+                  <div class="popover-val">${item.how}</div>
+                </div>
+                <div class="popover-item">
+                  <span class="popover-label">Признаки нормы:</span>
+                  <div class="popover-val">${item.norma}</div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="col-importance"><span class="importance-badge high">Высокая</span></td>
+          <td class="col-ans">${isYes ? '<span class="status-check yes">✓</span>' : ''}</td>
+          <td class="col-ans">${!isYes ? '<span class="status-check no">✕</span>' : ''}</td>
+          <td class="col-notes">${noteVal}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('metricNorma').textContent = normaCount;
+      document.getElementById('metricDefect').textContent = defectCount;
+      document.getElementById('metricNotes').textContent = notesCount;
+
+      const metricStatus = document.getElementById('metricStatus');
+      if (defectCount > 0) {
+        metricStatus.textContent = "Запрещен";
+        metricStatus.style.color = "var(--danger)";
+      } else {
+        metricStatus.textContent = "Разрешен";
+        metricStatus.style.color = "var(--success)";
+      }
+    }
+
+    function togglePopover(e, badge) {
+      e.stopPropagation();
+      const popover = badge.nextElementSibling;
+      const isActive = popover.classList.contains('active');
+      document.querySelectorAll('.info-popover').forEach(p => p.classList.remove('active'));
+      if (!isActive) popover.classList.add('active');
+    }
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.info-popover').forEach(p => p.classList.remove('active'));
+    });
+
+    function sendReport() {
+      alert('Отчет успешно отправлен!');
+      window.location.href = "https://assetzhan.github.io/TechService/Reports.htm";
+    }
+
+    function setupSidebarNav() {
+      const menuToggle = document.getElementById('menuToggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+      if (menuToggle) menuToggle.addEventListener('click', () => {
+        sidebar.classList.add('open');
+        sidebarOverlay.classList.add('active');
+      });
+
+      if (sidebarOverlay) sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('active');
+      });
+
+      const routes = {
+        "Мониторинг": "https://assetzhan.github.io/TechService/Monitoring.htm",
+        "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
+        "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
+        "Инциденты": "https://assetzhan.github.io/TechService/Incidents.htm",
+        "Локации": "https://assetzhan.github.io/TechService/Locations.htm",
+        "Пользователи": "https://assetzhan.github.io/TechService/Users.htm",
+        "Темы": "https://assetzhan.github.io/TechService/Topics.htm",
+        "Аттракционы": "https://assetzhan.github.io/TechService/Attractions.htm",
+        "Список аттракционов": "https://assetzhan.github.io/TechService/AttractionsList.htm",
+        "Ответственные": "https://assetzhan.github.io/TechService/Assignees.htm",
+        "Наблюдатели": "https://assetzhan.github.io/TechService/Observers.htm",
+        "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
+        "Заявка в ИТ": "https://support.mykids.kz/"
+      };
+
+      document.querySelectorAll('aside .nav a').forEach(element => {
+        element.addEventListener('click', (e) => {
+          const text = element.textContent.trim().split('\n')[0].trim();
+          if (routes[text]) {
+            e.preventDefault();
+            window.location.href = routes[text];
+          }
+        });
+      });
+    }
+  </script>
 </body>
 </html>

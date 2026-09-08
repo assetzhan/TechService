@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Новый отчет (Мастер) — TechService</title>
+  <title>Новый отчет — TechService</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -320,7 +320,7 @@
       font-size: 13px;
       color: var(--muted);
       display: grid;
-      gap: 6px;
+      gap: 8px;
       background: #f8fafc;
       padding: 12px;
       border-radius: 12px;
@@ -401,7 +401,7 @@
 
     .info-popover {
       position: absolute; left: 100%; top: 50%; transform: translateY(-50%) translateX(10px);
-      width: 300px; background: #fff; border: 1px solid var(--line);
+      width: 320px; background: #fff; border: 1px solid var(--line);
       border-radius: 14px; padding: 14px; box-shadow: var(--shadow); z-index: 999;
       opacity: 0; visibility: hidden; transition: 0.2s ease; font-size: 13px; font-weight: normal;
     }
@@ -1415,6 +1415,34 @@
       "what": "Вся траектория от старта до финиша и пространство над ней.",
       "how": "Осмотреть каждую дорожку; удалить мусор и убедиться в отсутствии препятствий.",
       "norma": "Путь свободен; загрязнения, предметы, свисающие элементы и доступ посторонних отсутствуют."
+    },
+    {
+      "num": 8,
+      "elem": "Ограждения и защитные элементы",
+      "what": "Сетки, панели, мягкая защита, их крепления, натяжение и зоны примыкания.",
+      "how": "Осмотреть и проверить фиксацию доступных элементов.",
+      "norma": "Защита целая и закреплена; сетки натянуты; открытые жёсткие элементы и опасные зазоры отсутствуют."
+    },
+    {
+      "num": 9,
+      "elem": "Зона финиша (приземления)",
+      "what": "Маты или покрытие, площадь перекрытия, положение, стыки и амортизация.",
+      "how": "Осмотреть и пройти по покрытию; проверить плотность укладки и отсутствие смещения.",
+      "norma": "Финиш перекрыт полностью; покрытие упругое и ровное; провалы, щели, разрывы и смещения отсутствуют."
+    },
+    {
+      "num": 10,
+      "elem": "Информационные элементы",
+      "what": "Правила, ограничения, предупреждения и требования к безопасной позе при спуске.",
+      "how": "Проверить наличие, соответствие аттракциону, закрепление и читаемость у входа.",
+      "norma": "Актуальные правила и ограничения размещены полностью, читаемы и не повреждены."
+    },
+    {
+      "num": 11,
+      "elem": "Пробная проверка",
+      "what": "Плавность прохождения секций, отсутствие зацепов и готовность финишной зоны.",
+      "how": "Выполнить безопасную пробную проверку способом, разрешённым изготовителем.",
+      "norma": "Спуск плавный; удары, зацепы, рывки, посторонние звуки и смещение защиты отсутствуют."
     }
   ]
 };
@@ -1422,49 +1450,37 @@
     let currentStep = 1;
     const totalSteps = 3;
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initApp();
-    });
-
-    function initApp() {
-      // 1. Заполнение списка аттракционов
-      const selectAttr = document.getElementById('inpAttraction');
-      selectAttr.innerHTML = '';
-      Object.keys(checklistData).forEach(attr => {
+    // Инициализация выпадающего списка аттракционов
+    function initAttractionSelect() {
+      const select = document.getElementById('inpAttraction');
+      select.innerHTML = '';
+      Object.keys(checklistData).forEach(attrName => {
         const opt = document.createElement('option');
-        opt.value = attr;
-        opt.textContent = attr;
-        selectAttr.appendChild(opt);
+        opt.value = attrName;
+        opt.textContent = attrName;
+        select.appendChild(opt);
       });
-
-      // 2. Автоматическая установка системной даты и времени (заблокировано)
-      const now = new Date();
-      const day = String(now.getDate()).padStart(2, '0');
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const year = now.getFullYear();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      
-      document.getElementById('inpDateTime').value = `${day}.${month}.${year}, ${hours}:${minutes}`;
-
-      // 3. Отрисовка Шага 2
-      renderChecklistCards();
-
-      // 4. Меню и навигация
-      setupSidebarNav();
-
-      // 5. Обработчики кнопок
-      document.getElementById('btnNext').addEventListener('click', handleNextClick);
-      document.getElementById('btnPrev').addEventListener('click', prevStep);
     }
 
+    // Инициализация текущей даты и времени
+    function initDateTime() {
+      const now = new Date();
+      const d = String(now.getDate()).padStart(2, '0');
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const y = now.getFullYear();
+      const h = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('inpDateTime').value = `${d}.${m}.${y} ${h}:${min}`;
+    }
+
+    // Отрисовка карточек проверки на Шаге 2
     function renderChecklistCards() {
-      const attr = document.getElementById('inpAttraction').value;
-      const items = checklistData[attr] || [];
+      const attrName = document.getElementById('inpAttraction').value;
+      const items = checklistData[attrName] || [];
       const container = document.getElementById('checklistCardsContainer');
       container.innerHTML = '';
 
-      items.forEach((item) => {
+      items.forEach(item => {
         const card = document.createElement('div');
         card.className = 'check-card';
         card.innerHTML = `
@@ -1473,88 +1489,63 @@
             <span>${item.elem}</span>
           </div>
           <div class="card-info">
-            <div><strong>Как проверить:</strong> ${item.how}</div>
-            <div><strong>Норма:</strong> ${item.norma}</div>
+            <div><strong>Что проверяется:</strong> ${item.what}</div>
+            <div><strong>Как проверяется:</strong> ${item.how}</div>
+            <div><strong>Признаки нормы:</strong> ${item.norma}</div>
           </div>
           <div class="touch-actions">
             <label class="radio-label">
-              <input type="radio" name="item_${item.num}" value="yes" checked>
-              <div class="radio-box yes-box">Норма</div>
+              <input type="radio" name="chk_item_${item.num}" value="YES">
+              <div class="radio-box yes-box">✓ Норма</div>
             </label>
             <label class="radio-label">
-              <input type="radio" name="item_${item.num}" value="no">
-              <div class="radio-box no-box">Дефект</div>
+              <input type="radio" name="chk_item_${item.num}" value="NO">
+              <div class="radio-box no-box">✕ Дефект</div>
             </label>
           </div>
-          <input type="text" class="form-control inp-note" id="note_${item.num}" placeholder="Примечание или дефект..." />
+          <div>
+            <input type="text" class="form-control" name="chk_note_${item.num}" placeholder="Примечание (если обнаружен дефект)" style="font-size: 13px;" />
+          </div>
         `;
         container.appendChild(card);
       });
     }
 
-    function updateWizardUI() {
-      for (let i = 1; i <= totalSteps; i++) {
-        document.getElementById(`step${i}`).classList.toggle('active', i === currentStep);
-        const indicator = document.getElementById(`stepIndicator${i}`);
-        indicator.classList.toggle('active', i === currentStep);
-        indicator.classList.toggle('completed', i < currentStep);
-      }
-
-      const btnNext = document.getElementById('btnNext');
-      const btnPrev = document.getElementById('btnPrev');
-
-      btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
-
-      if (currentStep === 3) {
-        btnNext.textContent = 'Отправить отчет';
-        renderPreviewReport();
-      } else {
-        btnNext.textContent = 'Далее →';
-      }
-    }
-
-    function handleNextClick() {
-      if (currentStep < totalSteps) {
-        currentStep++;
-        updateWizardUI();
-      } else if (currentStep === totalSteps) {
-        sendReport();
-      }
-    }
-
-    function prevStep() {
-      if (currentStep > 1) {
-        currentStep--;
-        updateWizardUI();
-      }
-    }
-
-    function renderPreviewReport() {
-      const attr = document.getElementById('inpAttraction').value;
-      const loc = document.getElementById('inpLocation').value;
-      const dt = document.getElementById('inpDateTime').value;
+    // Сбор данных и наполнение таблицы/метрик на Шаге 3
+    function buildPreviewReport() {
+      const location = document.getElementById('inpLocation').value;
+      const attraction = document.getElementById('inpAttraction').value;
+      const dateTime = document.getElementById('inpDateTime').value;
       const inspector = document.getElementById('inpInspector').value;
-      const items = checklistData[attr] || [];
 
-      document.getElementById('prevMetaDateTime').textContent = dt;
-      document.getElementById('prevMetaInspector').textContent = `${inspector} (Тех. отдел)`;
-      document.getElementById('prevMetaLocation').textContent = loc;
-      document.getElementById('prevMetaAttraction').textContent = attr;
-      document.getElementById('previewReportNum').textContent = `#CHK-2026 · Аттракцион: ${attr}`;
+      document.getElementById('prevMetaLocation').textContent = location;
+      document.getElementById('prevMetaAttraction').textContent = attraction;
+      document.getElementById('prevMetaDateTime').textContent = dateTime;
+      document.getElementById('prevMetaInspector').textContent = inspector;
+      document.getElementById('previewReportNum').textContent = `#CHK-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)} · Аттракцион: ${attraction}`;
+
+      const items = checklistData[attraction] || [];
+      const tbody = document.getElementById('previewTableBody');
+      tbody.innerHTML = '';
 
       let normaCount = 0;
       let defectCount = 0;
       let notesCount = 0;
 
-      const tbody = document.getElementById('previewTableBody');
-      tbody.innerHTML = '';
+      items.forEach(item => {
+        const radios = document.getElementsByName(`chk_item_${item.num}`);
+        let val = 'YES';
+        for (const r of radios) {
+          if (r.checked) { val = r.value; break; }
+        }
 
-      items.forEach((item) => {
-        const isYes = document.querySelector(`input[name="item_${item.num}"][value="yes"]`).checked;
-        const noteVal = document.getElementById(`note_${item.num}`).value.trim();
+        const noteInput = document.querySelector(`input[name="chk_note_${item.num}"]`);
+        const noteText = noteInput ? noteInput.value.trim() : '';
 
-        if (isYes) normaCount++; else defectCount++;
-        if (noteVal) notesCount++;
+        if (val === 'YES') normaCount++;
+        else defectCount++;
+
+        if (noteText.length > 0) notesCount++;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -1562,27 +1553,33 @@
           <td class="col-elem">
             <div class="elem-wrapper">
               <span>${item.elem}</span>
-              <span class="info-badge" onclick="togglePopover(event, this)">?</span>
+              <span class="info-badge" onclick="togglePopover(this)">i</span>
               <div class="info-popover">
                 <div class="popover-item">
                   <span class="popover-label">Что проверяется:</span>
-                  <div class="popover-val">${item.what || item.elem}</div>
+                  <span class="popover-val">${item.what}</span>
                 </div>
                 <div class="popover-item">
                   <span class="popover-label">Как проверяется:</span>
-                  <div class="popover-val">${item.how}</div>
+                  <span class="popover-val">${item.how}</span>
                 </div>
                 <div class="popover-item">
                   <span class="popover-label">Признаки нормы:</span>
-                  <div class="popover-val">${item.norma}</div>
+                  <span class="popover-val">${item.norma}</span>
                 </div>
               </div>
             </div>
           </td>
-          <td class="col-importance"><span class="importance-badge high">Высокая</span></td>
-          <td class="col-ans">${isYes ? '<span class="status-check yes">✓</span>' : ''}</td>
-          <td class="col-ans">${!isYes ? '<span class="status-check no">✕</span>' : ''}</td>
-          <td class="col-notes">${noteVal}</td>
+          <td class="col-importance">
+            ${item.elem.includes('(КРИТИЧЕСКИЙ РАЗДЕЛ)') ? '<span class="importance-badge high">Высокая</span>' : '<span style="color:var(--muted); font-size:12px;">Обычная</span>'}
+          </td>
+          <td class="col-ans">
+            ${val === 'YES' ? '<div class="status-check yes">✓</div>' : ''}
+          </td>
+          <td class="col-ans">
+            ${val === 'NO' ? '<div class="status-check no">✕</div>' : ''}
+          </td>
+          <td class="col-notes">${noteText || '-'}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -1593,72 +1590,116 @@
 
       const metricStatus = document.getElementById('metricStatus');
       if (defectCount > 0) {
-        metricStatus.textContent = "Запрещен";
-        metricStatus.style.color = "var(--danger)";
+        metricStatus.textContent = 'Требуется ремонт';
+        metricStatus.style.color = 'var(--danger)';
       } else {
-        metricStatus.textContent = "Разрешен";
-        metricStatus.style.color = "var(--success)";
+        metricStatus.textContent = 'Разрешено';
+        metricStatus.style.color = 'var(--success)';
       }
     }
 
-    function togglePopover(e, badge) {
-      e.stopPropagation();
-      const popover = badge.nextElementSibling;
+    // Переключение Popover на мобильных
+    function togglePopover(btn) {
+      const popover = btn.nextElementSibling;
       const isActive = popover.classList.contains('active');
-      document.querySelectorAll('.info-popover').forEach(p => p.classList.remove('active'));
-      if (!isActive) popover.classList.add('active');
+      document.querySelectorAll('.info-popover.active').forEach(p => p.classList.remove('active'));
+      if (!isActive) {
+        popover.classList.add('active');
+      }
     }
 
-    document.addEventListener('click', () => {
-      document.querySelectorAll('.info-popover').forEach(p => p.classList.remove('active'));
+    // Закрытие Popover при клике вне его
+    document.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('info-badge') && !e.target.closest('.info-popover')) {
+        document.querySelectorAll('.info-popover.active').forEach(p => p.classList.remove('active'));
+      }
     });
 
-    function sendReport() {
-      alert('Отчет успешно отправлен!');
-      window.location.href = "https://assetzhan.github.io/TechService/Reports.htm";
+    // Навигация Мастера
+    function updateWizardUI() {
+      for (let i = 1; i <= totalSteps; i++) {
+        const stepContent = document.getElementById(`step${i}`);
+        const stepInd = document.getElementById(`stepIndicator${i}`);
+
+        stepContent.classList.remove('active');
+        stepInd.classList.remove('active', 'completed');
+
+        if (i === currentStep) {
+          stepContent.classList.add('active');
+          stepInd.classList.add('active');
+        } else if (i < currentStep) {
+          stepInd.classList.add('completed');
+        }
+      }
+
+      const btnPrev = document.getElementById('btnPrev');
+      const btnNext = document.getElementById('btnNext');
+
+      if (currentStep === 1) {
+        btnPrev.style.visibility = 'hidden';
+        btnNext.textContent = 'Далее →';
+      } else if (currentStep === 2) {
+        btnPrev.style.visibility = 'visible';
+        btnNext.textContent = 'Просмотр отчета →';
+      } else if (currentStep === 3) {
+        btnPrev.style.visibility = 'visible';
+        btnNext.textContent = 'Сохранить и отправить';
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function setupSidebarNav() {
-      const menuToggle = document.getElementById('menuToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
+    document.getElementById('btnNext').addEventListener('click', () => {
+      if (currentStep === 1) {
+        const inspector = document.getElementById('inpInspector').value.trim();
+        if (!inspector) {
+          alert('Пожалуйста, укажите ФИО инспектора.');
+          return;
+        }
+        currentStep = 2;
+        updateWizardUI();
+      } else if (currentStep === 2) {
+        buildPreviewReport();
+        currentStep = 3;
+        updateWizardUI();
+      } else if (currentStep === 3) {
+        alert('Отчет успешно сформирован и сохранен!');
+        window.location.href = 'https://assetzhan.github.io/TechService/Reports.htm';
+      }
+    });
 
-      if (menuToggle) menuToggle.addEventListener('click', () => {
-        sidebar.classList.add('open');
-        sidebarOverlay.classList.add('active');
-      });
+    document.getElementById('btnPrev').addEventListener('click', () => {
+      if (currentStep > 1) {
+        currentStep--;
+        updateWizardUI();
+      }
+    });
 
-      if (sidebarOverlay) sidebarOverlay.addEventListener('click', () => {
-        sidebar.classList.remove('open');
-        sidebarOverlay.classList.remove('active');
-      });
+    // Управление мобильным сайдбаром
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const menuToggle = document.getElementById('menuToggle');
 
-      const routes = {
-        "Мониторинг": "https://assetzhan.github.io/TechService/Monitoring.htm",
-        "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
-        "Задачи": "https://assetzhan.github.io/TechService/Tasks.htm",
-        "Инциденты": "https://assetzhan.github.io/TechService/Incidents.htm",
-        "Локации": "https://assetzhan.github.io/TechService/Locations.htm",
-        "Пользователи": "https://assetzhan.github.io/TechService/Users.htm",
-        "Темы": "https://assetzhan.github.io/TechService/Topics.htm",
-        "Аттракционы": "https://assetzhan.github.io/TechService/Attractions.htm",
-        "Список аттракционов": "https://assetzhan.github.io/TechService/AttractionsList.htm",
-        "Ответственные": "https://assetzhan.github.io/TechService/Assignees.htm",
-        "Наблюдатели": "https://assetzhan.github.io/TechService/Observers.htm",
-        "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
-        "Заявка в ИТ": "https://support.mykids.kz/"
-      };
-
-      document.querySelectorAll('aside .nav a').forEach(element => {
-        element.addEventListener('click', (e) => {
-          const text = element.textContent.trim().split('\n')[0].trim();
-          if (routes[text]) {
-            e.preventDefault();
-            window.location.href = routes[text];
-          }
-        });
-      });
+    function openSidebar() {
+      sidebar.classList.add('open');
+      sidebarOverlay.classList.add('active');
     }
+
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('active');
+    }
+
+    menuToggle.addEventListener('click', openSidebar);
+    sidebarOverlay.addEventListener('click', closeSidebar);
+
+    // Старт страницы
+    window.addEventListener('DOMContentLoaded', () => {
+      initAttractionSelect();
+      initDateTime();
+      renderChecklistCards();
+      updateWizardUI();
+    });
   </script>
 </body>
 </html>

@@ -315,15 +315,15 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 14px;
-      min-width: 650px;
+      table-layout: fixed;
     }
 
     .checklist-table th, .checklist-table td {
-      padding: 14px 12px;
+      padding: 12px 8px;
       text-align: left;
       vertical-align: middle;
       border-bottom: 1px solid var(--line);
-      line-height: 1.45;
+      line-height: 1.4;
     }
 
     .checklist-table th {
@@ -339,11 +339,51 @@
       background: var(--primary-light);
     }
 
-    .col-num { width: 50px; text-align: center; font-weight: 700; color: var(--muted); }
-    .col-elem { font-weight: 600; position: relative; }
-    .col-importance { width: 110px; text-align: center; font-weight: 600; }
-    .col-ans { width: 80px; text-align: center; }
-    .col-notes { width: 380px; color: var(--muted); }
+    .col-num { width: 35px; text-align: center; font-weight: 700; color: var(--muted); padding-left: 4px; padding-right: 4px; }
+    .col-elem { font-weight: 600; position: relative; word-wrap: break-word; }
+    .col-importance { width: 85px; text-align: center; font-weight: 600; padding-left: 2px; padding-right: 2px; }
+    .col-ans { width: 55px; text-align: center; padding-left: 2px; padding-right: 2px; }
+    
+    /* Примечание с ограничением до ~50 символов в строке */
+    .col-notes { 
+      width: 320px; 
+      max-width: 50ch; 
+      color: var(--muted); 
+      word-wrap: break-word;
+      white-space: normal;
+    }
+
+    /* Мобильный вид (смартфоны и планшеты) */
+    @media (max-width: 768px) {
+      .checklist-table {
+        min-width: 100%;
+        table-layout: auto;
+      }
+
+      /* Первые 5 колонок помещаются без скролла */
+      .col-num { width: 28px; font-size: 12px; padding: 8px 2px; }
+      .col-elem { font-size: 13px; padding: 8px 4px; }
+      .col-importance { width: 75px; padding: 8px 2px; }
+      .col-ans { width: 45px; padding: 8px 2px; }
+
+      /* Примечание сдвигается вправо и доступно только через скролл */
+      .col-notes { 
+        min-width: 220px; 
+        max-width: 50ch; 
+        padding: 8px 6px;
+      }
+
+      .importance-badge {
+        font-size: 10px;
+        padding: 3px 5px;
+      }
+
+      .status-check {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+      }
+    }
 
     /* Importance Badges */
     .importance-badge {
@@ -362,7 +402,7 @@
     .elem-wrapper {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       position: relative;
     }
 
@@ -370,12 +410,12 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       background: #e2e8f0;
       color: var(--primary);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -457,6 +497,7 @@
       border-radius: 6px;
       font-weight: 700;
       font-size: 13px;
+      margin: 0 auto;
     }
 
     .status-check.yes { background: rgba(22, 163, 74, 0.15); color: var(--success); border: 1px solid var(--success); }

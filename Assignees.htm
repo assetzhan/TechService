@@ -210,38 +210,6 @@
       background: var(--primary-hover);
     }
 
-    .btn-new { min-width: 120px; }
-
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-    }
-
-    .stat-card {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .stat-card .label {
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .stat-card .value {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
     /* Content & Panels */
     .content {
       display: grid;
@@ -266,12 +234,11 @@
       flex-wrap: wrap;
       gap: 12px;
       align-items: center;
-      justify-content: space-between;
       background: #fff;
     }
 
     .search-box {
-      flex: 1 1 280px;
+      flex: 1 1 100%;
     }
 
     .search-box input {
@@ -286,31 +253,6 @@
 
     .search-box input:focus {
       border-color: var(--primary);
-    }
-
-    .filters-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .chip {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: #334155;
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .chip.active,
-    .chip:hover {
-      border-color: rgba(37,99,235,0.3);
-      background: var(--primary-light);
-      color: var(--primary);
     }
 
     /* Tabs Component */
@@ -364,13 +306,13 @@
       border: 1px solid var(--line);
       border-radius: 16px;
       padding: 18px;
-      display: grid;
-      gap: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
       transition: all 0.2s ease;
     }
 
     .ticket:hover {
-      transform: translateY(-2px);
       box-shadow: var(--shadow);
     }
 
@@ -379,6 +321,7 @@
       justify-content: space-between;
       gap: 12px;
       align-items: start;
+      cursor: pointer; /* Makes it look clickable */
     }
 
     .ticket-id {
@@ -392,6 +335,7 @@
       margin: 0 0 8px;
       font-size: 1.1rem;
       font-weight: 700;
+      color: var(--primary);
     }
 
     .ticket-meta {
@@ -400,12 +344,6 @@
       display: flex;
       gap: 16px;
       flex-wrap: wrap;
-    }
-
-    .ticket-meta span {
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
     .badge {
@@ -422,53 +360,105 @@
     .badge.success { background: rgba(22, 163, 74, 0.1); color: var(--success); }
     .badge.warning { background: rgba(217, 119, 6, 0.1); color: var(--warning); }
     .badge.danger  { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
-    .badge.info    { background: rgba(8, 145, 178, 0.1); color: var(--info); }
 
-    /* Settings Panel Inside Card */
+    /* Assignee Settings (Expandable Accordion) */
     .assignee-settings {
-      margin-top: 12px;
+      display: none; /* Hidden by default */
+      margin-top: 16px;
       padding-top: 16px;
-      border-top: 1px dashed var(--line);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      border-top: 1px solid var(--line);
     }
 
-    .settings-row {
+    /* Show settings when parent ticket has .expanded class */
+    .ticket.expanded .assignee-settings {
+      display: block;
+    }
+
+    .permissions-matrix {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .perm-section {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .perm-section h4 {
+      margin: 0 0 16px 0;
+      font-size: 14px;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 8px;
+    }
+
+    .perm-block {
+      margin-bottom: 16px;
+    }
+
+    .perm-block:last-child {
+      margin-bottom: 0;
+    }
+
+    .perm-header {
       display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
+      justify-content: space-between;
       align-items: center;
+      margin-bottom: 8px;
     }
 
-    .form-group {
+    .perm-header strong {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .btn-select-all {
+      font-size: 11px;
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: 0.2s;
+    }
+
+    .btn-select-all:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .checkbox-group {
+      max-height: 140px;
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 12px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      flex: 1 1 240px;
     }
 
-    .form-group label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .form-control {
-      padding: 9px 12px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 13px;
-      outline: none;
-      background: #fff;
-      color: var(--text);
-      transition: border-color 0.2s;
+      cursor: pointer;
+      color: #334155;
     }
 
-    .form-control:focus {
-      border-color: var(--primary);
+    .checkbox-label input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: var(--primary);
     }
 
     /* Responsive */
@@ -486,17 +476,16 @@
       .sidebar.open { transform: translateX(0); }
       .menu-toggle { display: flex; }
       .main { padding: 16px; }
-      .filter-bar { flex-direction: column; align-items: stretch; }
       .tabs-header { overflow-x: auto; }
+      .permissions-matrix { grid-template-columns: 1fr; gap: 16px; }
     }
   </style>
 </head>
 <body>
-  <!-- Overlay для мобильного меню -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <div class="app">
-    <!-- Боковая панель -->
+    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-badge">T</div>
@@ -511,69 +500,30 @@
       </div>
 
       <nav class="nav">
-        <a href="https://assetzhan.github.io/TechService/Monitoring.htm">
-          <span>Мониторинг</span>
-          <span class="count">3</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Reports.htm">
-          <span>Отчеты по парку</span>
-          <span class="count">128</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Tasks.htm">
-          <span>Задачи</span>
-          <span class="count">24</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Incidents.htm">
-          <span>Инциденты</span>
-          <span class="count">51</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Locations.htm">
-          <span>Локации</span>
-          <span class="count">10</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Users.htm">
-          <span>Пользователи</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Topics.htm">
-          <span>Темы</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Attractions.htm">
-          <span>Аттракционы</span>
-          <span class="count">10</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/AttractionsList.htm">
-          <span>Список аттракционов</span>
-          <span class="count">10</span>
-        </a>
-        <a class="active" href="https://assetzhan.github.io/TechService/Assignees.htm">
-          <span>Ответственные</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/Observers.htm">
-          <span>Наблюдатели</span>
-          <span class="count">35</span>
-        </a>
-        <a href="https://assetzhan.github.io/TechService/RootCauses.htm">
-          <span>Первопричины</span>
-          <span class="count">35</span>
-        </a>
+        <a href="https://assetzhan.github.io/TechService/Monitoring.htm"><span>Мониторинг</span><span class="count">3</span></a>
+        <a href="https://assetzhan.github.io/TechService/Reports.htm"><span>Отчеты по парку</span><span class="count">128</span></a>
+        <a href="https://assetzhan.github.io/TechService/Tasks.htm"><span>Задачи</span><span class="count">24</span></a>
+        <a href="https://assetzhan.github.io/TechService/Incidents.htm"><span>Инциденты</span><span class="count">51</span></a>
+        <a href="https://assetzhan.github.io/TechService/Locations.htm"><span>Локации</span><span class="count">10</span></a>
+        <a href="https://assetzhan.github.io/TechService/Users.htm"><span>Пользователи</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Topics.htm"><span>Темы</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Attractions.htm"><span>Аттракционы</span><span class="count">10</span></a>
+        <a href="https://assetzhan.github.io/TechService/AttractionsList.htm"><span>Список аттракционов</span><span class="count">10</span></a>
+        <a class="active" href="https://assetzhan.github.io/TechService/Assignees.htm"><span>Ответственные</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/Observers.htm"><span>Наблюдатели</span><span class="count">35</span></a>
+        <a href="https://assetzhan.github.io/TechService/RootCauses.htm"><span>Первопричины</span><span class="count">35</span></a>
       </nav>
       
       <div class="sidebar-footer">
         <nav class="nav">
-          <a href="https://support.mykids.kz/">
-            <span>Заявка в ИТ</span>
-          </a>
+          <a href="https://support.mykids.kz/"><span>Заявка в ИТ</span></a>
         </nav>
       </div>
     </aside>
 
-    <!-- Основной контент -->
+    <!-- Main Content -->
     <div class="main-wrapper">
       <main class="main">
-        <!-- Шапка -->
         <header class="topbar">
           <div class="topbar-left">
             <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню">☰</button>
@@ -581,57 +531,30 @@
           </div>
           <div class="topbar-actions">
             <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost">Фильтры</a>
-            <a href="https://assetzhan.github.io/TechService/NewAssignee.htm" class="btn btn-primary btn-new">+ Назначить специалиста</a>
+            <a href="https://assetzhan.github.io/TechService/NewAssignee.htm" class="btn btn-primary">+ Назначить специалиста</a>
           </div>
         </header>
 
-        <!-- Метрики -->
-        <section class="stats-grid">
-          <div class="stat-card">
-            <span class="label">Всего специалистов</span>
-            <span class="value">35</span>
-          </div>
-          <div class="stat-card">
-            <span class="label">Свободны</span>
-            <span class="value" style="color: var(--success);">12</span>
-          </div>
-          <div class="stat-card">
-            <span class="label">Заняты (в работе)</span>
-            <span class="value" style="color: var(--warning);">18</span>
-          </div>
-          <div class="stat-card">
-            <span class="label">Смена окончена</span>
-            <span class="value" style="color: var(--danger);">5</span>
-          </div>
-        </section>
-
-        <!-- Главная панель со списком и вкладками -->
         <section class="content">
           <div class="panel">
             <div class="filter-bar">
               <div class="search-box">
                 <input type="text" id="assigneeSearch" placeholder="Поиск по ФИО, специальности или назначенной локации..." />
               </div>
-
-              <!-- Фильтры по статусу загрузки -->
-              <div class="filters-group">
-                <button class="chip active" data-filter="all">Все (35)</button>
-                <button class="chip" data-filter="available">Свободен</button>
-                <button class="chip" data-filter="busy">Занят (в работе)</button>
-                <button class="chip" data-filter="shift-end">Смена окончена</button>
-              </div>
             </div>
 
-            <!-- Header Вкладок -->
+            <!-- Вкладки -->
             <div class="tabs-header">
-              <button class="tab-btn active" data-tab="tab-daily">Ежедневный отчет</button>
-              <button class="tab-btn" data-tab="tab-weekly">Еженедельный отчет</button>
-              <button class="tab-btn" data-tab="tab-monthly">Ежемесячный отчет</button>
+              <button class="tab-btn active" data-tab="tab-reports">Отчеты по парку</button>
+              <button class="tab-btn" data-tab="tab-incidents">Инциденты</button>
+              <button class="tab-btn" data-tab="tab-tasks">Задачи</button>
             </div>
 
-            <!-- Вкладка 1: Ежедневный отчет -->
-            <div class="tab-content active" id="tab-daily">
+            <!-- Контент: Отчеты по парку -->
+            <div class="tab-content active" id="tab-reports">
               <div class="tickets">
+                
+                <!-- Ticket 1 -->
                 <article class="ticket" data-status="busy">
                   <div class="ticket-top">
                     <div>
@@ -639,34 +562,104 @@
                       <h3 class="ticket-title">Самат С.</h3>
                       <div class="ticket-meta">
                         <span>📍 Локации: Алматы Атакент, Шымкент Royal Plaza</span>
-                        <span>📋 Активных задач: 5</span>
-                        <span>⚠️ Текущий инцидент: #INC-8994</span>
                       </div>
                     </div>
                     <span class="badge warning">Занят (в работе)</span>
                   </div>
+                  
+                  <!-- Раскрывающаяся панель настроек (Аккордеон) -->
                   <div class="assignee-settings">
-                    <div class="settings-row">
-                      <div class="form-group">
-                        <label>Объект (Локация + Аттракцион)</label>
-                        <select class="form-control">
-                          <option>Алматы Атакент — Колесо обозрения</option>
-                          <option>Алматы Атакент — Американские горки</option>
-                          <option>Шымкент Royal Plaza — Автодром</option>
-                        </select>
+                    <div class="permissions-matrix">
+                      
+                      <!-- Колонка: Создание -->
+                      <div class="perm-section">
+                        <h4>Создание отчета</h4>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Парки / Локации</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox"> Алматы Атакент</label>
+                            <label class="checkbox-label"><input type="checkbox"> Шымкент Royal Plaza</label>
+                            <label class="checkbox-label"><input type="checkbox"> Астана Хан Шатыр</label>
+                          </div>
+                        </div>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Аттракционы</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox"> Колесо обозрения</label>
+                            <label class="checkbox-label"><input type="checkbox"> Американские горки</label>
+                            <label class="checkbox-label"><input type="checkbox"> Автодром</label>
+                            <label class="checkbox-label"><input type="checkbox"> Батутный центр</label>
+                          </div>
+                        </div>
                       </div>
-                      <div class="form-group">
-                        <label>Права на отчет</label>
-                        <select class="form-control">
-                          <option>Создавать</option>
-                          <option>Проверять</option>
-                          <option>Только просматривать</option>
-                        </select>
+
+                      <!-- Колонка: Проверка -->
+                      <div class="perm-section">
+                        <h4>Проверка отчета</h4>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Парки / Локации</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox"> Алматы Атакент</label>
+                            <label class="checkbox-label"><input type="checkbox"> Шымкент Royal Plaza</label>
+                            <label class="checkbox-label"><input type="checkbox"> Астана Хан Шатыр</label>
+                          </div>
+                        </div>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Аттракционы</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox"> Колесо обозрения</label>
+                            <label class="checkbox-label"><input type="checkbox"> Американские горки</label>
+                            <label class="checkbox-label"><input type="checkbox"> Автодром</label>
+                            <label class="checkbox-label"><input type="checkbox"> Батутный центр</label>
+                          </div>
+                        </div>
                       </div>
+
+                      <!-- Колонка: Просмотр -->
+                      <div class="perm-section">
+                        <h4>Просмотр отчета</h4>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Парки / Локации</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox"> Алматы Атакент</label>
+                            <label class="checkbox-label"><input type="checkbox"> Шымкент Royal Plaza</label>
+                            <label class="checkbox-label"><input type="checkbox"> Астана Хан Шатыр</label>
+                          </div>
+                        </div>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Аттракционы</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox"> Колесо обозрения</label>
+                            <label class="checkbox-label"><input type="checkbox"> Американские горки</label>
+                            <label class="checkbox-label"><input type="checkbox"> Автодром</label>
+                            <label class="checkbox-label"><input type="checkbox"> Батутный центр</label>
+                          </div>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
                 </article>
 
+                <!-- Ticket 2 -->
                 <article class="ticket" data-status="available">
                   <div class="ticket-top">
                     <div>
@@ -674,96 +667,78 @@
                       <h3 class="ticket-title">Иванов И.</h3>
                       <div class="ticket-meta">
                         <span>📍 Локации: Шымкент Royal Plaza</span>
-                        <span>📋 Активных задач: 1</span>
-                        <span>⚠️ Текущий инцидент: #INC-9012</span>
                       </div>
                     </div>
                     <span class="badge success">Свободен</span>
                   </div>
+                  <!-- Тот же блок настроек для демонстрации -->
                   <div class="assignee-settings">
-                    <div class="settings-row">
-                      <div class="form-group">
-                        <label>Объект (Локация + Аттракцион)</label>
-                        <select class="form-control">
-                          <option>Шымкент Royal Plaza — VR-зоны</option>
-                          <option>Шымкент Royal Plaza — Автодром</option>
-                        </select>
+                     <div class="permissions-matrix">
+                      <div class="perm-section">
+                        <h4>Создание отчета</h4>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Парки / Локации</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox"> Шымкент Royal Plaza</label>
+                          </div>
+                        </div>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Аттракционы</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox"> VR-зоны</label>
+                            <label class="checkbox-label"><input type="checkbox"> Автодром</label>
+                          </div>
+                        </div>
                       </div>
-                      <div class="form-group">
-                        <label>Права на отчет</label>
-                        <select class="form-control">
-                          <option>Проверять</option>
-                          <option>Создавать</option>
-                          <option>Только просматривать</option>
-                        </select>
+                      <div class="perm-section">
+                        <h4>Проверка отчета</h4>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Парки / Локации</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                             <label class="checkbox-label"><input type="checkbox"> Шымкент Royal Plaza</label>
+                          </div>
+                        </div>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Аттракционы</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox"> VR-зоны</label>
+                            <label class="checkbox-label"><input type="checkbox"> Автодром</label>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </article>
-
-                <article class="ticket" data-status="busy">
-                  <div class="ticket-top">
-                    <div>
-                      <div class="ticket-id">#ASG-003 · Специализация: Сервисный механик</div>
-                      <h3 class="ticket-title">Романенко И.</h3>
-                      <div class="ticket-meta">
-                        <span>📍 Локации: Алматы Алатау</span>
-                        <span>📋 Активных задач: 3</span>
-                        <span>⚠️ Текущий инцидент: Нет</span>
-                      </div>
-                    </div>
-                    <span class="badge warning">Занят (в работе)</span>
-                  </div>
-                  <div class="assignee-settings">
-                    <div class="settings-row">
-                      <div class="form-group">
-                        <label>Объект (Локация + Аттракцион)</label>
-                        <select class="form-control">
-                          <option>Алматы Алатау — Карусель</option>
-                          <option>Алматы Алатау — Батутный центр</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Права на отчет</label>
-                        <select class="form-control">
-                          <option>Создавать</option>
-                          <option>Проверять</option>
-                          <option>Только просматривать</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-
-                <article class="ticket" data-status="shift-end">
-                  <div class="ticket-top">
-                    <div>
-                      <div class="ticket-id">#ASG-004 · Специализация: Специалист POS-терминалов</div>
-                      <h3 class="ticket-title">Сидоров И.</h3>
-                      <div class="ticket-meta">
-                        <span>📍 Локации: Астана Хан Шатыр</span>
-                        <span>📋 Активных задач: 0</span>
-                        <span>⏰ Смена до: 18:00</span>
-                      </div>
-                    </div>
-                    <span class="badge danger">Смена окончена</span>
-                  </div>
-                  <div class="assignee-settings">
-                    <div class="settings-row">
-                      <div class="form-group">
-                        <label>Объект (Локация + Аттракцион)</label>
-                        <select class="form-control">
-                          <option>Астана Хан Шатыр — Кассовая зона POS</option>
-                          <option>Астана Хан Шатыр — Игровые автоматы</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Права на отчет</label>
-                        <select class="form-control">
-                          <option>Только просматривать</option>
-                          <option>Создавать</option>
-                          <option>Проверять</option>
-                        </select>
+                      <div class="perm-section">
+                        <h4>Просмотр отчета</h4>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Парки / Локации</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox"> Шымкент Royal Plaza</label>
+                            <label class="checkbox-label"><input type="checkbox"> Алматы Атакент</label>
+                          </div>
+                        </div>
+                        <div class="perm-block">
+                          <div class="perm-header">
+                            <strong>Аттракционы</strong>
+                            <button type="button" class="btn-select-all">Выбрать все</button>
+                          </div>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox"> Все ИТ-системы</label>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -771,137 +746,28 @@
               </div>
             </div>
 
-            <!-- Вкладка 2: Еженедельный отчет -->
-            <div class="tab-content" id="tab-weekly">
+            <!-- Контент: Инциденты -->
+            <div class="tab-content" id="tab-incidents">
               <div class="tickets">
-                <article class="ticket" data-status="busy">
+                <article class="ticket">
                   <div class="ticket-top">
                     <div>
-                      <div class="ticket-id">#ASG-001 · Специализация: Инженер КИПиА</div>
-                      <h3 class="ticket-title">Самат С.</h3>
-                      <div class="ticket-meta">
-                        <span>📍 Локации: Алматы Атакент, Шымкент Royal Plaza</span>
-                        <span>📋 Активных задач: 5</span>
-                      </div>
-                    </div>
-                    <span class="badge warning">Занят (в работе)</span>
-                  </div>
-                  <div class="assignee-settings">
-                    <div class="settings-row">
-                      <div class="form-group">
-                        <label>Объект (Локация + Аттракцион)</label>
-                        <select class="form-control">
-                          <option>Алматы Атакент — Все аттракционы (Сводный)</option>
-                          <option>Шымкент Royal Plaza — Все аттракционы</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Права на отчет</label>
-                        <select class="form-control">
-                          <option>Проверять</option>
-                          <option>Создавать</option>
-                          <option>Только просматривать</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-
-                <article class="ticket" data-status="available">
-                  <div class="ticket-top">
-                    <div>
-                      <div class="ticket-id">#ASG-002 · Специализация: Системный администратор</div>
-                      <h3 class="ticket-title">Иванов И.</h3>
-                      <div class="ticket-meta">
-                        <span>📍 Локации: Шымкент Royal Plaza</span>
-                        <span>📋 Активных задач: 1</span>
-                      </div>
-                    </div>
-                    <span class="badge success">Свободен</span>
-                  </div>
-                  <div class="assignee-settings">
-                    <div class="settings-row">
-                      <div class="form-group">
-                        <label>Объект (Локация + Аттракцион)</label>
-                        <select class="form-control">
-                          <option>Шымкент Royal Plaza — IT Инфраструктура</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Права на отчет</label>
-                        <select class="form-control">
-                          <option>Создавать</option>
-                          <option>Проверять</option>
-                          <option>Только просматривать</option>
-                        </select>
-                      </div>
+                      <div class="ticket-id">Раздел Инцидентов</div>
+                      <h3 class="ticket-title">Здесь будут отображаться права и статусы по инцидентам</h3>
                     </div>
                   </div>
                 </article>
               </div>
             </div>
 
-            <!-- Вкладка 3: Ежемесячный отчет -->
-            <div class="tab-content" id="tab-monthly">
+            <!-- Контент: Задачи -->
+            <div class="tab-content" id="tab-tasks">
               <div class="tickets">
-                <article class="ticket" data-status="busy">
+                <article class="ticket">
                   <div class="ticket-top">
                     <div>
-                      <div class="ticket-id">#ASG-001 · Специализация: Инженер КИПиА</div>
-                      <h3 class="ticket-title">Самат С.</h3>
-                      <div class="ticket-meta">
-                        <span>📍 Локации: Алматы Атакент</span>
-                      </div>
-                    </div>
-                    <span class="badge warning">Занят (в работе)</span>
-                  </div>
-                  <div class="assignee-settings">
-                    <div class="settings-row">
-                      <div class="form-group">
-                        <label>Объект (Локация + Аттракцион)</label>
-                        <select class="form-control">
-                          <option>Алматы Атакент — Парковый комплекс</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Права на отчет</label>
-                        <select class="form-control">
-                          <option>Проверять</option>
-                          <option>Создавать</option>
-                          <option>Только просматривать</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-
-                <article class="ticket" data-status="shift-end">
-                  <div class="ticket-top">
-                    <div>
-                      <div class="ticket-id">#ASG-004 · Специализация: Специалист POS-терминалов</div>
-                      <h3 class="ticket-title">Сидоров И.</h3>
-                      <div class="ticket-meta">
-                        <span>📍 Локации: Астана Хан Шатыр</span>
-                      </div>
-                    </div>
-                    <span class="badge danger">Смена окончена</span>
-                  </div>
-                  <div class="assignee-settings">
-                    <div class="settings-row">
-                      <div class="form-group">
-                        <label>Объект (Локация + Аттракцион)</label>
-                        <select class="form-control">
-                          <option>Астана Хан Шатыр — Кассовый аудит</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Права на отчет</label>
-                        <select class="form-control">
-                          <option>Только просматривать</option>
-                          <option>Создавать</option>
-                          <option>Проверять</option>
-                        </select>
-                      </div>
+                      <div class="ticket-id">Раздел Задач</div>
+                      <h3 class="ticket-title">Здесь будут отображаться права и статусы по задачам</h3>
                     </div>
                   </div>
                 </article>
@@ -914,10 +780,9 @@
     </div>
   </div>
 
-  <!-- СКРИПТ УПРАВЛЕНИЯ И НАВИГАЦИИ -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Управление шторкой бокового меню (Sidebar Drawer)
+      // 1. Управление шторкой бокового меню
       const menuToggle = document.getElementById('menuToggle');
       const sidebar = document.getElementById('sidebar');
       const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -937,16 +802,7 @@
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
-      // Жесты (свайпы)
-      let touchStartX = 0, touchEndX = 0;
-      document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
-      document.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        if (touchStartX - touchEndX > 70 && sidebar.classList.contains('open')) closeSidebar();
-        if (touchEndX - touchStartX > 70 && touchStartX < 30 && !sidebar.classList.contains('open')) openSidebar();
-      }, false);
-
-      // 2. Универсальный роутинг
+      // 2. Универсальный роутинг бокового меню
       const routes = {
         "Мониторинг": "https://assetzhan.github.io/TechService/Monitoring.htm",
         "Отчеты по парку": "https://assetzhan.github.io/TechService/Reports.htm",
@@ -965,7 +821,7 @@
         "+ Назначить специалиста": "https://assetzhan.github.io/TechService/NewAssignee.htm"
       };
 
-      document.querySelectorAll('a, button').forEach(element => {
+      document.querySelectorAll('.sidebar .nav a, .topbar-actions a').forEach(element => {
         element.addEventListener('click', (e) => {
           const text = element.textContent.trim().split('\n')[0].trim();
           if (routes[text] && !element.getAttribute('href')?.startsWith('file:///')) {
@@ -988,51 +844,63 @@
 
           btn.classList.add('active');
           document.getElementById(targetTab)?.classList.add('active');
-
-          filterAssignees(); // Применяем фильтр для вновь активной вкладки
+          filterAssignees(); // Применяем фильтр поиска к новой вкладке
         });
       });
 
-      // 4. Интерактивная фильтрация и поиск
-      const chips = document.querySelectorAll('.chip');
+      // 4. Поиск по списку (без чипсов)
       const searchInput = document.getElementById('assigneeSearch');
 
       function filterAssignees() {
-        const activeChip = document.querySelector('.chip.active');
-        const filterStatus = activeChip ? activeChip.getAttribute('data-filter') : 'all';
         const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
-
         const activeTab = document.querySelector('.tab-content.active');
         if (!activeTab) return;
 
         const activeTickets = activeTab.querySelectorAll('.ticket');
 
         activeTickets.forEach(ticket => {
-          const status = ticket.getAttribute('data-status');
-          const content = ticket.textContent.toLowerCase();
-
-          const matchesStatus = (filterStatus === 'all' || status === filterStatus);
-          const matchesSearch = content.includes(searchQuery);
-
-          if (matchesStatus && matchesSearch) {
-            ticket.style.display = 'grid';
+          const content = ticket.querySelector('.ticket-top').textContent.toLowerCase();
+          if (content.includes(searchQuery)) {
+            ticket.style.display = 'flex';
           } else {
             ticket.style.display = 'none';
           }
         });
       }
 
-      chips.forEach(chip => {
-        chip.addEventListener('click', () => {
-          chips.forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-          filterAssignees();
-        });
-      });
-
       if (searchInput) {
         searchInput.addEventListener('input', filterAssignees);
       }
+
+      // 5. Раскрытие карточки при клике (Аккордеон)
+      document.querySelectorAll('.ticket-top').forEach(top => {
+        top.addEventListener('click', () => {
+          const ticket = top.closest('.ticket');
+          // Раскрываем/закрываем текущую
+          ticket.classList.toggle('expanded');
+        });
+      });
+
+      // 6. Логика кнопок "Выбрать все"
+      document.querySelectorAll('.btn-select-all').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation(); // Не закрывать аккордеон при клике на кнопку
+          const group = btn.closest('.perm-block').querySelector('.checkbox-group');
+          const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+          
+          // Проверяем, выбраны ли все чекбоксы
+          const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+          
+          // Инвертируем состояние
+          checkboxes.forEach(cb => {
+            cb.checked = !allChecked;
+          });
+          
+          // Меняем текст кнопки
+          btn.textContent = allChecked ? "Выбрать все" : "Снять все";
+        });
+      });
+
     });
   </script>
 </body>

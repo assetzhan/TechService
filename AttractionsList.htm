@@ -871,7 +871,7 @@
         if (recordStatus === 'Архив') {
           row.classList.add('archived');
           if (nameCell && !nameCell.textContent.startsWith('- ')) {
-            nameCell.textContent = '- ' + nameCell.textContent.trim();
+            nameCell.textContent = '' + nameCell.textContent.trim();
           }
         } else {
           row.classList.remove('archived');

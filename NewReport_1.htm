@@ -189,6 +189,12 @@
     .btn-ghost:hover { background: var(--primary-light); color: var(--primary); }
     .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
     .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:disabled {
+      background: #94a3b8;
+      color: #f8fafc;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
 
     /* Wizard Steps */
     .wizard-steps {
@@ -1473,6 +1479,33 @@
       document.getElementById('inpDateTime').value = `${d}.${m}.${y} ${h}:${min}`;
     }
 
+    // Проверка заполненности чек-листа на Шаге 2
+    function validateStep2() {
+      if (currentStep !== 2) return;
+      
+      const attraction = document.getElementById('inpAttraction').value;
+      const items = checklistData[attraction] || [];
+      const btnNext = document.getElementById('btnNext');
+
+      let allChecked = true;
+      for (const item of items) {
+        const radios = document.getElementsByName(`chk_item_${item.num}`);
+        let itemChecked = false;
+        for (const r of radios) {
+          if (r.checked) {
+            itemChecked = true;
+            break;
+          }
+        }
+        if (!itemChecked) {
+          allChecked = false;
+          break;
+        }
+      }
+
+      btnNext.disabled = !allChecked;
+    }
+
     // Отрисовка карточек проверки на Шаге 2
     function renderChecklistCards() {
       const attrName = document.getElementById('inpAttraction').value;
@@ -1495,11 +1528,11 @@
           </div>
           <div class="touch-actions">
             <label class="radio-label">
-              <input type="radio" name="chk_item_${item.num}" value="YES">
+              <input type="radio" name="chk_item_${item.num}" value="YES" onchange="validateStep2();">
               <div class="radio-box yes-box">Норма</div>
             </label>
             <label class="radio-label">
-              <input type="radio" name="chk_item_${item.num}" value="NO">
+              <input type="radio" name="chk_item_${item.num}" value="NO" onchange="validateStep2();">
               <div class="radio-box no-box">Дефект</div>
             </label>
           </div>
@@ -1509,6 +1542,11 @@
         `;
         container.appendChild(card);
       });
+
+      // Сразу проверяем валидность при смене аттракциона / отрисовке
+      if (currentStep === 2) {
+        validateStep2();
+      }
     }
 
     // Сбор данных и наполнение таблицы/метрик на Шаге 3
@@ -1638,12 +1676,15 @@
       if (currentStep === 1) {
         btnPrev.style.visibility = 'hidden';
         btnNext.textContent = 'Далее →';
+        btnNext.disabled = false;
       } else if (currentStep === 2) {
         btnPrev.style.visibility = 'visible';
         btnNext.textContent = 'Просмотр отчета →';
+        validateStep2();
       } else if (currentStep === 3) {
         btnPrev.style.visibility = 'visible';
         btnNext.textContent = 'Сохранить и отправить';
+        btnNext.disabled = false;
       }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });

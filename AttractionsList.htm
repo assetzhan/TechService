@@ -342,6 +342,16 @@
       border-bottom: none;
     }
 
+    /* Стили для заархивированных строк */
+    tr.clickable-row.archived td {
+      background-color: #e2e8f0 !important;
+      color: #64748b;
+    }
+
+    tr.clickable-row.archived:hover td {
+      background-color: #cbd5e1 !important;
+    }
+
     /* Status Badges */
     .badge {
       display: inline-flex;
@@ -357,6 +367,7 @@
     .badge-success { background: #dcfce7; color: var(--success); }
     .badge-warning { background: #fef3c7; color: var(--warning); }
     .badge-danger  { background: #fee2e2; color: var(--danger); }
+    .badge-secondary { background: #e2e8f0; color: #475569; }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
     /* Modal Overlay */
@@ -621,9 +632,9 @@
                   </tr>
                 </thead>
                 <tbody id="attractionsTableBody">
-                  <tr class="clickable-row">
+                  <tr class="clickable-row" data-record-status="Активный">
                     <td class="col-code"><strong>ATR-001</strong></td>
-                    <td>Батуты</td>
+                    <td class="col-name">Батуты</td>
                     <td class="col-location">Алматы Алатау</td>
                     <td class="col-category">Семейные</td>
                     <td class="col-status">
@@ -633,9 +644,9 @@
                     </td>
                     <td style="color: var(--muted);">03.09.2026</td>
                   </tr>
-                  <tr class="clickable-row">
+                  <tr class="clickable-row" data-record-status="Активный">
                     <td class="col-code"><strong>ATR-002</strong></td>
-                    <td>Башни равновесия"</td>
+                    <td class="col-name">Башни равновесия</td>
                     <td class="col-location">Алматы Алатау</td>
                     <td class="col-category">Семейные</td>
                     <td class="col-status">
@@ -645,9 +656,9 @@
                     </td>
                     <td style="color: var(--muted);">01.09.2026</td>
                   </tr>
-                  <tr class="clickable-row">
+                  <tr class="clickable-row" data-record-status="Активный">
                     <td class="col-code"><strong>ATR-003</strong></td>
-                    <td>Башня</td>
+                    <td class="col-name">Башня</td>
                     <td class="col-location">Шымкент Dala Mall</td>
                     <td class="col-category">Семейные</td>
                     <td class="col-status">
@@ -657,9 +668,9 @@
                     </td>
                     <td style="color: var(--muted);">28.08.2026</td>
                   </tr>
-                  <tr class="clickable-row">
+                  <tr class="clickable-row" data-record-status="Активный">
                     <td class="col-code"><strong>ATR-004</strong></td>
-                    <td>Башня-кран</td>
+                    <td class="col-name">Башня-кран</td>
                     <td class="col-location">Шымкент Dala Mall</td>
                     <td class="col-category">Детские</td>
                     <td class="col-status">
@@ -669,9 +680,9 @@
                     </td>
                     <td style="color: var(--muted);">02.09.2026</td>
                   </tr>
-                  <tr class="clickable-row">
+                  <tr class="clickable-row" data-record-status="Активный">
                     <td class="col-code"><strong>ATR-005</strong></td>
-                    <td>Большая волна</td>
+                    <td class="col-name">Большая волна</td>
                     <td class="col-location">Шымкент Dala Mall</td>
                     <td class="col-category">Экстремальные</td>
                     <td class="col-status">
@@ -722,6 +733,14 @@
           <option value="В работе">В работе</option>
           <option value="На ТО">На ТО</option>
           <option value="Остановлен">Остановлен</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Статус</label>
+        <select id="editRecordStatus" class="form-control">
+          <option value="Активный">Активный</option>
+          <option value="Архив">Архив</option>
         </select>
       </div>
 
@@ -843,6 +862,26 @@
         el.addEventListener('change', filterTable);
       });
 
+      // Инициализация стиля архивации при загрузке
+      function initRowArchiveState(row) {
+        const recordStatus = row.getAttribute('data-record-status') || 'Активный';
+        const nameCell = row.querySelector('.col-name');
+
+        if (recordStatus === 'Архив') {
+          row.classList.add('archived');
+          if (nameCell && !nameCell.textContent.startsWith('- ')) {
+            nameCell.textContent = '- ' + nameCell.textContent.trim();
+          }
+        } else {
+          row.classList.remove('archived');
+          if (nameCell && nameCell.textContent.startsWith('- ')) {
+            nameCell.textContent = nameCell.textContent.replace(/^-\s*/, '');
+          }
+        }
+      }
+
+      tableRows.forEach(row => initRowArchiveState(row));
+
       // 4. Логика модального окна
       const editModal = document.getElementById('editModal');
       const cancelEditBtn = document.getElementById('cancelEditBtn');
@@ -851,6 +890,7 @@
       const editCodeInput = document.getElementById('editCode');
       const editLocationSelect = document.getElementById('editLocation');
       const editStatusSelect = document.getElementById('editStatus');
+      const editRecordStatusSelect = document.getElementById('editRecordStatus');
       
       let currentRowContext = null;
 
@@ -860,10 +900,12 @@
         const codeText = row.querySelector('.col-code').textContent.trim();
         const locationText = row.querySelector('.col-location').textContent.trim();
         const statusText = row.querySelector('.badge').getAttribute('data-status');
+        const recordStatusText = row.getAttribute('data-record-status') || 'Активный';
 
         editCodeInput.value = codeText;
         editLocationSelect.value = locationText;
         editStatusSelect.value = statusText;
+        editRecordStatusSelect.value = recordStatusText;
 
         editModal.classList.add('active');
       }
@@ -899,6 +941,11 @@
             </span>
           `;
           
+          // Обновление состояния Статуса (Активный / Архив)
+          const newRecordStatus = editRecordStatusSelect.value;
+          currentRowContext.setAttribute('data-record-status', newRecordStatus);
+          initRowArchiveState(currentRowContext);
+
           filterTable();
         }
         closeModal();

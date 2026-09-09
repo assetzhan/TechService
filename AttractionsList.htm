@@ -10,7 +10,7 @@
       --panel: #ffffff;
       --muted: #64748b;
       --text: #0f172a;
-      --line: #e2e8f0;
+      --line: #cbd5e1; /* Затемнили цвет разделительных линий */
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
       --primary-light: #eff6ff;
@@ -346,6 +346,7 @@
     tr.clickable-row.archived td {
       background-color: #e2e8f0 !important;
       color: #64748b;
+      border-bottom: 1px solid #94a3b8 !important; /* Более тёмный разделитель для заархивированных строк */
     }
 
     tr.clickable-row.archived:hover td {
@@ -870,7 +871,7 @@
         if (recordStatus === 'Архив') {
           row.classList.add('archived');
           if (nameCell && !nameCell.textContent.startsWith('- ')) {
-            nameCell.textContent = + nameCell.textContent.trim();
+            nameCell.textContent = '- ' + nameCell.textContent.trim();
           }
         } else {
           row.classList.remove('archived');

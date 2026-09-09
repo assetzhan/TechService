@@ -313,11 +313,50 @@
       color: var(--primary);
     }
 
+    /* Tabs Component */
+    .tabs-header {
+      display: flex;
+      border-bottom: 1px solid var(--line);
+      background: #f8fafc;
+      padding: 0 20px;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      padding: 14px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: #fff;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 20px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
     /* Assignee List */
     .tickets {
       display: grid;
       gap: 12px;
-      padding: 20px;
     }
 
     .ticket {
@@ -385,6 +424,53 @@
     .badge.danger  { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
     .badge.info    { background: rgba(8, 145, 178, 0.1); color: var(--info); }
 
+    /* Settings Panel Inside Card */
+    .assignee-settings {
+      margin-top: 12px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .settings-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1 1 240px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-control {
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+
     /* Responsive */
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
@@ -401,6 +487,7 @@
       .menu-toggle { display: flex; }
       .main { padding: 16px; }
       .filter-bar { flex-direction: column; align-items: stretch; }
+      .tabs-header { overflow-x: auto; }
     }
   </style>
 </head>
@@ -518,7 +605,7 @@
           </div>
         </section>
 
-        <!-- Главная панель со списком -->
+        <!-- Главная панель со списком и вкладками -->
         <section class="content">
           <div class="panel">
             <div class="filter-bar">
@@ -535,67 +622,292 @@
               </div>
             </div>
 
-            <div class="tickets" id="assigneeList">
-              <article class="ticket" data-status="busy">
-                <div class="ticket-top">
-                  <div>
-                    <div class="ticket-id">#ASG-001 · Специализация: Инженер КИПиА</div>
-                    <h3 class="ticket-title">Самат С.</h3>
-                    <div class="ticket-meta">
-                      <span>📍 Локации: Алматы Атакент, Шымкент Royal Plaza</span>
-                      <span>📋 Активных задач: 5</span>
-                      <span>⚠️ Текущий инцидент: #INC-8994</span>
-                    </div>
-                  </div>
-                  <span class="badge warning">Занят (в работе)</span>
-                </div>
-              </article>
-
-              <article class="ticket" data-status="available">
-                <div class="ticket-top">
-                  <div>
-                    <div class="ticket-id">#ASG-002 · Специализация: Системный администратор</div>
-                    <h3 class="ticket-title">Иванов И.</h3>
-                    <div class="ticket-meta">
-                      <span>📍 Локации: Шымкент Royal Plaza</span>
-                      <span>📋 Активных задач: 1</span>
-                      <span>⚠️ Текущий инцидент: #INC-9012</span>
-                    </div>
-                  </div>
-                  <span class="badge success">Свободен</span>
-                </div>
-              </article>
-
-              <article class="ticket" data-status="busy">
-                <div class="ticket-top">
-                  <div>
-                    <div class="ticket-id">#ASG-003 · Специализация: Сервисный механик</div>
-                    <h3 class="ticket-title">Романенко И.</h3>
-                    <div class="ticket-meta">
-                      <span>📍 Локации: Алматы Алатау</span>
-                      <span>📋 Активных задач: 3</span>
-                      <span>⚠️ Текущий инцидент: Нет</span>
-                    </div>
-                  </div>
-                  <span class="badge warning">Занят (в работе)</span>
-                </div>
-              </article>
-
-              <article class="ticket" data-status="shift-end">
-                <div class="ticket-top">
-                  <div>
-                    <div class="ticket-id">#ASG-004 · Специализация: Специалист POS-терминалов</div>
-                    <h3 class="ticket-title">Сидоров И.</h3>
-                    <div class="ticket-meta">
-                      <span>📍 Локации: Астана Хан Шатыр</span>
-                      <span>📋 Активных задач: 0</span>
-                      <span>⏰ Смена до: 18:00</span>
-                    </div>
-                  </div>
-                  <span class="badge danger">Смена окончена</span>
-                </div>
-              </article>
+            <!-- Header Вкладок -->
+            <div class="tabs-header">
+              <button class="tab-btn active" data-tab="tab-daily">Ежедневный отчет</button>
+              <button class="tab-btn" data-tab="tab-weekly">Еженедельный отчет</button>
+              <button class="tab-btn" data-tab="tab-monthly">Ежемесячный отчет</button>
             </div>
+
+            <!-- Вкладка 1: Ежедневный отчет -->
+            <div class="tab-content active" id="tab-daily">
+              <div class="tickets">
+                <article class="ticket" data-status="busy">
+                  <div class="ticket-top">
+                    <div>
+                      <div class="ticket-id">#ASG-001 · Специализация: Инженер КИПиА</div>
+                      <h3 class="ticket-title">Самат С.</h3>
+                      <div class="ticket-meta">
+                        <span>📍 Локации: Алматы Атакент, Шымкент Royal Plaza</span>
+                        <span>📋 Активных задач: 5</span>
+                        <span>⚠️ Текущий инцидент: #INC-8994</span>
+                      </div>
+                    </div>
+                    <span class="badge warning">Занят (в работе)</span>
+                  </div>
+                  <div class="assignee-settings">
+                    <div class="settings-row">
+                      <div class="form-group">
+                        <label>Объект (Локация + Аттракцион)</label>
+                        <select class="form-control">
+                          <option>Алматы Атакент — Колесо обозрения</option>
+                          <option>Алматы Атакент — Американские горки</option>
+                          <option>Шымкент Royal Plaza — Автодром</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Права на отчет</label>
+                        <select class="form-control">
+                          <option>Создавать</option>
+                          <option>Проверять</option>
+                          <option>Только просматривать</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="ticket" data-status="available">
+                  <div class="ticket-top">
+                    <div>
+                      <div class="ticket-id">#ASG-002 · Специализация: Системный администратор</div>
+                      <h3 class="ticket-title">Иванов И.</h3>
+                      <div class="ticket-meta">
+                        <span>📍 Локации: Шымкент Royal Plaza</span>
+                        <span>📋 Активных задач: 1</span>
+                        <span>⚠️ Текущий инцидент: #INC-9012</span>
+                      </div>
+                    </div>
+                    <span class="badge success">Свободен</span>
+                  </div>
+                  <div class="assignee-settings">
+                    <div class="settings-row">
+                      <div class="form-group">
+                        <label>Объект (Локация + Аттракцион)</label>
+                        <select class="form-control">
+                          <option>Шымкент Royal Plaza — VR-зоны</option>
+                          <option>Шымкент Royal Plaza — Автодром</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Права на отчет</label>
+                        <select class="form-control">
+                          <option>Проверять</option>
+                          <option>Создавать</option>
+                          <option>Только просматривать</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="ticket" data-status="busy">
+                  <div class="ticket-top">
+                    <div>
+                      <div class="ticket-id">#ASG-003 · Специализация: Сервисный механик</div>
+                      <h3 class="ticket-title">Романенко И.</h3>
+                      <div class="ticket-meta">
+                        <span>📍 Локации: Алматы Алатау</span>
+                        <span>📋 Активных задач: 3</span>
+                        <span>⚠️ Текущий инцидент: Нет</span>
+                      </div>
+                    </div>
+                    <span class="badge warning">Занят (в работе)</span>
+                  </div>
+                  <div class="assignee-settings">
+                    <div class="settings-row">
+                      <div class="form-group">
+                        <label>Объект (Локация + Аттракцион)</label>
+                        <select class="form-control">
+                          <option>Алматы Алатау — Карусель</option>
+                          <option>Алматы Алатау — Батутный центр</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Права на отчет</label>
+                        <select class="form-control">
+                          <option>Создавать</option>
+                          <option>Проверять</option>
+                          <option>Только просматривать</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="ticket" data-status="shift-end">
+                  <div class="ticket-top">
+                    <div>
+                      <div class="ticket-id">#ASG-004 · Специализация: Специалист POS-терминалов</div>
+                      <h3 class="ticket-title">Сидоров И.</h3>
+                      <div class="ticket-meta">
+                        <span>📍 Локации: Астана Хан Шатыр</span>
+                        <span>📋 Активных задач: 0</span>
+                        <span>⏰ Смена до: 18:00</span>
+                      </div>
+                    </div>
+                    <span class="badge danger">Смена окончена</span>
+                  </div>
+                  <div class="assignee-settings">
+                    <div class="settings-row">
+                      <div class="form-group">
+                        <label>Объект (Локация + Аттракцион)</label>
+                        <select class="form-control">
+                          <option>Астана Хан Шатыр — Кассовая зона POS</option>
+                          <option>Астана Хан Шатыр — Игровые автоматы</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Права на отчет</label>
+                        <select class="form-control">
+                          <option>Только просматривать</option>
+                          <option>Создавать</option>
+                          <option>Проверять</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+
+            <!-- Вкладка 2: Еженедельный отчет -->
+            <div class="tab-content" id="tab-weekly">
+              <div class="tickets">
+                <article class="ticket" data-status="busy">
+                  <div class="ticket-top">
+                    <div>
+                      <div class="ticket-id">#ASG-001 · Специализация: Инженер КИПиА</div>
+                      <h3 class="ticket-title">Самат С.</h3>
+                      <div class="ticket-meta">
+                        <span>📍 Локации: Алматы Атакент, Шымкент Royal Plaza</span>
+                        <span>📋 Активных задач: 5</span>
+                      </div>
+                    </div>
+                    <span class="badge warning">Занят (в работе)</span>
+                  </div>
+                  <div class="assignee-settings">
+                    <div class="settings-row">
+                      <div class="form-group">
+                        <label>Объект (Локация + Аттракцион)</label>
+                        <select class="form-control">
+                          <option>Алматы Атакент — Все аттракционы (Сводный)</option>
+                          <option>Шымкент Royal Plaza — Все аттракционы</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Права на отчет</label>
+                        <select class="form-control">
+                          <option>Проверять</option>
+                          <option>Создавать</option>
+                          <option>Только просматривать</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="ticket" data-status="available">
+                  <div class="ticket-top">
+                    <div>
+                      <div class="ticket-id">#ASG-002 · Специализация: Системный администратор</div>
+                      <h3 class="ticket-title">Иванов И.</h3>
+                      <div class="ticket-meta">
+                        <span>📍 Локации: Шымкент Royal Plaza</span>
+                        <span>📋 Активных задач: 1</span>
+                      </div>
+                    </div>
+                    <span class="badge success">Свободен</span>
+                  </div>
+                  <div class="assignee-settings">
+                    <div class="settings-row">
+                      <div class="form-group">
+                        <label>Объект (Локация + Аттракцион)</label>
+                        <select class="form-control">
+                          <option>Шымкент Royal Plaza — IT Инфраструктура</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Права на отчет</label>
+                        <select class="form-control">
+                          <option>Создавать</option>
+                          <option>Проверять</option>
+                          <option>Только просматривать</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+
+            <!-- Вкладка 3: Ежемесячный отчет -->
+            <div class="tab-content" id="tab-monthly">
+              <div class="tickets">
+                <article class="ticket" data-status="busy">
+                  <div class="ticket-top">
+                    <div>
+                      <div class="ticket-id">#ASG-001 · Специализация: Инженер КИПиА</div>
+                      <h3 class="ticket-title">Самат С.</h3>
+                      <div class="ticket-meta">
+                        <span>📍 Локации: Алматы Атакент</span>
+                      </div>
+                    </div>
+                    <span class="badge warning">Занят (в работе)</span>
+                  </div>
+                  <div class="assignee-settings">
+                    <div class="settings-row">
+                      <div class="form-group">
+                        <label>Объект (Локация + Аттракцион)</label>
+                        <select class="form-control">
+                          <option>Алматы Атакент — Парковый комплекс</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Права на отчет</label>
+                        <select class="form-control">
+                          <option>Проверять</option>
+                          <option>Создавать</option>
+                          <option>Только просматривать</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="ticket" data-status="shift-end">
+                  <div class="ticket-top">
+                    <div>
+                      <div class="ticket-id">#ASG-004 · Специализация: Специалист POS-терминалов</div>
+                      <h3 class="ticket-title">Сидоров И.</h3>
+                      <div class="ticket-meta">
+                        <span>📍 Локации: Астана Хан Шатыр</span>
+                      </div>
+                    </div>
+                    <span class="badge danger">Смена окончена</span>
+                  </div>
+                  <div class="assignee-settings">
+                    <div class="settings-row">
+                      <div class="form-group">
+                        <label>Объект (Локация + Аттракцион)</label>
+                        <select class="form-control">
+                          <option>Астана Хан Шатыр — Кассовый аудит</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Права на отчет</label>
+                        <select class="form-control">
+                          <option>Только просматривать</option>
+                          <option>Создавать</option>
+                          <option>Проверять</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+
           </div>
         </section>
       </main>
@@ -663,9 +975,26 @@
         });
       });
 
-      // 3. Интерактивная фильтрация и поиск
+      // 3. Переключение Вкладок (Tabs)
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetTab = btn.getAttribute('data-tab');
+
+          tabButtons.forEach(b => b.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+
+          btn.classList.add('active');
+          document.getElementById(targetTab)?.classList.add('active');
+
+          filterAssignees(); // Применяем фильтр для вновь активной вкладки
+        });
+      });
+
+      // 4. Интерактивная фильтрация и поиск
       const chips = document.querySelectorAll('.chip');
-      const tickets = document.querySelectorAll('#assigneeList .ticket');
       const searchInput = document.getElementById('assigneeSearch');
 
       function filterAssignees() {
@@ -673,7 +1002,12 @@
         const filterStatus = activeChip ? activeChip.getAttribute('data-filter') : 'all';
         const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-        tickets.forEach(ticket => {
+        const activeTab = document.querySelector('.tab-content.active');
+        if (!activeTab) return;
+
+        const activeTickets = activeTab.querySelectorAll('.ticket');
+
+        activeTickets.forEach(ticket => {
           const status = ticket.getAttribute('data-status');
           const content = ticket.textContent.toLowerCase();
 

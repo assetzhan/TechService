@@ -922,7 +922,7 @@
 
       if (ticket.classList.contains('archived')) {
         ticket.classList.remove('archived');
-        if (title.startsWith('- ')) {
+        if (title.startsWith('')) {
           titleEl.textContent = title.replace(/^-\s*/, '');
         }
         btn.textContent = 'Архивировать';
@@ -930,7 +930,7 @@
         btn.classList.add('btn-secondary');
       } else {
         ticket.classList.add('archived');
-        if (!title.startsWith('- ')) {
+        if (!title.startsWith('')) {
           titleEl.textContent = '- ' + title;
         }
         btn.textContent = 'Активировать';

@@ -321,7 +321,7 @@
       justify-content: space-between;
       gap: 12px;
       align-items: start;
-      cursor: pointer; /* Makes it look clickable */
+      cursor: pointer;
     }
 
     .ticket-id {
@@ -363,13 +363,12 @@
 
     /* Assignee Settings (Expandable Accordion) */
     .assignee-settings {
-      display: none; /* Hidden by default */
+      display: none;
       margin-top: 16px;
       padding-top: 16px;
       border-top: 1px solid var(--line);
     }
 
-    /* Show settings when parent ticket has .expanded class */
     .ticket.expanded .assignee-settings {
       display: block;
     }
@@ -459,6 +458,37 @@
     .checkbox-label input[type="checkbox"] {
       cursor: pointer;
       accent-color: var(--primary);
+    }
+
+    /* Actions Panel (Save Button) */
+    .settings-actions {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--line);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-save {
+      display: none; /* Скрыто по умолчанию */
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 24px;
+    }
+
+    .btn-save.visible {
+      display: inline-flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .btn-save.saved {
+      background: var(--success);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* Responsive */
@@ -567,29 +597,20 @@
                     <span class="badge warning">Занят (в работе)</span>
                   </div>
                   
-                  <!-- Раскрывающаяся панель настроек (Аккордеон) -->
                   <div class="assignee-settings">
                     <div class="permissions-matrix">
-                      
-                      <!-- Колонка: Создание -->
+                      <!-- Создание -->
                       <div class="perm-section">
                         <h4>Создание отчета</h4>
                         <div class="perm-block">
                           <div class="perm-header">
-                            <strong>Локации</strong>
+                            <strong>Парки / Локации</strong>
                             <button type="button" class="btn-select-all">Выбрать все</button>
                           </div>
                           <div class="checkbox-group">
-                            <label class="checkbox-label"><input type="checkbox"> Актау</label>
-							<label class="checkbox-label"><input type="checkbox"> Актобе</label>
-							<label class="checkbox-label"><input type="checkbox"> Алматы Алатау</label>
-							<label class="checkbox-label"><input type="checkbox"> Алматы Атакент</label>
-							<label class="checkbox-label"><input type="checkbox"> Караганда</label>
-							<label class="checkbox-label"><input type="checkbox"> Темиртау</label>
-							<label class="checkbox-label"><input type="checkbox"> Уральск</label>
-							<label class="checkbox-label"><input type="checkbox"> Шымкент City Mall</label>
-							<label class="checkbox-label"><input type="checkbox"> Шымкент Dala Mall</label>
+                            <label class="checkbox-label"><input type="checkbox"> Алматы Атакент</label>
                             <label class="checkbox-label"><input type="checkbox"> Шымкент Royal Plaza</label>
+                            <label class="checkbox-label"><input type="checkbox"> Астана Хан Шатыр</label>
                           </div>
                         </div>
                         <div class="perm-block">
@@ -606,25 +627,18 @@
                         </div>
                       </div>
 
-                      <!-- Колонка: Проверка -->
+                      <!-- Проверка -->
                       <div class="perm-section">
                         <h4>Проверка отчета</h4>
                         <div class="perm-block">
                           <div class="perm-header">
-                            <strong>Локации</strong>
+                            <strong>Парки / Локации</strong>
                             <button type="button" class="btn-select-all">Выбрать все</button>
                           </div>
                           <div class="checkbox-group">
-                            <label class="checkbox-label"><input type="checkbox"> Актау</label>
-							<label class="checkbox-label"><input type="checkbox"> Актобе</label>
-							<label class="checkbox-label"><input type="checkbox"> Алматы Алатау</label>
-							<label class="checkbox-label"><input type="checkbox"> Алматы Атакент</label>
-							<label class="checkbox-label"><input type="checkbox"> Караганда</label>
-							<label class="checkbox-label"><input type="checkbox"> Темиртау</label>
-							<label class="checkbox-label"><input type="checkbox"> Уральск</label>
-							<label class="checkbox-label"><input type="checkbox"> Шымкент City Mall</label>
-							<label class="checkbox-label"><input type="checkbox"> Шымкент Dala Mall</label>
+                            <label class="checkbox-label"><input type="checkbox"> Алматы Атакент</label>
                             <label class="checkbox-label"><input type="checkbox"> Шымкент Royal Plaza</label>
+                            <label class="checkbox-label"><input type="checkbox"> Астана Хан Шатыр</label>
                           </div>
                         </div>
                         <div class="perm-block">
@@ -641,25 +655,18 @@
                         </div>
                       </div>
 
-                      <!-- Колонка: Просмотр -->
+                      <!-- Просмотр -->
                       <div class="perm-section">
                         <h4>Просмотр отчета</h4>
                         <div class="perm-block">
                           <div class="perm-header">
-                            <strong>Локации</strong>
+                            <strong>Парки / Локации</strong>
                             <button type="button" class="btn-select-all">Выбрать все</button>
                           </div>
                           <div class="checkbox-group">
-                            <label class="checkbox-label"><input type="checkbox"> Актау</label>
-							<label class="checkbox-label"><input type="checkbox"> Актобе</label>
-							<label class="checkbox-label"><input type="checkbox"> Алматы Алатау</label>
-							<label class="checkbox-label"><input type="checkbox"> Алматы Атакент</label>
-							<label class="checkbox-label"><input type="checkbox"> Караганда</label>
-							<label class="checkbox-label"><input type="checkbox"> Темиртау</label>
-							<label class="checkbox-label"><input type="checkbox"> Уральск</label>
-							<label class="checkbox-label"><input type="checkbox"> Шымкент City Mall</label>
-							<label class="checkbox-label"><input type="checkbox"> Шымкент Dala Mall</label>
+                            <label class="checkbox-label"><input type="checkbox"> Алматы Атакент</label>
                             <label class="checkbox-label"><input type="checkbox"> Шымкент Royal Plaza</label>
+                            <label class="checkbox-label"><input type="checkbox"> Астана Хан Шатыр</label>
                           </div>
                         </div>
                         <div class="perm-block">
@@ -675,7 +682,11 @@
                           </div>
                         </div>
                       </div>
-
+                    </div>
+                    
+                    <!-- Блок кнопок сохранения -->
+                    <div class="settings-actions">
+                      <button class="btn btn-save" type="button">Сохранить изменения</button>
                     </div>
                   </div>
                 </article>
@@ -692,7 +703,7 @@
                     </div>
                     <span class="badge success">Свободен</span>
                   </div>
-                  <!-- Тот же блок настроек для демонстрации -->
+                  
                   <div class="assignee-settings">
                      <div class="permissions-matrix">
                       <div class="perm-section">
@@ -761,6 +772,11 @@
                           </div>
                         </div>
                       </div>
+                    </div>
+
+                    <!-- Блок кнопок сохранения -->
+                    <div class="settings-actions">
+                      <button class="btn btn-save" type="button">Сохранить изменения</button>
                     </div>
                   </div>
                 </article>
@@ -865,7 +881,7 @@
 
           btn.classList.add('active');
           document.getElementById(targetTab)?.classList.add('active');
-          filterAssignees(); // Применяем фильтр поиска к новой вкладке
+          filterAssignees(); 
         });
       });
 
@@ -897,29 +913,62 @@
       document.querySelectorAll('.ticket-top').forEach(top => {
         top.addEventListener('click', () => {
           const ticket = top.closest('.ticket');
-          // Раскрываем/закрываем текущую
           ticket.classList.toggle('expanded');
         });
       });
 
-      // 6. Логика кнопок "Выбрать все"
-      document.querySelectorAll('.btn-select-all').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation(); // Не закрывать аккордеон при клике на кнопку
-          const group = btn.closest('.perm-block').querySelector('.checkbox-group');
-          const checkboxes = group.querySelectorAll('input[type="checkbox"]');
-          
-          // Проверяем, выбраны ли все чекбоксы
-          const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-          
-          // Инвертируем состояние
-          checkboxes.forEach(cb => {
-            cb.checked = !allChecked;
+      // 6. Логика чекбоксов и появления кнопки "Сохранить"
+      document.querySelectorAll('.assignee-settings').forEach(settingsPanel => {
+        const saveBtn = settingsPanel.querySelector('.btn-save');
+
+        // Показ кнопки сохранения
+        const showSaveButton = () => {
+          if (saveBtn && !saveBtn.classList.contains('visible')) {
+            saveBtn.classList.add('visible');
+            saveBtn.classList.remove('saved');
+            saveBtn.textContent = 'Сохранить изменения';
+          }
+        };
+
+        // Обработка клика по кнопкам "Выбрать все"
+        settingsPanel.querySelectorAll('.btn-select-all').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            const group = btn.closest('.perm-block').querySelector('.checkbox-group');
+            const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+            
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            checkboxes.forEach(cb => {
+              cb.checked = !allChecked;
+            });
+            
+            btn.textContent = allChecked ? "Выбрать все" : "Снять все";
+            showSaveButton();
           });
-          
-          // Меняем текст кнопки
-          btn.textContent = allChecked ? "Выбрать все" : "Снять все";
         });
+
+        // Обработка клика по самим чекбоксам
+        settingsPanel.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+          checkbox.addEventListener('change', showSaveButton);
+        });
+
+        // Клик по кнопке "Сохранить изменения"
+        if (saveBtn) {
+          saveBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            // Имитация успешного сохранения
+            saveBtn.textContent = 'Сохранено ✓';
+            saveBtn.classList.add('saved');
+            
+            // Скрываем кнопку через 2 секунды
+            setTimeout(() => {
+              saveBtn.classList.remove('visible', 'saved');
+              saveBtn.textContent = 'Сохранить изменения';
+            }, 2000);
+          });
+        }
       });
 
     });

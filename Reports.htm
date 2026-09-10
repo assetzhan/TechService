@@ -123,7 +123,7 @@
 
     .main {
       width: 100%;
-      max-width: 1360px;
+      max-width: 1400px;
       padding: 24px;
       display: flex;
       flex-direction: column;
@@ -210,8 +210,6 @@
       background: var(--primary-hover);
     }
 
-    .btn-new { min-width: 120px; }
-
     /* Stats Grid */
     .stats-grid {
       display: grid;
@@ -242,12 +240,9 @@
       color: var(--text);
     }
 
-    /* Content Layout */
+    /* Content Layout - Full Width */
     .content {
-      display: grid;
-      grid-template-columns: 1.35fr 0.9fr;
-      gap: 20px;
-      align-items: start;
+      width: 100%;
     }
 
     .panel {
@@ -256,21 +251,7 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
-    }
-
-    .panel-head {
-      padding: 18px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .panel-title {
-      margin: 0;
-      font-size: 1.05rem;
-      font-weight: 700;
+      width: 100%;
     }
 
     /* Filter Bar */
@@ -279,14 +260,14 @@
       border-bottom: 1px solid var(--line);
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 16px;
       align-items: center;
       justify-content: space-between;
       background: #fff;
     }
 
     .search-box {
-      flex: 1 1 240px;
+      flex: 1 1 260px;
     }
 
     .search-box input {
@@ -307,6 +288,7 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .chip {
@@ -328,7 +310,32 @@
       color: var(--primary);
     }
 
-    /* Reports / Ticket list */
+    .page-size-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .page-size-selector select {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .page-size-selector select:focus {
+      border-color: var(--primary);
+    }
+
+    /* Reports List */
     .tickets {
       display: grid;
       gap: 12px;
@@ -345,7 +352,7 @@
       background: #fff;
       border: 1px solid var(--line);
       border-radius: 16px;
-      padding: 18px;
+      padding: 18px 20px;
       display: grid;
       gap: 12px;
       transition: all 0.2s ease;
@@ -359,8 +366,8 @@
     .ticket-top {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
-      align-items: start;
+      gap: 16px;
+      align-items: center;
     }
 
     .ticket-id {
@@ -372,14 +379,13 @@
 
     .ticket-title {
       margin: 0;
-      font-size: 1rem;
     }
 
     .ticket-meta {
-      color: var(--muted);
-      font-size: 13px;
+      color: #334155;
+      font-size: 14px;
       display: flex;
-      gap: 16px;
+      gap: 20px;
       flex-wrap: wrap;
     }
 
@@ -387,9 +393,9 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 999px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       white-space: nowrap;
     }
@@ -399,87 +405,7 @@
     .badge.danger  { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
     .badge.info    { background: rgba(8, 145, 178, 0.1); color: var(--info); }
 
-    /* Side Panel Details */
-    .detail {
-      padding: 20px;
-      display: grid;
-      gap: 16px;
-    }
-
-    .detail-card {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 16px;
-    }
-
-    .detail-card h3 {
-      margin: 0 0 12px;
-      font-size: 1rem;
-      font-weight: 700;
-    }
-
-    .meta-grid {
-      display: grid;
-      gap: 12px;
-    }
-
-    .meta-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      font-size: 14px;
-      color: #334155;
-      padding-bottom: 10px;
-      border-bottom: 1px dashed var(--line);
-    }
-
-    .meta-row:last-child {
-      border-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .timeline {
-      display: grid;
-      gap: 14px;
-      margin-top: 8px;
-    }
-
-    .timeline-item {
-      display: grid;
-      grid-template-columns: 14px 1fr;
-      gap: 12px;
-      align-items: start;
-    }
-
-    .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      margin-top: 5px;
-      background: var(--primary);
-      box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.1);
-    }
-
-    .timeline-item p {
-      margin: 0;
-      color: #334155;
-      line-height: 1.4;
-      font-size: 13px;
-    }
-
-    .timeline-item small {
-      color: var(--muted);
-      display: block;
-      margin-bottom: 4px;
-      font-size: 12px;
-    }
-
-    /* Responsive */
-    @media (max-width: 1100px) {
-      .content { grid-template-columns: 1fr; }
-    }
-
+    /* Responsive Design */
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
       .sidebar {
@@ -495,6 +421,17 @@
       .menu-toggle { display: flex; }
       .main { padding: 16px; }
       .filter-bar { flex-direction: column; align-items: stretch; }
+      .filters-group { justify-content: space-between; }
+      .page-size-selector { justify-content: space-between; }
+    }
+
+    @media (max-width: 600px) {
+      .topbar { flex-wrap: wrap; }
+      .topbar-actions { width: 100%; display: flex; }
+      .topbar-actions .btn { flex: 1; text-align: center; }
+      .ticket-top { flex-direction: column; align-items: flex-start; }
+      .ticket-meta { flex-direction: column; gap: 6px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -588,7 +525,7 @@
           </div>
           <div class="topbar-actions">
             <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost">Фильтры</a>
-            <a href="https://assetzhan.github.io/TechService/NewReport_1.htm" class="btn btn-primary btn-new">+ Новый отчет</a>
+            <a href="https://assetzhan.github.io/TechService/NewReport_1.htm" class="btn btn-primary">+ Новый отчет</a>
           </div>
         </header>
 
@@ -612,9 +549,8 @@
           </div>
         </section>
 
-        <!-- Главный блок -->
+        <!-- Главный блок на всю ширину -->
         <section class="content">
-          <!-- Левая панель: Реестр отчетов -->
           <div class="panel">
             <div class="filter-bar">
               <div class="search-box">
@@ -627,13 +563,13 @@
                 <button class="chip" data-filter="warning">Желтый</button>
                 <button class="chip" data-filter="success">Зеленый</button>
               </div>
+
               <div class="page-size-selector">
                 <label for="pageSize">Отображать по:</label>
                 <select id="pageSize">
-                  <option value="2">2 пользователей</option>
-                  <option value="10" selected>10 пользователей</option>
-                  <option value="20">20 пользователей</option>
-                  <option value="50">50 пользователей</option>
+                  <option value="10" selected>10 записей</option>
+                  <option value="20">20 записей</option>
+                  <option value="50">50 записей</option>
                   <option value="all">Все</option>
                 </select>
               </div>
@@ -658,40 +594,43 @@
                 </article>
               </a>
 
-              <article class="ticket" data-status="warning">
-                <div class="ticket-top">
-                  <div>
-                    <div class="ticket-id">#103457 · Создан: 14:15 · Автор: Сидоров И.</div>
-                    <div class="ticket-title">
-                      <div class="ticket-meta">
-                        <span>📍 Локация: Алматы Атакент</span>
-                        <span>🎡 Аттракцион: Скаладром</span>
-                        <span>📊 Статус: Желтый</span>
+              <a href="https://assetzhan.github.io/TechService/ReportDetail.htm" class="ticket-link">
+                <article class="ticket" data-status="warning">
+                  <div class="ticket-top">
+                    <div>
+                      <div class="ticket-id">#103457 · Создан: 14:15 · Автор: Сидоров И.</div>
+                      <div class="ticket-title">
+                        <div class="ticket-meta">
+                          <span>📍 Локация: Алматы Атакент</span>
+                          <span>🎡 Аттракцион: Скаладром</span>
+                          <span>📊 Статус: Желтый</span>
+                        </div>
                       </div>
                     </div>
+                    <span class="badge warning">Временно отключен</span>
                   </div>
-                  <span class="badge warning">Временно отключен</span>
-                </div>
-              </article>
+                </article>
+              </a>
 
-              <article class="ticket" data-status="success">
-                <div class="ticket-top">
-                  <div>
-                    <div class="ticket-id">#103456 · Создан: 14:00 · Автор: Романенко И.</div>
-                    <div class="ticket-title">
-                      <div class="ticket-meta">
-                        <span>📍 Локация: Алматы Алатау</span>
-                        <span>🎡 Аттракцион: Скаладром</span>
-                        <span>📊 Статус: Зеленый</span>
+              <a href="https://assetzhan.github.io/TechService/ReportDetail.htm" class="ticket-link">
+                <article class="ticket" data-status="success">
+                  <div class="ticket-top">
+                    <div>
+                      <div class="ticket-id">#103456 · Создан: 14:00 · Автор: Романенко И.</div>
+                      <div class="ticket-title">
+                        <div class="ticket-meta">
+                          <span>📍 Локация: Алматы Алатау</span>
+                          <span>🎡 Аттракцион: Скаладром</span>
+                          <span>📊 Статус: Зеленый</span>
+                        </div>
                       </div>
                     </div>
+                    <span class="badge success">Работает</span>
                   </div>
-                  <span class="badge success">Работает</span>
-                </div>
-              </article>
+                </article>
+              </a>
             </div>
           </div>
-
         </section>
       </main>
     </div>
@@ -720,7 +659,7 @@
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
-      // Жесты (свайпы)
+      // Свайпы для мобильного меню
       let touchStartX = 0, touchEndX = 0;
       document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
       document.addEventListener('touchend', e => {
@@ -745,8 +684,7 @@
         "Первопричины": "https://assetzhan.github.io/TechService/RootCauses.htm",
         "Заявка в ИТ": "https://support.mykids.kz/",
         "Фильтры": "https://assetzhan.github.io/TechService/Filters.htm",
-        "+ Новый отчет": "https://assetzhan.github.io/TechService/NewReport_1.htm",
-        "Показать все логи": "https://assetzhan.github.io/TechService/Logs.htm"
+        "+ Новый отчет": "https://assetzhan.github.io/TechService/NewReport_1.htm"
       };
 
       document.querySelectorAll('a, button').forEach(element => {
@@ -759,7 +697,7 @@
         });
       });
 
-      // 3. Интерактивная фильтрация и поиск
+      // 3. Фильтрация и поиск
       const chips = document.querySelectorAll('.chip');
       const tickets = document.querySelectorAll('#reportList .ticket');
       const searchInput = document.getElementById('reportSearch');
@@ -776,7 +714,6 @@
           const matchesStatus = (filterStatus === 'all' || status === filterStatus);
           const matchesSearch = content.includes(searchQuery);
 
-          // Скрываем/показываем карточку целиком (включая ссылку-обертку, если она есть)
           const target = ticket.closest('.ticket-link') || ticket;
 
           if (matchesStatus && matchesSearch) {

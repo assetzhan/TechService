@@ -4060,43 +4060,34 @@
         return span;
       };
 
-      if (totalPages === 2) {
-        paginationContainer.appendChild(createBtn(1, '1', currentPage === 1));
-        paginationContainer.appendChild(createBtn(2, '2', currentPage === 2));
-      } else if (totalPages === 3) {
-        paginationContainer.appendChild(createBtn(1, '1', currentPage === 1));
-        paginationContainer.appendChild(createBtn(2, '2', currentPage === 2));
-        paginationContainer.appendChild(createBtn(3, '3', currentPage === 3));
-      } else {
-        // 4 или более страниц
-        paginationContainer.appendChild(createBtn(1, '1', currentPage === 1));
+      // 1. Всегда выводим первую страницу
+      paginationContainer.appendChild(createBtn(1, '1', currentPage === 1));
 
-        if (currentPage > 3) {
-          paginationContainer.appendChild(createDots());
-        }
-
-        let start = Math.max(2, currentPage - 1);
-        let end = Math.min(totalPages - 1, currentPage + 1);
-
-        if (currentPage <= 3) {
-          end = 3;
-        }
-        if (currentPage >= totalPages - 2) {
-          start = totalPages - 2;
-        }
-
-        for (let i = start; i <= end; i++) {
-          if (i > 1 && i < totalPages) {
-            paginationContainer.appendChild(createBtn(i, i.toString(), currentPage === i));
-          }
-        }
-
-        if (currentPage < totalPages - 2) {
-          paginationContainer.appendChild(createDots());
-        }
-
-        paginationContainer.appendChild(createBtn(totalPages, totalPages.toString(), currentPage === totalPages));
+      // 2. Многоточие слева, если текущая страница > 3
+      if (currentPage > 3) {
+        paginationContainer.appendChild(createDots());
       }
+
+      // 3. Вычисляем диапазон соседних страниц (активная страница по центру)
+      let start = currentPage - 1;
+      let end = currentPage + 1;
+
+      // Ограничиваем границы, чтобы не выходить за 2 и totalPages - 1
+      if (start < 2) start = 2;
+      if (end >= totalPages) end = totalPages - 1;
+
+      // Выводим центральные кнопки
+      for (let i = start; i <= end; i++) {
+        paginationContainer.appendChild(createBtn(i, i.toString(), currentPage === i));
+      }
+
+      // 4. Многоточие справа, если текущая страница < totalPages - 2
+      if (currentPage < totalPages - 2) {
+        paginationContainer.appendChild(createDots());
+      }
+
+      // 5. Всегда выводим последнюю страницу
+      paginationContainer.appendChild(createBtn(totalPages, totalPages.toString(), currentPage === totalPages));
     }
 
     function updateView() {

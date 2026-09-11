@@ -161,6 +161,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      position: relative;
     }
 
     .menu-toggle {
@@ -188,6 +189,7 @@
       align-items: center;
       justify-content: center;
       font-size: 14px;
+      height: 44px;
     }
 
     .btn-ghost {
@@ -210,6 +212,130 @@
       background: var(--primary-hover);
     }
 
+    /* --- DATE PICKER STYLES (from Monitoring) --- */
+    .date-picker-wrapper {
+      position: relative;
+    }
+
+    .date-picker-trigger {
+      height: 44px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .date-picker-trigger:hover, .date-picker-trigger.active {
+      border-color: var(--primary);
+      background: #fff;
+    }
+    .date-picker-trigger .arrow {
+      font-size: 10px;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+    .date-picker-trigger.active .arrow {
+      transform: rotate(180deg);
+    }
+
+    .date-picker-popover {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 590px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.22);
+      border: 1px solid #e2e8f0;
+      padding: 20px;
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      animation: popoverFadeIn 0.2s ease-out;
+    }
+    .date-picker-popover.open { display: flex; }
+
+    @keyframes popoverFadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .popover-header { display: flex; justify-content: flex-end; align-items: center; }
+
+    .preset-select {
+      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;
+      padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--text);
+      outline: none; cursor: pointer;
+    }
+
+    .calendars-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px; position: relative;
+    }
+    .calendars-grid::before {
+      content: ''; position: absolute; left: 50%; top: 10px; bottom: 10px;
+      width: 1px; background: #e2e8f0;
+    }
+
+    .calendar-col { display: flex; flex-direction: column; gap: 12px; }
+    .cal-title-label { font-size: 13px; font-weight: 700; color: var(--text); text-align: center; }
+    .cal-month-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
+    .cal-month-name { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: 0.5px; text-transform: uppercase; }
+    .cal-nav-btn {
+      background: transparent; border: none; width: 28px; height: 28px; border-radius: 50%;
+      cursor: pointer; display: grid; place-items: center; font-size: 14px;
+      color: var(--text); transition: background 0.15s;
+    }
+    .cal-nav-btn:hover { background: #f1f5f9; }
+
+    .cal-weekdays {
+      display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;
+      font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 4px;
+    }
+
+    .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 4px; text-align: center; }
+
+    .day-cell {
+      height: 34px; display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer;
+      border-radius: 50%; margin: 0 auto; width: 34px; user-select: none; transition: all 0.15s ease;
+    }
+    .day-cell.empty { cursor: default; pointer-events: none; }
+    .day-cell:not(.empty):hover { background: #e2e8f0; }
+    .day-cell.selected-start, .day-cell.selected-end {
+      background: #2563eb !important; color: #ffffff !important; font-weight: 700;
+      border-radius: 50%; box-shadow: 0 4px 10px rgba(37,99,235,0.3);
+    }
+    .day-cell.in-range { background: #eff6ff; border-radius: 0; width: 100%; color: #1d4ed8; font-weight: 600; }
+
+    .popover-footer {
+      display: flex; justify-content: flex-end; align-items: center; gap: 12px;
+      padding-top: 12px; border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-cancel {
+      background: transparent; border: none; font-size: 14px; font-weight: 600;
+      color: var(--text); padding: 10px 18px; cursor: pointer; border-radius: 12px;
+    }
+    .btn-cancel:hover { background: #f1f5f9; }
+
+    .btn-apply {
+      background: #e2e8f0; border: none; font-size: 14px; font-weight: 600;
+      color: #0f172a; padding: 10px 24px; cursor: pointer; border-radius: 999px; transition: 0.2s ease;
+    }
+    .btn-apply:hover { background: #cbd5e1; }
+    /* -------------------------------------- */
+
+
     /* Stats Grid */
     .stats-grid {
       display: grid;
@@ -228,22 +354,11 @@
       gap: 6px;
     }
 
-    .stat-card .label {
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .stat-card .value {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--text);
-    }
+    .stat-card .label { font-size: 13px; color: var(--muted); font-weight: 600; }
+    .stat-card .value { font-size: 28px; font-weight: 700; color: var(--text); }
 
     /* Content Layout - Full Width */
-    .content {
-      width: 100%;
-    }
+    .content { width: 100%; }
 
     .panel {
       background: #ffffff;
@@ -266,140 +381,47 @@
       background: #fff;
     }
 
-    .search-box {
-      flex: 1 1 260px;
-    }
-
+    .search-box { flex: 1 1 260px; }
     .search-box input {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.2s;
+      width: 100%; padding: 10px 14px; border: 1px solid var(--line);
+      border-radius: 12px; font-size: 14px; outline: none; transition: border-color 0.2s;
     }
+    .search-box input:focus { border-color: var(--primary); }
 
-    .search-box input:focus {
-      border-color: var(--primary);
-    }
-
-    .filters-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+    .filters-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
     .chip {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: #334155;
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
+      border: 1px solid var(--line); background: #fff; color: #334155;
+      padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: 0.2s ease;
     }
+    .chip.active, .chip:hover { border-color: rgba(37,99,235,0.3); background: var(--primary-light); color: var(--primary); }
 
-    .chip.active,
-    .chip:hover {
-      border-color: rgba(37,99,235,0.3);
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    .page-size-selector {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
+    .page-size-selector { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); font-weight: 600; }
     .page-size-selector select {
-      padding: 8px 12px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #fff;
-      color: var(--text);
-      font-size: 13px;
-      outline: none;
-      cursor: pointer;
-      transition: border-color 0.2s;
+      padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px;
+      background: #fff; color: var(--text); font-size: 13px; outline: none;
+      cursor: pointer; transition: border-color 0.2s;
     }
-
-    .page-size-selector select:focus {
-      border-color: var(--primary);
-    }
+    .page-size-selector select:focus { border-color: var(--primary); }
 
     /* Reports List */
-    .tickets {
-      display: grid;
-      gap: 12px;
-      padding: 20px;
-    }
-
-    .ticket-link {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-
+    .tickets { display: grid; gap: 12px; padding: 20px; }
+    .ticket-link { text-decoration: none; color: inherit; display: block; }
     .ticket {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 18px 20px;
-      display: grid;
-      gap: 12px;
-      transition: all 0.2s ease;
+      background: #fff; border: 1px solid var(--line); border-radius: 16px;
+      padding: 18px 20px; display: grid; gap: 12px; transition: all 0.2s ease;
     }
-
-    .ticket:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .ticket-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .ticket-id {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .ticket-title {
-      margin: 0;
-    }
-
-    .ticket-meta {
-      color: #334155;
-      font-size: 14px;
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
+    .ticket:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .ticket-top { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+    .ticket-id { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+    .ticket-title { margin: 0; }
+    .ticket-meta { color: #334155; font-size: 14px; display: flex; gap: 20px; flex-wrap: wrap; }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+      border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap;
     }
-
     .badge.success { background: rgba(22, 163, 74, 0.1); color: var(--success); }
     .badge.warning { background: rgba(217, 119, 6, 0.1); color: var(--warning); }
     .badge.danger  { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
@@ -409,13 +431,8 @@
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; }
       .sidebar {
-        position: fixed;
-        left: 0; top: 0;
-        z-index: 1000;
-        height: 100vh;
-        width: 280px;
-        transform: translateX(-100%);
-        box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+        position: fixed; left: 0; top: 0; z-index: 1000; height: 100vh; width: 280px;
+        transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.2);
       }
       .sidebar.open { transform: translateX(0); }
       .menu-toggle { display: flex; }
@@ -423,6 +440,12 @@
       .filter-bar { flex-direction: column; align-items: stretch; }
       .filters-group { justify-content: space-between; }
       .page-size-selector { justify-content: space-between; }
+      .topbar-actions { flex-wrap: wrap; }
+      .date-picker-wrapper { width: 100%; order: 3; margin-top: 10px; }
+      .date-picker-trigger { width: 100%; justify-content: space-between; }
+      .date-picker-popover { width: 100%; right: auto; left: 0; }
+      .calendars-grid { grid-template-columns: 1fr; }
+      .calendars-grid::before { display: none; }
     }
 
     @media (max-width: 600px) {
@@ -436,7 +459,6 @@
   </style>
 </head>
 <body>
-  <!-- Overlay для мобильного меню -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <div class="app">
@@ -524,19 +546,15 @@
             <h1 class="topbar-title">Отчеты по парку</h1>
           </div>
           <div class="topbar-actions">
-            <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost">Фильтры</a>
-            <a href="https://assetzhan.github.io/TechService/NewReport_1.htm" class="btn btn-primary">+ Новый отчет</a>
-          </div>
-
-		  <!-- Кастомный фильтр дат -->
+            
+            <!-- Фильтр дат -->
             <div class="date-picker-wrapper">
               <button type="button" class="date-picker-trigger" id="datePickerTrigger">
                 <span>📅</span>
-                <span id="dateRangeText">1 авг. 2026 г. - 25 авг. 2026 г.</span>
+                <span id="dateRangeText">1 авг. 2026 г. - 31 авг. 2026 г.</span>
                 <span class="arrow">▼</span>
               </button>
 
-              <!-- Всплывающий календарь (Popover) -->
               <div class="date-picker-popover" id="datePickerPopover">
                 <div class="popover-header">
                   <select class="preset-select" id="presetSelect">
@@ -550,7 +568,6 @@
                 </div>
 
                 <div class="calendars-grid">
-                  <!-- Календарь даты начала -->
                   <div class="calendar-col">
                     <div class="cal-title-label">Дата начала</div>
                     <div class="cal-month-nav">
@@ -564,7 +581,6 @@
                     <div class="cal-days" id="startDaysGrid"></div>
                   </div>
 
-                  <!-- Календарь даты окончания -->
                   <div class="calendar-col">
                     <div class="cal-title-label">Дата окончания</div>
                     <div class="cal-month-nav">
@@ -585,6 +601,10 @@
                 </div>
               </div>
             </div>
+            
+            <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost">Фильтры</a>
+            <a href="https://assetzhan.github.io/TechService/NewReport_1.htm" class="btn btn-primary">+ Новый отчет</a>
+          </div>
         </header>
 
         <!-- Метрики -->
@@ -618,8 +638,8 @@
               <div class="filters-group">
                 <button class="chip active" data-filter="all">Все (128)</button>
                 <button class="chip" data-filter="success">Работает</button>
-				<button class="chip" data-filter="warning">С примечаниями работает</button>
-				<button class="chip" data-filter="danger">Не работает</button>
+                <button class="chip" data-filter="warning">С примечаниями работает</button>
+                <button class="chip" data-filter="danger">Не работает</button>
               </div>
 
               <div class="page-size-selector">
@@ -627,7 +647,7 @@
                 <select id="pageSize">
                   <option value="2" selected>2 отчета</option>
                   <option value="10">10 отчетов</option>
-				  <option value="20">20 отчетов</option>
+                  <option value="20">20 отчетов</option>
                   <option value="50">50 отчетов</option>
                   <option value="all">Все</option>
                 </select>
@@ -636,7 +656,8 @@
 
             <div class="tickets" id="reportList">
               <a href="https://assetzhan.github.io/TechService/ReportDetail.htm" class="ticket-link">
-                <article class="ticket" data-status="danger">
+                <!-- Добавлен атрибут data-date для фильтра -->
+                <article class="ticket" data-status="danger" data-date="2026-08-25">
                   <div class="ticket-top">
                     <div>
                       <div class="ticket-id">#103458 · Создан: 14:20 · Автор: Иванов И.</div>
@@ -654,7 +675,8 @@
               </a>
 
               <a href="https://assetzhan.github.io/TechService/ReportDetail.htm" class="ticket-link">
-                <article class="ticket" data-status="warning">
+                <!-- Добавлен атрибут data-date для фильтра -->
+                <article class="ticket" data-status="warning" data-date="2026-08-24">
                   <div class="ticket-top">
                     <div>
                       <div class="ticket-id">#103457 · Создан: 14:15 · Автор: Сидоров И.</div>
@@ -672,7 +694,8 @@
               </a>
 
               <a href="https://assetzhan.github.io/TechService/ReportDetail.htm" class="ticket-link">
-                <article class="ticket" data-status="success">
+                <!-- Добавлен атрибут data-date для фильтра -->
+                <article class="ticket" data-status="success" data-date="2026-08-15">
                   <div class="ticket-top">
                     <div>
                       <div class="ticket-id">#103456 · Создан: 14:00 · Автор: Романенко И.</div>
@@ -695,10 +718,9 @@
     </div>
   </div>
 
-  <!-- СКРИПТ УПРАВЛЕНИЯ И НАВИГАЦИИ -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Управление шторкой бокового меню (Sidebar Drawer)
+      // 1. Управление шторкой бокового меню
       const menuToggle = document.getElementById('menuToggle');
       const sidebar = document.getElementById('sidebar');
       const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -718,7 +740,6 @@
       if (menuToggle) menuToggle.addEventListener('click', openSidebar);
       if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
-      // Свайпы для мобильного меню
       let touchStartX = 0, touchEndX = 0;
       document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
       document.addEventListener('touchend', e => {
@@ -726,6 +747,7 @@
         if (touchStartX - touchEndX > 70 && sidebar.classList.contains('open')) closeSidebar();
         if (touchEndX - touchStartX > 70 && touchStartX < 30 && !sidebar.classList.contains('open')) openSidebar();
       }, false);
+
 
       // 2. Универсальный роутинг
       const routes = {
@@ -756,7 +778,123 @@
         });
       });
 
-      // 3. Фильтрация и поиск
+      // 3. Date Picker Logic
+      const monthGenitive = ["янв.", "февр.", "мар.", "апр.", "мая", "июня", "июля", "авг.", "сент.", "окт.", "нояб.", "дек."];
+
+      let appliedStartDate = new Date(2026, 7, 1);
+      let appliedEndDate = new Date(2026, 7, 31);
+
+      let tempStartDate = new Date(appliedStartDate);
+      let tempEndDate = new Date(appliedEndDate);
+
+      let startCalendarMonth = new Date(2026, 7, 1);
+      let endCalendarMonth = new Date(2026, 7, 1);
+
+      const trigger = document.getElementById('datePickerTrigger');
+      const popover = document.getElementById('datePickerPopover');
+      const dateRangeText = document.getElementById('dateRangeText');
+
+      const startDaysGrid = document.getElementById('startDaysGrid');
+      const endDaysGrid = document.getElementById('endDaysGrid');
+      const startMonthTitle = document.getElementById('startMonthTitle');
+      const endMonthTitle = document.getElementById('endMonthTitle');
+
+      function formatDateTitle(date) {
+        const mNames = ["ЯНВ.", "ФЕВР.", "МАРТ", "АПР.", "МАЙ", "ИЮНЬ", "ИЮЛЬ", "АВГ.", "СЕНТ.", "ОКТ.", "НОЯБ.", "ДЕК."];
+        return `${mNames[date.getMonth()]} ${date.getFullYear()} Г.`;
+      }
+
+      function formatDateDisplay(startDate, endDate) {
+        if (!startDate && !endDate) return "За всё время";
+        if (startDate && !endDate) return `С ${startDate.getDate()} ${monthGenitive[startDate.getMonth()]} ${startDate.getFullYear()} г.`;
+        return `${startDate.getDate()} ${monthGenitive[startDate.getMonth()]} ${startDate.getFullYear()} г. - ${endDate.getDate()} ${monthGenitive[endDate.getMonth()]} ${endDate.getFullYear()} г.`;
+      }
+
+      function isSameDay(d1, d2) {
+        return d1 && d2 && d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+      }
+
+      function renderSingleCalendar(gridElement, year, month) {
+        gridElement.innerHTML = '';
+        const firstDayOfMonth = new Date(year, month, 1);
+        const lastDayOfMonth = new Date(year, month + 1, 0);
+
+        let firstDayIndex = (firstDayOfMonth.getDay() + 6) % 7;
+
+        for (let i = 0; i < firstDayIndex; i++) {
+          const emptyCell = document.createElement('div');
+          emptyCell.className = 'day-cell empty';
+          gridElement.appendChild(emptyCell);
+        }
+
+        for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+          const currentDate = new Date(year, month, day);
+          const cell = document.createElement('div');
+          cell.className = 'day-cell';
+          cell.textContent = day;
+
+          if (isSameDay(currentDate, tempStartDate)) {
+            cell.classList.add('selected-start');
+          } else if (isSameDay(currentDate, tempEndDate)) {
+            cell.classList.add('selected-end');
+          } else if (tempStartDate && tempEndDate && currentDate > tempStartDate && currentDate < tempEndDate) {
+            cell.classList.add('in-range');
+          }
+
+          cell.addEventListener('click', () => {
+            if (!tempStartDate || (tempStartDate && tempEndDate)) {
+              tempStartDate = currentDate;
+              tempEndDate = null;
+            } else if (currentDate < tempStartDate) {
+              tempStartDate = currentDate;
+            } else {
+              tempEndDate = currentDate;
+            }
+            renderCalendars();
+          });
+
+          gridElement.appendChild(cell);
+        }
+      }
+
+      function renderCalendars() {
+        startMonthTitle.textContent = formatDateTitle(startCalendarMonth);
+        endMonthTitle.textContent = formatDateTitle(endCalendarMonth);
+        renderSingleCalendar(startDaysGrid, startCalendarMonth.getFullYear(), startCalendarMonth.getMonth());
+        renderSingleCalendar(endDaysGrid, endCalendarMonth.getFullYear(), endCalendarMonth.getMonth());
+      }
+
+      renderCalendars();
+
+      if (trigger) {
+        trigger.addEventListener('click', () => {
+          popover.classList.toggle('open');
+          trigger.classList.toggle('active');
+        });
+      }
+
+      document.getElementById('cancelDateBtn')?.addEventListener('click', () => {
+        popover.classList.remove('open');
+        trigger.classList.remove('active');
+      });
+
+      document.getElementById('applyDateBtn')?.addEventListener('click', () => {
+        appliedStartDate = tempStartDate;
+        appliedEndDate = tempEndDate;
+        dateRangeText.textContent = formatDateDisplay(appliedStartDate, appliedEndDate);
+        popover.classList.remove('open');
+        trigger.classList.remove('active');
+        filterReports(); // Update list after date application
+      });
+
+      // Navigate Calendar Months
+      document.getElementById('prevStartMonth')?.addEventListener('click', () => { startCalendarMonth.setMonth(startCalendarMonth.getMonth() - 1); renderCalendars(); });
+      document.getElementById('nextStartMonth')?.addEventListener('click', () => { startCalendarMonth.setMonth(startCalendarMonth.getMonth() + 1); renderCalendars(); });
+      document.getElementById('prevEndMonth')?.addEventListener('click', () => { endCalendarMonth.setMonth(endCalendarMonth.getMonth() - 1); renderCalendars(); });
+      document.getElementById('nextEndMonth')?.addEventListener('click', () => { endCalendarMonth.setMonth(endCalendarMonth.getMonth() + 1); renderCalendars(); });
+
+
+      // 4. Фильтрация и поиск
       const chips = document.querySelectorAll('.chip');
       const tickets = document.querySelectorAll('#reportList .ticket');
       const searchInput = document.getElementById('reportSearch');
@@ -773,9 +911,24 @@
           const matchesStatus = (filterStatus === 'all' || status === filterStatus);
           const matchesSearch = content.includes(searchQuery);
 
+          // Date Matching
+          let matchesDate = true;
+          const dateStr = ticket.getAttribute('data-date');
+          if (dateStr && appliedStartDate) {
+            const tDate = new Date(dateStr);
+            tDate.setHours(0,0,0,0);
+            const sDate = new Date(appliedStartDate); sDate.setHours(0,0,0,0);
+            if (appliedEndDate) {
+              const eDate = new Date(appliedEndDate); eDate.setHours(0,0,0,0);
+              matchesDate = (tDate >= sDate && tDate <= eDate);
+            } else {
+              matchesDate = (tDate.getTime() === sDate.getTime());
+            }
+          }
+
           const target = ticket.closest('.ticket-link') || ticket;
 
-          if (matchesStatus && matchesSearch) {
+          if (matchesStatus && matchesSearch && matchesDate) {
             target.style.display = 'block';
           } else {
             target.style.display = 'none';
@@ -794,6 +947,9 @@
       if (searchInput) {
         searchInput.addEventListener('input', filterReports);
       }
+      
+      // Initialize filtering on load
+      filterReports();
     });
   </script>
 </body>

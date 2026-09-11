@@ -527,6 +527,64 @@
             <a href="https://assetzhan.github.io/TechService/Filters.htm" class="btn btn-ghost">Фильтры</a>
             <a href="https://assetzhan.github.io/TechService/NewReport_1.htm" class="btn btn-primary">+ Новый отчет</a>
           </div>
+
+		  <!-- Кастомный фильтр дат -->
+            <div class="date-picker-wrapper">
+              <button type="button" class="date-picker-trigger" id="datePickerTrigger">
+                <span>📅</span>
+                <span id="dateRangeText">1 авг. 2026 г. - 25 авг. 2026 г.</span>
+                <span class="arrow">▼</span>
+              </button>
+
+              <!-- Всплывающий календарь (Popover) -->
+              <div class="date-picker-popover" id="datePickerPopover">
+                <div class="popover-header">
+                  <select class="preset-select" id="presetSelect">
+                    <option value="custom">Фиксированные даты</option>
+                    <option value="today">За сегодня</option>
+                    <option value="7days">За последние 7 дней</option>
+                    <option value="30days">За 30 дней</option>
+                    <option value="thisMonth">Этот месяц</option>
+                    <option value="all">За всё время</option>
+                  </select>
+                </div>
+
+                <div class="calendars-grid">
+                  <!-- Календарь даты начала -->
+                  <div class="calendar-col">
+                    <div class="cal-title-label">Дата начала</div>
+                    <div class="cal-month-nav">
+                      <button class="cal-nav-btn" id="prevStartMonth">‹</button>
+                      <span class="cal-month-name" id="startMonthTitle">АВГ. 2026 Г.</span>
+                      <button class="cal-nav-btn" id="nextStartMonth">›</button>
+                    </div>
+                    <div class="cal-weekdays">
+                      <span>П</span><span>В</span><span>С</span><span>Ч</span><span>П</span><span>С</span><span>В</span>
+                    </div>
+                    <div class="cal-days" id="startDaysGrid"></div>
+                  </div>
+
+                  <!-- Календарь даты окончания -->
+                  <div class="calendar-col">
+                    <div class="cal-title-label">Дата окончания</div>
+                    <div class="cal-month-nav">
+                      <button class="cal-nav-btn" id="prevEndMonth">‹</button>
+                      <span class="cal-month-name" id="endMonthTitle">АВГ. 2026 Г.</span>
+                      <button class="cal-nav-btn" id="nextEndMonth">›</button>
+                    </div>
+                    <div class="cal-weekdays">
+                      <span>П</span><span>В</span><span>С</span><span>Ч</span><span>П</span><span>С</span><span>В</span>
+                    </div>
+                    <div class="cal-days" id="endDaysGrid"></div>
+                  </div>
+                </div>
+
+                <div class="popover-footer">
+                  <button type="button" class="btn-cancel" id="cancelDateBtn">Отмена</button>
+                  <button type="button" class="btn-apply" id="applyDateBtn">Применить</button>
+                </div>
+              </div>
+            </div>
         </header>
 
         <!-- Метрики -->
